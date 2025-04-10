@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
+const monggoose = require('mongoose');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 exports.getAllUsers = async (req, res) => {
     try {
