@@ -20,6 +20,21 @@ const verifyToken = (req, res, next) => {
     }
 };
 
+const redirectIfAuthenticated = (req, res, next) => {
+    const token = getTokenFromHeader(req);
+
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            return res.status(403).json({ message: "Bạn đã đăng nhập. Vui lòng đăng xuất để tiếp tục.", redirectToLogin: true });
+        } catch (err) {
+            return res.status(401).json({ message: "Token không hợp lệ." });
+        }
+    } else {
+        return next();
+    }
+};
+
 const verifyRole = (roles) => {
     return (req, res, next) => {
         if (!req.user || !roles.includes(req.user.role)) {
@@ -29,4 +44,4 @@ const verifyRole = (roles) => {
     };
 };
 
-module.exports = { verifyToken, verifyRole };
+module.exports = { verifyToken, verifyRole, redirectIfAuthenticated };
