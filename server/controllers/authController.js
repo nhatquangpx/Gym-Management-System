@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
+const crypto = require('crypto');
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { sendEmail, sendNewPasswordEmail, sendReceiptEmail, sendMaintenanceNotificationEmail } = require("../utils/emailService");
 
 exports.register = async (req, res) => {
   try {
@@ -50,6 +52,50 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Email không tồn tại.' });
+    }
+
+    const newPassword = crypto.randomBytes(10).toString('base64').slice(0, 12);
+    const salt = await bcrypt.genSalt();
+    const hashNewPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashNewPassword;
+    await user.save();
+
+    await sendNewPasswordEmail(email, hashNewPassword);
+
+    res.status(200).json({ message: 'Đã gửi mật khẩu mới.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi khi xử lý yêu cầu đặt lại mật khẩu.' });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+    const { id } = req.user.id;
+
+    user = await User.findOne({ id });
+    if (!user) return res.status(400).json({ message: "Người dùng không tồn tại!" });
+
+    const salt = await bcrypt.genSalt();
+    const hashNewPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashNewPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Mật khẩu của bạn đã được đặt lại thành công!" });
+  } catch (err) {
+    res.status(500).json({ message: "Đã xảy ra lỗi khi đặt lại mật khẩu.", error: err.message });
   }
 };
 
