@@ -71,7 +71,7 @@ exports.forgotPassword = async (req, res) => {
     user.password = hashNewPassword;
     await user.save();
 
-    await sendNewPasswordEmail(email, hashNewPassword);
+    await sendNewPasswordEmail(email, newPassword);
 
     res.status(200).json({ message: 'Đã gửi mật khẩu mới.' });
   } catch (error) {
@@ -83,9 +83,9 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { newPassword } = req.body;
-    const { id } = req.user.id;
+    const id = req.user.id;
 
-    user = await User.findOne({ id });
+    const user = await User.findById(id);
     if (!user) return res.status(400).json({ message: "Người dùng không tồn tại!" });
 
     const salt = await bcrypt.genSalt();
