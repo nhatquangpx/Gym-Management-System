@@ -6,7 +6,7 @@ const { sendEmail, sendNewPasswordEmail, sendReceiptEmail, sendMaintenanceNotifi
 
 exports.register = async (req, res) => {
   try {
-    const { username, name, email, password, phone, role } = req.body;
+    const {  name, email, password, phone, role } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Người dùng đã tồn tại!" });
@@ -16,7 +16,6 @@ exports.register = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      username,
       name,
       email,
       password: hashPassword,
