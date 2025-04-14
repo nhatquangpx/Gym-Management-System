@@ -4,6 +4,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const adminUserRoutes = require("./routes/adminUserRoutes");
+const homepageRoutes = require("./routes/homepageRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -18,5 +19,5 @@ app.use(express.static('public'));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminUserRoutes);
-
+app.use("/api", require("./routes/homepageRoutes"));
 app.listen(PORT, () => console.log(`Server run in port: ${PORT}`));
