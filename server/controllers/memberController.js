@@ -2,6 +2,9 @@ const Member = require("../models/Member");
 const User = require("../models/User");
 const { validationResult } = require("express-validator");
 
+// @desc    Create a new member
+// @route   POST /api/members
+// @access  Private (Admin)
 exports.createMember = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -71,6 +74,9 @@ exports.createMember = async (req, res) => {
   }
 };
 
+// @desc    Create a new member from existing user
+// @route   POST /api/members/from-user
+// @access  Private (Admin)
 exports.createMemberFromExistingUser = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -140,7 +146,9 @@ exports.createMemberFromExistingUser = async (req, res) => {
   }
 };
 
-
+// @desc    Update member information
+// @route   PUT /api/members/:id
+// @access  Private (Admin)
 exports.updateMember = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -184,6 +192,9 @@ exports.updateMember = async (req, res) => {
   }
 };
 
+// @desc    Get all members
+// @route   GET /api/members
+// @access  Private (Admin)
 exports.getAllMembers = async (req, res) => {
   try {
     const members = await Member.find().populate({
@@ -203,7 +214,9 @@ exports.getAllMembers = async (req, res) => {
   }
 };
 
-
+// @desc    Get member by ID
+// @route   GET /api/members/:id
+// @access  Private (Admin)
 exports.getMemberById = async (req, res) => {
   try {
     const memberId = req.params.id;
@@ -228,6 +241,9 @@ exports.getMemberById = async (req, res) => {
   }
 };
 
+// @desc    Delete member
+// @route   DELETE /api/members/:id
+// @access  Private (Admin)
 exports.deleteMember = async (req, res) => {
   try {
     const memberId = req.params.id;
