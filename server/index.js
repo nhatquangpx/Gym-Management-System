@@ -20,6 +20,6 @@ app.use(express.static('public'));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminUserRoutes);
+app.use("/api", homepageRoutes);
 app.use("/api/members", memberRoutes);
-app.use("/api", require("./routes/homepageRoutes"));
 app.listen(PORT, () => console.log(`Server run in port: ${PORT}`));
