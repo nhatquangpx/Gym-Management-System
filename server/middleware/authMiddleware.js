@@ -28,6 +28,7 @@ const redirectIfAuthenticated = (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             return res.status(403).json({ message: "Bạn đã đăng nhập. Vui lòng đăng xuất để tiếp tục.", redirectToLogin: true });
         } catch (err) {
+            console.log(err, token);
             return res.status(401).json({ message: "Token không hợp lệ." });
         }
     } else {
