@@ -1,24 +1,17 @@
-const Joi = require('joi');
-const { StatusCodes } = require('http-status-codes');
+const { check, validationResult } = require("express-validator");
 
-const registerValidation = async (req, res, next) => {
-    const schema = Joi.object({
-        name: Joi.string().min(3).max(30).required(),
-        email: Joi.string().email().required(),
-        password: Joi.string().min(6).max(30).required(),
-        phone: Joi.string().pattern(/^[0-9]{10,11}$/).required(),
-        role: Joi.string().valid('member', 'admin', 'employee', 'trainer').optional()
-    });
+exports.registerValidation = [
+  check("name", "Tên không được để trống").not().isEmpty(),
+  check("email", "Email không hợp lệ").isEmail(),
+  check("password", "Mật khẩu phải có ít nhất 6 ký tự").isLength({ min: 6 }),
+  check("phone", "Số điện thoại không hợp lệ").isMobilePhone("vi-VN"),
+  check("role", "Vai trò không hợp lệ").optional().isIn(["member", "admin", "employee", "trainer"]),
+];
 
-    try {
-        await schema.validateAsync(req.body);
-        next(); 
-    } catch (error) {
-        console.error(error);
-        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
-            message: error.details[0].message
-        });
-    }
+exports.validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+  next();
 };
-
-module.exports = registerValidation;
