@@ -184,9 +184,6 @@ exports.updateMember = async (req, res) => {
   }
 };
 
-// @desc    Get all members
-// @route   GET /api/members
-// @access  Private (Admin)
 exports.getAllMembers = async (req, res) => {
   try {
     const members = await Member.find().populate({
@@ -206,9 +203,7 @@ exports.getAllMembers = async (req, res) => {
   }
 };
 
-// @desc    Get member by ID
-// @route   GET /api/members/:id
-// @access  Private (Admin)
+
 exports.getMemberById = async (req, res) => {
   try {
     const memberId = req.params.id;
@@ -233,9 +228,6 @@ exports.getMemberById = async (req, res) => {
   }
 };
 
-// @desc    Delete member
-// @route   DELETE /api/members/:id
-// @access  Private (Admin)
 exports.deleteMember = async (req, res) => {
   try {
     const memberId = req.params.id;
