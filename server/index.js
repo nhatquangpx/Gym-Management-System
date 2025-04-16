@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes");
 const adminUserRoutes = require("./routes/adminUserRoutes");
 const homepageRoutes = require("./routes/homepageRoutes");
 const memberRoutes = require("./routes/memberRoutes");
+const packageRoutes = require("./routes/packageRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -22,4 +23,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminUserRoutes);
 app.use("/api", homepageRoutes);
 app.use("/api/members", memberRoutes);
+app.use("/api/packages", packageRoutes);
+
 app.listen(PORT, () => console.log(`Server run in port: ${PORT}`));
