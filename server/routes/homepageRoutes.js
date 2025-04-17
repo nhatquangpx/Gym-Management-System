@@ -1,5 +1,5 @@
 const express = require("express");
-const { verifyToken, verifyRole } = require("../middlewares/authMiddleware");
+const { verifyToken, verifyRole } = require("../middleware/authMiddleware");
 const router = express.Router();
 const {adminAccess, trainerAccess, staffAccess, memberAccess} = require("../controllers/authController");
 
