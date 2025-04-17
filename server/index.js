@@ -23,6 +23,7 @@ app.use(express.static('public'));
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminUserRoutes);
 app.use("/api", homepageRoutes);
+app.use("/api", homepageRoutes);
 app.use("/api/members", memberRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/packages", packageRoutes);
