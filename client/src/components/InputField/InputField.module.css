@@ -1,0 +1,66 @@
+.formGroup {
+  margin-bottom: 22px;
+  position: relative;
+}
+
+.label {
+  display: block;
+  color: var(--text-color);
+  margin-bottom: 6px;
+  font-size: 0.9em;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--input-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  color: var(--text-color);
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.input:focus {
+  border-color: var(--primary-red);
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 23, 68, 0.2);
+}
+
+.errorMessage {
+  color: var(--error-color);
+  font-size: 12px;
+  margin-top: 5px;
+  font-weight: 500;
+  background-color: rgba(255, 68, 68, 0.1);
+  padding: 3px 8px;
+  border-radius: 3px;
+  border-left: 2px solid var(--error-color);
+  animation: fadeIn 0.3s ease;
+}
+
+.error .input {
+  border-color: var(--error-color);
+  animation: shake 0.3s ease-in-out;
+}
+
+.focused .input {
+  border-color: var(--primary-red);
+}
+
+.required {
+  color: var(--primary-red);
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
