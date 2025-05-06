@@ -1,0 +1,28 @@
+.button {
+  width: 100%;
+  padding: 10px;
+  background: var(--primary-red);
+  color: var(--text-color);
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background: #ff4081;
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(0);
+  animation: buttonPop 0.3s ease;
+}
+
+@keyframes buttonPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
