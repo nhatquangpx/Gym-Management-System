@@ -1,0 +1,236 @@
+.pageContainer {
+  min-height: 100vh;
+  width: 100%;
+  /* Ảnh nền sáng hơn, hiện đại hơn */
+  background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+              url('https://images.unsplash.com/photo-1596357395104-ba989e72b5ec?ixlib=rb-1.2.1&auto=format&fit=crop&w=1471&q=80'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px; /* Giảm padding dọc */
+}
+
+  .contentWrapper {
+  width: 100%;
+  max-width: 1100px; /* Giảm nhẹ max-width để card không quá xa nhau */
+  background: rgba(20, 20, 20, 0.92); /* Tăng nhẹ độ mờ */
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  padding: 35px; /* Giảm padding */
+  }
+
+.header {
+  text-align: center;
+  margin-bottom: 30px; /* Giảm margin */
+}
+  
+  .header h1 {
+  font-size: 2.5rem; /* Giảm nhẹ */
+  color: var(--primary-red);
+  margin-bottom: 12px; /* Giảm margin */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  }
+  
+  .header p {
+  color: var(--text-color);
+  font-size: 1.2rem; /* Giảm nhẹ */
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+  }
+
+.packagesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px; /* Giảm gap */
+  margin-bottom: 30px; /* Giảm margin */
+}
+
+.packageCard {
+  background: rgba(30, 30, 30, 0.85); /* Tăng độ trong suốt */
+  border-radius: 12px; /* Giảm nhẹ */
+  overflow: hidden; /* Giữ lại để bo góc hoạt động */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Giảm nhẹ shadow */
+  padding: 25px; /* Giảm padding */
+  height: 100%; /* Để các card cao bằng nhau */
+}
+
+.packageCard:hover {
+  transform: translateY(-8px); /* Giảm hiệu ứng */
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3); /* Giảm nhẹ shadow */
+}
+
+.packageCard.selected {
+  border-color: var(--primary-red);
+  background: rgba(40, 40, 40, 0.95);
+  box-shadow: 0 0 25px rgba(255, 23, 68, 0.25); /* Giảm nhẹ shadow */
+}
+
+.packageHeader {
+  text-align: center;
+  margin-bottom: 25px; /* Giảm margin */
+  padding-bottom: 15px; /* Giảm padding */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.packageName {
+  color: var(--text-color);
+  font-size: 1.7rem; /* Giảm nhẹ */
+  margin-bottom: 12px; /* Giảm margin */
+  font-weight: 700;
+  /* Thêm padding phải để tránh badge đè lên nếu tên quá dài */
+  padding-right: 80px; 
+  min-height: 50px; /* Đảm bảo có không gian cho badge */
+  display: flex; /* Căn giữa tên gói nếu nó ngắn */
+  align-items: center;
+  justify-content: center;
+}
+
+.packageType {
+  position: absolute;
+  top: 0px; /* Đẩy lên sát viền trên */
+  right: 0px; /* Đẩy sang sát viền phải */
+  background-color: var(--primary-red);
+  color: white;
+  padding: 5px 12px; /* Giảm padding */
+  border-radius: 0 12px 0 12px; /* Bo góc chéo */
+  font-size: 0.85rem; /* Giảm nhẹ */
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.priceContainer {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.price {
+  color: var(--primary-red);
+  font-size: 2rem; /* Giảm nhẹ */
+  font-weight: bold;
+}
+
+.period {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 0.9rem; /* Giảm nhẹ */
+  margin-left: 5px;
+}
+
+.packageFeatures {
+  flex-grow: 1;
+  margin-bottom: 25px; /* Giảm margin */
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* Giảm margin */
+  color: var(--text-color);
+}
+
+.feature i {
+  color: var(--primary-red);
+  font-size: 18px;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.feature span {
+  font-size: 0.9rem; /* Giảm nhẹ */
+  line-height: 1.4;
+}
+
+.packageFooter {
+  margin-top: auto;
+}
+
+.selectButton {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid var(--primary-red);
+}
+
+.selectButton:hover {
+  background-color: rgba(255, 23, 68, 0.1);
+}
+
+.selectedButton {
+  background-color: var(--primary-red);
+  color: white;
+}
+
+.continueButton {
+  width: 100%;
+  max-width: 250px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 auto;
+  display: block;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 992px) {
+  .packagesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .header p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    align-items: center; /* Căn giữa lại trên mobile */
+    padding: 20px;
+  }
+  .contentWrapper {
+    padding: 20px;
+  }
+  .packagesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .packageCard {
+    max-width: 100%;
+  }
+  
+  .header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .header p {
+    font-size: 1rem;
+  }
+}

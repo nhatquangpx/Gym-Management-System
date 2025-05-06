@@ -1,0 +1,205 @@
+.pageContainer { /* Thêm container này */
+  min-height: 100vh;
+  width: 100%;
+  /* Ảnh nền phù hợp */
+  background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+              url('https://images.unsplash.com/photo-1599058917212-d750089bc07e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Căn giữa */
+  padding: 30px 20px; /* Giảm padding */
+}
+
+.contentWrapper { /* Container cho nội dung */
+  width: 100%;
+  max-width: 1000px; /* Tăng kích thước cho layout grid */
+  background: rgba(20, 20, 20, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  padding: 35px; /* Giảm padding */
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px; /* Giảm margin */
+  color: var(--text-color);
+}
+
+.header h2 {
+  font-size: 2.2em;
+  margin-bottom: 8px;
+  color: var(--primary-red);
+}
+
+.header p {
+  font-size: 1.1em; /* Tăng nhẹ */
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+.packageInfo {
+  background-color: rgba(255, 23, 68, 0.1);
+  padding: 8px 15px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+
+.packageInfo strong {
+  color: var(--primary-red);
+}
+
+  .trainersGrid {
+  display: grid;
+  /* 4 cột trên màn hình lớn, 3 cột trên màn hình vừa, 2 cột trên mobile */
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 20px; /* Giảm gap */
+  margin-bottom: 30px; /* Giảm margin */
+  }
+
+.trainerCard {
+  background: rgba(30, 30, 30, 0.85);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.trainerCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+}
+
+.trainerCard.selected {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 25px rgba(255, 23, 68, 0.25);
+}
+
+.trainerImage {
+  height: 200px; /* Tăng chiều cao ảnh */
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.4s ease;
+}
+.trainerCard:hover .trainerImage {
+    transform: scale(1.05);
+}
+
+.trainerContent {
+  padding: 15px;
+  flex-grow: 1; /* Để nội dung co giãn */
+  text-align: center; /* Căn giữa nội dung text */
+}
+
+.trainerContent h3 {
+  color: var(--text-color);
+  font-size: 1.2em;
+  margin-bottom: 8px;
+}
+
+.trainerRating {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Căn giữa sao */
+  margin-bottom: 8px;
+  color: #FFD700;
+}
+
+.trainerRating i {
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.trainerSpecialty {
+  color: var(--text-color);
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+.trainerExperience {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 0.85em;
+  margin-bottom: 15px; /* Thêm margin dưới */
+}
+
+.selectButton { /* Style cho nút chọn trên card */
+  width: calc(100% - 30px); /* Trừ padding của content */
+  margin: 0 15px 15px 15px; /* Căn giữa và cách đáy */
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid var(--primary-red);
+}
+
+.selectButton:hover {
+  background-color: rgba(255, 23, 68, 0.1);
+}
+
+.selectedButton {
+  background-color: var(--primary-red);
+  color: white;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 20px; /* Giảm margin */
+}
+
+.backButton {
+  background-color: #555;
+  flex: 1;
+}
+
+.continueButton {
+  flex: 2;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Grid */
+@media (max-width: 992px) {
+  .trainersGrid {
+    grid-template-columns: repeat(3, 1fr); /* 3 cột */
+  }
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 25px;
+  }
+  .trainersGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 cột */
+  }
+}
+
+@media (max-width: 576px) {
+  .trainersGrid {
+    grid-template-columns: 1fr; /* 1 cột */
+  }
+   .buttonGroup {
+    flex-direction: column;
+  }
+  .backButton, .continueButton {
+    width: 100%;
+  }
+}

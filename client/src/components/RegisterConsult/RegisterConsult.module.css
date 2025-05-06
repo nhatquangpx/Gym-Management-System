@@ -1,0 +1,190 @@
+.pageContainer {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+              url('https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1471&q=80'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px;
+}
+
+  .contentWrapper {
+  width: 100%;
+  max-width: 850px;
+  background: rgba(20, 20, 20, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  padding: 35px;
+  }
+
+.loading {
+  color: white;
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 50px;
+  }
+
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--text-color);
+}
+
+.header h2 {
+  font-size: 2em;
+  margin-bottom: 8px;
+  color: var(--primary-red);
+}
+
+.header p {
+  font-size: 1em;
+  opacity: 0.8;
+}
+
+.consultLayout {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.trainerSection, .contactSection {
+  background: rgba(30, 30, 30, 0.8);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.trainerSection h4, .contactSection h4 {
+  color: var(--primary-red);
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.trainerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.trainerImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 12px;
+  border: 3px solid var(--primary-red);
+}
+
+.trainerDetails h4 {
+  color: var(--text-color);
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+.trainerDetails p {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+}
+
+.trainerRating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFD700;
+}
+
+.trainerRating i {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.trainerRating span {
+  font-size: 0.9em;
+}
+
+.contactInfo {
+  margin-bottom: 15px;
+}
+
+.contactItem {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.contactItem i {
+  color: var(--primary-red);
+  font-size: 22px;
+  margin-right: 12px;
+  margin-top: 3px;
+}
+
+.contactItem h5 {
+  color: var(--text-color);
+  font-size: 1em;
+  margin-bottom: 4px;
+}
+
+.contactItem p {
+  color: var(--text-color);
+  margin-bottom: 4px;
+  font-size: 0.9em;
+}
+
+.contactItem small {
+  color: var(--text-color);
+  opacity: 0.6;
+  font-size: 0.8em;
+}
+
+.note {
+  display: flex;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  align-items: flex-start;
+}
+
+.note i {
+  color: var(--primary-red);
+  font-size: 20px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.note p {
+  color: var(--text-color);
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+.actionButton {
+  width: 100%;
+  max-width: 280px;
+  margin: 15px auto 0;
+  display: block;
+  padding: 12px;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 30px 20px;
+    max-width: 90vw;
+  }
+  .consultLayout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
