@@ -25,7 +25,7 @@ const PaymentPage = () => {
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
-    setErrors({}); // Reset lỗi khi đổi phương thức
+    setErrors({}); 
   };
 
   const handleChange = (e) => {
@@ -48,12 +48,10 @@ const PaymentPage = () => {
         newErrors.cardNumber = 'Số thẻ không hợp lệ';
         isValid = false;
       }
-
       if (!formData.cardName.trim()) {
         newErrors.cardName = 'Tên chủ thẻ là bắt buộc';
         isValid = false;
       }
-
       if (!formData.expiryDate.trim()) {
         newErrors.expiryDate = 'Ngày hết hạn là bắt buộc';
         isValid = false;
@@ -61,7 +59,6 @@ const PaymentPage = () => {
         newErrors.expiryDate = 'Định dạng MM/YY không hợp lệ';
         isValid = false;
       }
-
       if (!formData.cvv.trim()) {
         newErrors.cvv = 'CVV là bắt buộc';
         isValid = false;
@@ -70,18 +67,20 @@ const PaymentPage = () => {
         isValid = false;
       }
     }
-
     setErrors(newErrors);
     return isValid;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     if (validateForm()) {
       console.log('Thanh toán thành công:', {
-        paymentMethod, formData, package: paymentData.package
+        paymentMethod,
+        formData,
+        package: paymentData.package
       });
-      navigate('/dashboard');
+      navigate('/login'); 
     }
   };
 
@@ -137,6 +136,7 @@ const PaymentPage = () => {
         </div>
       </div>
               </div>
+
           <div className={styles.formSection}>
             <form className={styles.paymentForm} onSubmit={handleSubmit}>
               {paymentMethod === 'card' && (
@@ -188,11 +188,11 @@ const PaymentPage = () => {
                     </div>
                     <div className={styles.bankingRow}>
                       <span className={styles.bankingLabel}>Chủ tài khoản:</span>
-                      <span className={styles.bankingValue}>GYMPRO CENTER</span>
+                        <span className={styles.bankingValue}>GYMFLEX CENTER</span>
                     </div>
                     <div className={styles.bankingRow}>
                       <span className={styles.bankingLabel}>Nội dung CK:</span>
-                      <span className={styles.bankingValue}>GYMPRO {paymentData.account?.email || 'USER'}</span>
+                        <span className={styles.bankingValue}>GYMFLEX {paymentData.account?.email || 'USER'}</span>
                     </div>
                   </div>
                 </div>
@@ -205,7 +205,7 @@ const PaymentPage = () => {
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QR Code" />
                   </div>
                   <p className={styles.momoInstruction}>
-                    Sử dụng ứng dụng MoMo để quét mã hoặc chuyển đến SĐT <strong>0987654321</strong> (GYMPRO CENTER)
+                    Sử dụng ứng dụng MoMo để quét mã hoặc chuyển đến SĐT <strong>0987654321</strong> (GYMFLEX CENTER)
                   </p>
                 </div>
               )}
