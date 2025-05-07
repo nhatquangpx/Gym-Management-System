@@ -100,6 +100,10 @@ const RegisterConfirm = () => {
                   <span className={styles.value}>{registrationData.personal.fullName || "Chưa cung cấp"}</span>
                 </div>
                 <div className={styles.infoRow}>
+                  <span className={styles.label}>Giới tính:</span>
+                  <span className={styles.value}>{registrationData.personal.gender || "Chưa cung cấp"}</span>
+                </div>
+                <div className={styles.infoRow}>
                   <span className={styles.label}>Ngày sinh:</span>
                   <span className={styles.value}>{registrationData.personal.birthDate || "Chưa cung cấp"}</span>
                 </div>
