@@ -13,7 +13,8 @@ const RegisterPersonal = () => {
     fullName: '',
     birthDate: '',
     address: '',
-    occupation: ''
+    occupation: '',
+    gender: '' // Thêm state cho giới tính
   });
 
   useEffect(() => {
@@ -50,62 +51,84 @@ const RegisterPersonal = () => {
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <InputField
-          id="fullName"
-          label="Họ và tên"
-          type="text"
-          placeholder="Nhập họ và tên của bạn"
-          value={formData.fullName}
+            id="fullName" label="Họ và tên" type="text"
+            placeholder="Nhập họ và tên của bạn" value={formData.fullName}
           onChange={handleChange}
-            // Không required
         />
 
-        <InputField
-          id="birthDate"
-          label="Ngày sinh"
-          type="date"
-          value={formData.birthDate}
-          onChange={handleChange}
-            // Không required
+          {/* Thêm phần chọn giới tính */}
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Giới tính</label>
+            <div className={styles.genderOptions}>
+              <label className={styles.radioLabel}>
+                <input 
+                  type="radio" 
+                  name="gender" 
+                  value="Nam" 
+                  checked={formData.gender === 'Nam'} 
+                  onChange={handleChange} 
+                  className={styles.radioInput}
         />
+                Nam
+              </label>
+              <label className={styles.radioLabel}>
+                <input 
+                  type="radio" 
+                  name="gender" 
+                  value="Nữ" 
+                  checked={formData.gender === 'Nữ'} 
+                  onChange={handleChange} 
+                  className={styles.radioInput}
+        />
+                Nữ
+              </label>
+              <label className={styles.radioLabel}>
+                <input 
+                  type="radio" 
+                  name="gender" 
+                  value="Khác" 
+                  checked={formData.gender === 'Khác'} 
+                  onChange={handleChange} 
+                  className={styles.radioInput}
+        />
+                Khác
+              </label>
+        </div>
+      </div>
 
-        <InputField
-          id="address"
-          label="Địa chỉ"
-          type="text"
-          placeholder="Nhập địa chỉ của bạn"
-          value={formData.address}
-          onChange={handleChange}
-            // Không required
-        />
+          <InputField
+            id="birthDate" label="Ngày sinh" type="date"
+            value={formData.birthDate} onChange={handleChange}
+          />
 
-        <InputField
-          id="occupation"
-          label="Công việc"
-          type="text"
-          placeholder="Nhập công việc của bạn"
-          value={formData.occupation}
-          onChange={handleChange}
-            // Không required
-        />
+          <InputField
+            id="address" label="Địa chỉ" type="text"
+            placeholder="Nhập địa chỉ của bạn" value={formData.address}
+            onChange={handleChange}
+          />
+
+          <InputField
+            id="occupation" label="Công việc" type="text"
+            placeholder="Nhập công việc của bạn" value={formData.occupation}
+            onChange={handleChange}
+          />
 
           {/* Bỏ phần note vì đã ghi chú ở tiêu đề */}
           {/* <div className={styles.note}>...</div> */}
           <div className={styles.buttonGroup}>
             <Button 
-            type="button"
-            className={styles.backButton}
-            onClick={handleBack}
-          >
-            Quay lại
-          </Button>
+              type="button" className={styles.backButton}
+              onClick={handleBack}
+            >
+              Quay lại
+            </Button>
             <Button 
-            type="submit"
-            className={styles.continueButton}
-          >
-            Tiếp tục
-          </Button>
-        </div>
-      </form>
+              type="submit" className={styles.continueButton}
+            >
+              Tiếp tục
+            </Button>
+    </div>
+        </form>
       </div>
     </div>
   );

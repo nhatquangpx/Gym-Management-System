@@ -69,58 +69,71 @@ const RegisterPackage = () => {
     }
   };
 
+  // Hàm xử lý nút quay lại
+  const handleBackToLogin = () => {
+    navigate('/login');
+};
+
   return (
     <div className={styles.pageContainer}> 
       <div className={styles.contentWrapper}>
         <div className={styles.header}>
-        <h1>Chọn Gói Tập</h1>
-        <p>Lựa chọn gói tập phù hợp với mục tiêu của bạn</p>
-      </div>
+          <h1>Chọn Gói Tập</h1>
+          <p>Lựa chọn gói tập phù hợp với mục tiêu của bạn</p>
+        </div>
 
-      <div className={styles.packagesGrid}>
-        {packages.map((pkg) => (
+        <div className={styles.packagesGrid}>
+          {packages.map((pkg) => (
             <div 
-            key={pkg.id}
-            className={`${styles.packageCard} ${selectedPackage?.id === pkg.id ? styles.selected : ''}`}
-            onClick={() => handlePackageSelect(pkg)}
-          >
+              key={pkg.id}
+              className={`${styles.packageCard} ${selectedPackage?.id === pkg.id ? styles.selected : ''}`}
+              onClick={() => handlePackageSelect(pkg)}
+            >
               <div className={styles.packageHeader}>
                 <div className={styles.packageName}>{pkg.name}</div>
-                {/* Di chuyển badge lên trên */}
                 <div className={styles.packageType}>{pkg.type}</div> 
                 <div className={styles.priceContainer}>
                   <span className={styles.price}>{pkg.price}</span>
                   <span className={styles.period}>{pkg.period}</span>
-          </div>
-      </div>
-            
-            <div className={styles.packageFeatures}>
-              {pkg.features.map((feature, index) => (
-                <div key={index} className={styles.feature}>
-                  <i className="material-icons">check_circle</i>
-                  <span>{feature}</span>
-      </div>
-              ))}
-            </div>
-
-            <div className={styles.packageFooter}>
+                </div>
+              </div>
+              
+              <div className={styles.packageFeatures}>
+                {pkg.features.map((feature, index) => (
+                  <div key={index} className={styles.feature}>
+                    <i className="material-icons">check_circle</i>
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <div className={styles.packageFooter}>
                 <button 
-                className={`${styles.selectButton} ${selectedPackage?.id === pkg.id ? styles.selectedButton : ''}`}
-      >
-                {selectedPackage?.id === pkg.id ? 'Đã chọn' : 'Chọn gói'}
-              </button>
+                  className={`${styles.selectButton} ${selectedPackage?.id === pkg.id ? styles.selectedButton : ''}`}
+                >
+                  {selectedPackage?.id === pkg.id ? 'Đã chọn' : 'Chọn gói'}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-        <Button 
-        className={`${styles.continueButton} ${!selectedPackage ? styles.disabled : ''}`}
-        onClick={handleContinue}
-        disabled={!selectedPackage}
-      >
-        Tiếp tục
-      </Button>
+        {/* Thêm nhóm nút */}
+        <div className={styles.buttonGroup}>
+          <Button 
+            className={styles.backButton} // Style riêng cho nút quay lại
+            onClick={handleBackToLogin} 
+          >
+            Quay lại
+          </Button>
+          <Button 
+            className={`${styles.continueButton} ${!selectedPackage ? styles.disabled : ''}`}
+            onClick={handleContinue}
+            disabled={!selectedPackage}
+          >
+            Tiếp tục
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -181,14 +181,35 @@
   color: white;
 }
 
-.continueButton {
+.buttonGroup { /* Nhóm chứa 2 nút */
+  display: flex;
+  justify-content: center; /* Căn giữa nhóm nút */
+  gap: 20px; /* Khoảng cách giữa 2 nút */
+  margin-top: 10px; /* Giảm margin top so với chỉ có 1 nút */
   width: 100%;
-  max-width: 250px;
+  max-width: 500px; /* Giới hạn chiều rộng nhóm nút */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.backButton { /* Style cho nút quay lại */
+  background-color: #555; /* Màu nền khác */
+  flex: 1; /* Chia đều không gian */
+  max-width: 200px; /* Giới hạn chiều rộng */
   padding: 12px;
   font-size: 1rem;
   font-weight: bold;
-  margin: 0 auto;
-  display: block;
+}
+.backButton:hover {
+    background-color: #666;
+}
+
+.continueButton {
+  flex: 1; /* Chia đều không gian */
+  max-width: 200px; /* Giới hạn chiều rộng */
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .disabled {
@@ -232,5 +253,16 @@
   
   .header p {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .buttonGroup {
+    flex-direction: column; /* Xếp dọc trên mobile */
+    max-width: 100%;
+    gap: 15px;
+  }
+  .backButton, .continueButton {
+    max-width: 100%; /* Full width trên mobile */
   }
 }
