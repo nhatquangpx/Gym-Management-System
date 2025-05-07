@@ -24,7 +24,6 @@ const LoginForm = () => {
       [name]: type === 'checkbox' ? checked : value
     });
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -70,6 +69,11 @@ const LoginForm = () => {
     navigate('/dashboard');
   };
 
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    navigate('/forgot-password');
+};
+
   return (
     <form className={styles.loginForm} onSubmit={handleSubmit} noValidate>
       <InputField
@@ -103,7 +107,7 @@ const LoginForm = () => {
           />
           <span>Ghi nhớ đăng nhập</span>
         </label>
-        <a href="#" className={styles.forgotPassword}>Quên mật khẩu?</a>
+        <a href="#" className={styles.forgotPassword} onClick={handleForgotPassword}>Quên mật khẩu?</a>
       </div>
 
       <Button type="submit" className={styles.loginBtn}>
