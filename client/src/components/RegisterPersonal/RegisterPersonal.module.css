@@ -10,7 +10,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 30px 20px 50px 20px;
+  padding: 40px 20px;
 }
 
 .contentWrapper { /* Container cho nội dung form */
@@ -43,13 +43,47 @@
   width: 100%;
 }
 
+/* Style cho phần chọn giới tính */
+.formGroup {
+  margin-bottom: 22px; /* Giống InputField */
+  text-align: left; /* Căn trái label */
+}
+
+.label {
+  display: block;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+.genderOptions {
+  display: flex;
+  gap: 20px; /* Khoảng cách giữa các lựa chọn */
+  flex-wrap: wrap; /* Xuống dòng nếu cần */
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-color);
+  font-size: 0.95em;
+}
+
+.radioInput {
+  margin-right: 8px;
+  accent-color: var(--primary-red); /* Đổi màu radio button */
+  width: 16px;
+  height: 16px;
+}
+/* --- Kết thúc style giới tính --- */
 .buttonGroup {
   display: flex;
   justify-content: space-between;
   gap: 15px;
-  margin-top: 25px; /* Tăng lại margin */
+  margin-top: 25px; 
 }
-
+  
 .backButton {
   background-color: #555;
   flex: 1;
@@ -69,5 +103,8 @@
   
   .backButton, .continueButton {
     width: 100%;
+  }
+  .genderOptions {
+      gap: 15px;
   }
 }
