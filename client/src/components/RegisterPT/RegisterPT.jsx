@@ -31,7 +31,7 @@ const trainers = [
   },
   {
     id: 4,
-    name: "Tuấn Huy",
+    name: "Hồ Tuấn Huy",
     specialty: "Giảm cân, Dinh dưỡng",
     experience: "6 năm kinh nghiệm",
     rating: 4.6,

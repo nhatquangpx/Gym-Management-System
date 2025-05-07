@@ -7,6 +7,9 @@ import RegisterPersonal from './components/RegisterPersonal/RegisterPersonal';
 import RegisterConfirm from './components/RegisterConfirm/RegisterConfirm';
 import RegisterConsult from './components/RegisterConsult/RegisterConsult';
 import PaymentPage from './components/PaymentPage/PaymentPage';
+import ForgotPasswordPage from './components/ForgotPasswordPage/ForgotPasswordPage';
+import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPasswordSentPage';
+import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
@@ -23,6 +26,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage />} />
+        
+        {/* Luồng quên mật khẩu */}
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password-sent" element={<ResetPasswordSentPage />} />
+
         {/* Luồng đăng ký */}
         <Route path="/register/package" element={<RegisterPackage />} />
         <Route path="/register/pt" element={<RegisterPT />} />
@@ -30,16 +38,18 @@ function App() {
         <Route path="/register/personal" element={<RegisterPersonal />} />
         <Route path="/register/confirm" element={<RegisterConfirm />} />
         <Route path="/register/consult" element={<RegisterConsult />} />
+        
         {/* Trang thanh toán */}
         <Route path="/payment" element={<PaymentPage />} />
+        
         {/* Các route khác */}
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/register" element={<RegisterPage />} /> {/* Route này có thể không cần nếu /register/package là điểm bắt đầu */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/members" element={<MemberManagement />} />
         <Route path="/equipment" element={<EquipmentManagement />} />
         <Route path="/staff" element={<StaffManagement />} />
         <Route path="/packages" element={<PackageManagement />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );
