@@ -1,0 +1,68 @@
+.pageContainer {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #2C3E50 0%, #FD746C 100%); /* Gradient màu khác */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: white;
+}
+
+.contentWrapper {
+  max-width: 600px;
+}
+
+.characterImage { /* Style cho ảnh chibi nếu bạn thêm vào */
+  width: 150px;
+  height: auto;
+  margin-bottom: 30px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.errorCode {
+  font-size: 8rem;
+  font-weight: bold;
+  color: var(--primary-red);
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.message {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.homeButton {
+  display: inline-block;
+  padding: 12px 30px;
+  background-color: var(--primary-red);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.homeButton:hover {
+  background-color: #e0002d;
+  transform: translateY(-2px);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
