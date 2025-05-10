@@ -48,6 +48,8 @@ export default function StaffAccount() {
             onChange={handleChange}
             fullWidth
             margin="normal"
+            InputLabelProps={{ style: { color: '#fff' } }}
+            InputProps={{ style: { color: '#fff' } }}
           />
           <TextField
             label="Email"
@@ -56,6 +58,8 @@ export default function StaffAccount() {
             onChange={handleChange}
             fullWidth
             margin="normal"
+            InputLabelProps={{ style: { color: '#fff' } }}
+            InputProps={{ style: { color: '#fff' } }}
           />
           <TextField
             label="Số điện thoại"
@@ -64,6 +68,8 @@ export default function StaffAccount() {
             onChange={handleChange}
             fullWidth
             margin="normal"
+            InputLabelProps={{ style: { color: '#fff' } }}
+            InputProps={{ style: { color: '#fff' } }}
           />
           <Button type="submit" variant="contained" color="primary">Cập nhật thông tin</Button>
         </form>
@@ -79,6 +85,8 @@ export default function StaffAccount() {
             onChange={handlePasswordChange}
             fullWidth
             margin="normal"
+            InputLabelProps={{ style: { color: '#fff' } }}
+            InputProps={{ style: { color: '#fff' } }}
           />
           <TextField
             label="Mật khẩu mới"
@@ -88,6 +96,8 @@ export default function StaffAccount() {
             onChange={handlePasswordChange}
             fullWidth
             margin="normal"
+            InputLabelProps={{ style: { color: '#fff' } }}
+            InputProps={{ style: { color: '#fff' } }}
           />
           <TextField
             label="Xác nhận mật khẩu mới"
@@ -97,6 +107,8 @@ export default function StaffAccount() {
             onChange={handlePasswordChange}
             fullWidth
             margin="normal"
+            InputLabelProps={{ style: { color: '#fff' } }}
+            InputProps={{ style: { color: '#fff' } }}
           />
           <Button type="submit" variant="contained" color="primary">Đổi mật khẩu</Button>
         </form>
