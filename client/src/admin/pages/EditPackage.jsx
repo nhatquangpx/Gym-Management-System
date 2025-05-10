@@ -19,7 +19,7 @@ export default function EditPackage() {
     e.preventDefault();
     // TODO: Gửi dữ liệu lên server
     alert('Đã lưu thay đổi!');
-    navigate('/packages');
+    navigate('/admin/packages');
   };
   return (
     <div className="bg-[#181818] min-h-screen p-6 text-white">
