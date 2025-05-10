@@ -11,6 +11,19 @@ import ForgotPasswordPage from './components/ForgotPasswordPage/ForgotPasswordPa
 import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPasswordSentPage';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 
+// Admin components
+import AdminLayout from './admin/components/AdminLayout';
+import AdminLogin from './admin/pages/Login';
+import AdminDashboard from './admin/pages/Dashboard';
+import AdminMembers from './admin/pages/Members';
+import AdminEmployees from './admin/pages/Employees';
+import AdminPackages from './admin/pages/Packages';
+import AdminOrders from './admin/pages/Orders';
+import AdminStatistics from './admin/pages/Statistics';
+import AdminSettings from './admin/pages/Settings';
+import AdminProfile from './admin/pages/Profile';
+import AdminAccount from './admin/pages/Account';
+
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
 const Dashboard = () => <div>Dashboard Page</div>;
@@ -18,7 +31,6 @@ const MemberManagement = () => <div>Member Management Page</div>;
 const EquipmentManagement = () => <div>Equipment Management Page</div>;
 const StaffManagement = () => <div>Staff Management Page</div>;
 const PackageManagement = () => <div>Package Management Page</div>;
-const NotFound = () => <div>404 - Page Not Found</div>;
 
 function App() {
   return (
@@ -43,12 +55,30 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} />
         
         {/* Các route khác */}
-        <Route path="/register" element={<RegisterPage />} /> {/* Route này có thể không cần nếu /register/package là điểm bắt đầu */}
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/members" element={<MemberManagement />} />
         <Route path="/equipment" element={<EquipmentManagement />} />
         <Route path="/staff" element={<StaffManagement />} />
         <Route path="/packages" element={<PackageManagement />} />
+
+        {/* Admin routes */}
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        
+        {/* Admin routes with layout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="members" element={<AdminMembers />} />
+          <Route path="employees" element={<AdminEmployees />} />
+          <Route path="packages" element={<AdminPackages />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="statistics" element={<AdminStatistics />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="profile" element={<AdminProfile />} />
+          <Route path="account" element={<AdminAccount />} />
+        </Route>
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
