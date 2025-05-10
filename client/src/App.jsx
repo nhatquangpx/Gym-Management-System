@@ -65,6 +65,9 @@ import StaffSchedules from './staff/pages/Schedules';
 import StaffFeedback from './staff/pages/Feedback';
 import StaffStatistics from './staff/pages/Statistics';
 import StaffAccount from './staff/pages/Account';
+import AddMember from './staff/pages/AddMember';
+import AddPackage from './staff/pages/AddPackage';
+import AddEquipment from './staff/pages/AddEquipment';
 
 function App() {
   return (
@@ -96,8 +99,11 @@ function App() {
         <Route path="/staff" element={<StaffLayout />}>
           <Route path="dashboard" element={<StaffDashboard />} />
           <Route path="members" element={<StaffMembers />} />
+          <Route path="members/add" element={<AddMember />} />
           <Route path="packages" element={<StaffPackages />} />
+          <Route path="packages/add" element={<AddPackage />} />
           <Route path="equipment" element={<StaffEquipment />} />
+          <Route path="equipment/add" element={<AddEquipment />} />
           <Route path="workouts" element={<StaffWorkouts />} />
           <Route path="schedules" element={<StaffSchedules />} />
           <Route path="feedback" element={<StaffFeedback />} />
