@@ -55,6 +55,17 @@ const EquipmentManagement = () => <div>Equipment Management Page</div>;
 const StaffManagement = () => <div>Staff Management Page</div>;
 const PackageManagement = () => <div>Package Management Page</div>;
 
+import StaffLayout from './staff/layouts/StaffLayout';
+import StaffDashboard from './staff/pages/Dashboard';
+import StaffMembers from './staff/pages/Members';
+import StaffPackages from './staff/pages/Packages';
+import StaffEquipment from './staff/pages/Equipment';
+import StaffWorkouts from './staff/pages/Workouts';
+import StaffSchedules from './staff/pages/Schedules';
+import StaffFeedback from './staff/pages/Feedback';
+import StaffStatistics from './staff/pages/Statistics';
+import StaffAccount from './staff/pages/Account';
+
 function App() {
   return (
     <Router>
@@ -82,7 +93,17 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/members" element={<MemberManagement />} />
         <Route path="/equipment" element={<EquipmentManagement />} />
-        <Route path="/staff" element={<StaffManagement />} />
+        <Route path="/staff" element={<StaffLayout />}>
+          <Route path="dashboard" element={<StaffDashboard />} />
+          <Route path="members" element={<StaffMembers />} />
+          <Route path="packages" element={<StaffPackages />} />
+          <Route path="equipment" element={<StaffEquipment />} />
+          <Route path="workouts" element={<StaffWorkouts />} />
+          <Route path="schedules" element={<StaffSchedules />} />
+          <Route path="feedback" element={<StaffFeedback />} />
+          <Route path="statistics" element={<StaffStatistics />} />
+          <Route path="account" element={<StaffAccount />} />
+        </Route>
         <Route path="/packages" element={<PackageManagement />} />
 
         {/* Admin routes */}
