@@ -43,8 +43,8 @@ export default function Orders() {
                   </td>
                   <td className="py-2 px-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/orders/view/${o.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/orders/edit/${o.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/orders/view/${o.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/orders/edit/${o.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>

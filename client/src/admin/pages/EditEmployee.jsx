@@ -19,7 +19,7 @@ export default function EditEmployee() {
     e.preventDefault();
     // TODO: Gửi dữ liệu lên server
     alert('Đã lưu thay đổi!');
-    navigate('/employees');
+    navigate('/admin/employees');
   };
   return (
     <div className="bg-[#181818] min-h-screen p-6 text-white">

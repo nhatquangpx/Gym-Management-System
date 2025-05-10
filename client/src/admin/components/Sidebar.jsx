@@ -5,6 +5,10 @@ import PeopleIcon from '@mui/icons-material/People';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import BuildIcon from '@mui/icons-material/Build';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import HistoryIcon from '@mui/icons-material/History';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 const menu = [
   { name: "Dashboard", path: "/admin/dashboard", icon: <DashboardIcon /> },
@@ -12,16 +16,27 @@ const menu = [
   { name: "Nhân viên/Huấn luyện viên", path: "/admin/employees", icon: <PeopleIcon /> },
   { name: "Gói tập", path: "/admin/packages", icon: <FitnessCenterIcon /> },
   { name: "Đơn hàng/Thanh toán", path: "/admin/orders", icon: <ReceiptLongIcon /> },
+  { name: "Thiết bị", path: "/admin/equipment", icon: <BuildIcon /> },
+  { name: "Lịch sử tập luyện", path: "/admin/workouts", icon: <HistoryIcon /> },
+  { name: "Lịch tập", path: "/admin/schedules", icon: <CalendarMonthIcon /> },
+  { name: "Phản hồi", path: "/admin/feedback", icon: <FeedbackIcon /> },
   { name: "Tài khoản admin", path: "/admin/account", icon: <AccountCircleIcon /> },
 ];
 
 export default function Sidebar() {
+  // Danh sách các path cần đổi màu icon khi active
+  const whiteIconPaths = [
+    '/admin/equipment',
+    '/admin/workouts',
+    '/admin/schedules',
+    '/admin/feedback',
+  ];
   return (
     <aside className="w-64 bg-[#1f1f1f] shadow-2xl h-screen sticky top-0 flex flex-col rounded-r-3xl border-r-4 border-[#e53935]">
       <div className="p-6 text-2xl font-extrabold text-white border-b border-[#e53935] flex items-center justify-center bg-gradient-to-r from-[#e53935] to-[#b71c1c] rounded-tr-3xl shadow-lg">
-        <span className="mr-2 text-3xl animate-pulse">🏋️‍♂️</span> <span className="drop-shadow-lg tracking-wider">CJ GYM ADMIN</span>
+        <span className="mr-2 text-3xl animate-pulse">🏋️‍♂️</span> <span className="drop-shadow-lg tracking-wider">GymPro ADMIN</span>
       </div>
-      <nav className="mt-6 flex-1">
+      <nav className="mt-6 flex-1 overflow-y-auto">
         {menu.map((item) => (
           <NavLink
             key={item.path}
@@ -34,12 +49,17 @@ export default function Sidebar() {
             }
             end
           >
-            <span className="text-2xl drop-shadow-lg">{item.icon}</span>
+            <span className={
+              `text-2xl drop-shadow-lg` +
+              ((whiteIconPaths.includes(item.path) && window.location.pathname.startsWith(item.path)) ? ' text-white' : '')
+            }>
+              {item.icon}
+            </span>
             {item.name}
           </NavLink>
         ))}
       </nav>
-      <div className="p-4 text-[#D4D4D4] text-sm text-center border-t border-[#e53935] opacity-70">CJ Gym © 2024</div>
+      <div className="p-4 text-[#D4D4D4] text-sm text-center border-t border-[#e53935] opacity-70 mt-auto bg-[#1f1f1f]">GymPro © 2024</div>
     </aside>
   );
 } 

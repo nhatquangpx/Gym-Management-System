@@ -44,8 +44,8 @@ export default function Employees() {
                   </td>
                   <td className="py-2 px-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/employees/view/${e.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/employees/edit/${e.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/employees/view/${e.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/employees/edit/${e.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
