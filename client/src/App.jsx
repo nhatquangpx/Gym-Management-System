@@ -23,6 +23,29 @@ import AdminStatistics from './admin/pages/Statistics';
 import AdminSettings from './admin/pages/Settings';
 import AdminProfile from './admin/pages/Profile';
 import AdminAccount from './admin/pages/Account';
+import ViewMember from './admin/pages/ViewMember';
+import EditMember from './admin/pages/EditMember';
+import ViewEmployee from './admin/pages/ViewEmployee';
+import EditEmployee from './admin/pages/EditEmployee';
+import ViewPackage from './admin/pages/ViewPackage';
+import EditPackage from './admin/pages/EditPackage';
+import ViewOrder from './admin/pages/ViewOrder';
+import EditOrder from './admin/pages/EditOrder';
+import EditProfile from './admin/pages/EditProfile';
+import AdminEquipment from './admin/pages/Equipment';
+import AdminFeedback from './admin/pages/Feedback';
+import AdminWorkouts from './admin/pages/Workouts';
+import AdminSchedules from './admin/pages/Schedules';
+import ViewEquipment from './admin/pages/ViewEquipment';
+import EditEquipment from './admin/pages/EditEquipment';
+import ViewFeedback from './admin/pages/ViewFeedback';
+import ViewWorkout from './admin/pages/ViewWorkout';
+import EditWorkout from './admin/pages/EditWorkout';
+import EquipmentList from './admin/pages/EquipmentList';
+import WorkoutList from './admin/pages/WorkoutList';
+import ScheduleList from './admin/pages/ScheduleList';
+import ViewSchedule from './admin/pages/ViewSchedule';
+import EditSchedule from './admin/pages/EditSchedule';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
@@ -66,16 +89,39 @@ function App() {
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         
-        {/* Admin routes with layout */}
+        {/* Admin routes và layout */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="members" element={<AdminMembers />} />
+          <Route path="members/view/:id" element={<ViewMember />} />
+          <Route path="members/edit/:id" element={<EditMember />} />
           <Route path="employees" element={<AdminEmployees />} />
+          <Route path="employees/view/:id" element={<ViewEmployee />} />
+          <Route path="employees/edit/:id" element={<EditEmployee />} />
           <Route path="packages" element={<AdminPackages />} />
+          <Route path="packages/view/:id" element={<ViewPackage />} />
+          <Route path="packages/edit/:id" element={<EditPackage />} />
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="orders/view/:id" element={<ViewOrder />} />
+          <Route path="orders/edit/:id" element={<EditOrder />} />
+          <Route path="equipment" element={<EquipmentList />} />
+          <Route path="equipment/view/:id" element={<ViewEquipment />} />
+          <Route path="equipment/edit/:id" element={<EditEquipment />} />
+          <Route path="equipment/add" element={<EditEquipment />} />
+          <Route path="workouts" element={<WorkoutList />} />
+          <Route path="workouts/view/:id" element={<ViewWorkout />} />
+          <Route path="workouts/edit/:id" element={<EditWorkout />} />
+          <Route path="workouts/add" element={<EditWorkout />} />
+          <Route path="schedules" element={<ScheduleList />} />
+          <Route path="schedules/view/:id" element={<ViewSchedule />} />
+          <Route path="schedules/edit/:id" element={<EditSchedule />} />
+          <Route path="schedules/add" element={<EditSchedule />} />
+          <Route path="feedback" element={<AdminFeedback />} />
+          <Route path="feedback/view/:id" element={<ViewFeedback />} />
           <Route path="statistics" element={<AdminStatistics />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="profile" element={<AdminProfile />} />
+          <Route path="profile/edit" element={<EditProfile />} />
           <Route path="account" element={<AdminAccount />} />
         </Route>
 

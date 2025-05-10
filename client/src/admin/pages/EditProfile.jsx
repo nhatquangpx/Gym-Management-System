@@ -35,7 +35,7 @@ export default function EditProfile() {
   const handleSave = (e) => {
     e.preventDefault();
     // Xử lý lưu thông tin ở đây
-    navigate('/account');
+    navigate('/admin/account');
   };
 
   return (
@@ -115,7 +115,7 @@ export default function EditProfile() {
               variant="outlined"
               startIcon={<ArrowBack />}
               sx={{ color: '#e53935', borderColor: '#e53935', '&:hover': { borderColor: '#e53935', background: '#1f1f1f' } }}
-              onClick={() => navigate('/account')}
+              onClick={() => navigate('/admin/account')}
             >
               Hủy
             </Button>

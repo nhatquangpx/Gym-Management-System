@@ -43,8 +43,8 @@ export default function Members() {
                   <td className="px-6 py-4 text-[#D4D4D4]">{member.joinDate}</td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/members/view/${member.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/members/edit/${member.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/members/view/${member.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/members/edit/${member.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
