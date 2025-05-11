@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController');
+const userController = require('../controllers/api_userController');
 const { verifyToken } = require('../middleware/authMiddleware');
 
 // Lấy các gói tập đã mua thành công của user hiện tại

@@ -12,7 +12,7 @@ const vnp_ReturnUrl = process.env.VNP_RETURNURL;
 // Tạo URL thanh toán VNPAY
 exports.createVnpayPayment = async (req, res) => {
     try {
-        // console.log(vnp_TmnCode, vnp_HashSecret, vnp_Url, vnp_ReturnUrl)
+        console.log(vnp_TmnCode, vnp_HashSecret, vnp_Url, vnp_ReturnUrl)
         const { userId, packageId } = req.body;
         const gymPackage = await Package.findById(packageId);
         if (!gymPackage) return res.status(404).json({ message: "Package not found" });
@@ -76,7 +76,6 @@ exports.vnpayReturn = async (req, res) => {
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
     if (secureHash === signed) {
         // Thành công, cập nhật trạng thái đơn hàng
-        // Từ lúc chọn phải check xem gói tập đã được mua chưa, nếu chưa thì mới cho chọn
         const order = await Order.findOne({ vnp_TxnRef: vnp_Params['vnp_TxnRef'] });
         if (order) {
             order.status = vnp_Params['vnp_ResponseCode'] === '00' ? 'paid' : 'failed';
