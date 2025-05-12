@@ -31,27 +31,51 @@ exports.getUserById = async (req, res) => {
 
 exports.createUser = async (req, res) => {
     try {
-        const { username, name, email, password, role, phone } = req.body;
-        if (!username || !name || !password || !email || !role) {
-            return res.status(400).json({ message: 'Không được để trống!' });
+        const { name, email, password, role, phone, 
+               // Member fields
+               gender, dateOfBirth, job, address, membershipEnd,
+               // Trainer fields
+               specialization,
+               // Employee fields
+               position, salary, shiftSchedule, performanceRating } = req.body;
+        
+        if (!name || !password || !email || !role) {
+            return res.status(400).json({ message: 'Các trường bắt buộc không được để trống!' });
         }
 
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'Email hoặc username đã được sử dụng!' });
+            return res.status(400).json({ message: 'Email đã được sử dụng!' });
         }
 
-        const saltRound = 10; // Số lần băm mật khẩu
-        const hashedPassword = await bcrypt.hash(password, saltRound); 
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt); 
 
+        // Create user with role-specific fields
         const newUser = new User({
-            username,
             name,
             email,
             password: hashedPassword,
             role,
             phone
         });
+        
+        // Add role-specific fields
+        if (role === 'member') {
+            newUser.gender = gender;
+            newUser.dateOfBirth = dateOfBirth;
+            newUser.job = job;
+            newUser.address = address;
+            newUser.membershipStart = Date.now();
+            newUser.membershipEnd = membershipEnd;
+        } else if (role === 'trainer') {
+            newUser.specialization = specialization;
+        } else if (role === 'employee') {
+            newUser.position = position;
+            newUser.salary = salary;
+            newUser.shiftSchedule = shiftSchedule;
+            newUser.performanceRating = performanceRating;
+        }
         await newUser.save();
         res.status(201).json({ message: 'Người dùng đã được tạo thành công!', user: newUser });
     }
@@ -66,11 +90,51 @@ exports.updateUser = async (req, res) => {
             return res.status(400).json({ message: 'ID người dùng không hợp lệ!' });
         }
 
-        const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true }).select('-password');
-        if (!updatedUser) {
+        // Get user first to handle role changes properly
+        const user = await User.findById(userId);
+        if (!user) {
             return res.status(404).json({ message: 'Người dùng không tồn tại!' });
         }
 
+        // Handle basic fields
+        const { name, email, phone, role,
+                // Member fields
+                gender, dateOfBirth, job, address, membershipEnd,
+                // Trainer fields
+                specialization,
+                // Employee fields
+                position, salary, shiftSchedule, performanceRating } = req.body;
+
+        if (name) user.name = name;
+        if (email) user.email = email;
+        if (phone) user.phone = phone;
+        
+        // If role is being changed, update role-specific fields
+        if (role && role !== user.role) {
+            user.role = role;
+        }
+        
+        // Update role-specific fields
+        if (user.role === 'member') {
+            if (gender) user.gender = gender;
+            if (dateOfBirth) user.dateOfBirth = dateOfBirth;
+            if (job) user.job = job;
+            if (address) user.address = address;
+            if (membershipEnd) user.membershipEnd = membershipEnd;
+            // Set membershipStart if it doesn't exist
+            if (!user.membershipStart) user.membershipStart = Date.now();
+        } else if (user.role === 'trainer') {
+            if (specialization) user.specialization = specialization;
+        } else if (user.role === 'employee') {
+            if (position) user.position = position;
+            if (salary) user.salary = salary;
+            if (shiftSchedule) user.shiftSchedule = shiftSchedule;
+            if (performanceRating) user.performanceRating = performanceRating;
+        }
+        
+        await user.save();
+        
+        const updatedUser = await User.findById(userId).select('-password');
         res.status(200).json(updatedUser);
     } catch (err) {
         res.status(500).json({ message: 'Lỗi khi cập nhật thông tin người dùng!', error: err.message });

@@ -1,6 +1,6 @@
-const Member = require("../models/Member");
 const User = require("../models/User");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 
 // @desc    Create a new member
 // @route   POST /api/members
@@ -20,31 +20,24 @@ exports.createMember = async (req, res) => {
       return res.status(400).json({ message: "Email đã được sử dụng" });
     }
 
-    // Create new user with member role
+    // Hash password
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    // Create new user with member role and member fields
     user = new User({
       name,
       email,
-      password,
+      password: hashPassword,
       phone,
-      role: "member"
-    });
-
-    // Save user
-    await user.save();
-
-    // Create new member
-    const member = new Member({
-      userId: user._id,
+      role: "member",
       gender,
       dateOfBirth,
-      job,
-      address,
+      job,      address,
       membershipStart: Date.now(),
       membershipEnd
-    });
-
-    // Save member
-    await member.save();
+    });    // Save user
+    await user.save();
 
     res.status(201).json({
       success: true,
@@ -55,16 +48,13 @@ exports.createMember = async (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          role: user.role
-        },
-        member: {
-          _id: member._id,
-          gender: member.gender,
-          dateOfBirth: member.dateOfBirth,
-          job: member.job,
-          address: member.address,
-          membershipStart: member.membershipStart,
-          membershipEnd: member.membershipEnd
+          role: user.role,
+          gender: user.gender,
+          dateOfBirth: user.dateOfBirth,
+          job: user.job,
+          address: user.address,
+          membershipStart: user.membershipStart,
+          membershipEnd: user.membershipEnd
         }
       }
     });
@@ -90,35 +80,21 @@ exports.createMemberFromExistingUser = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Không tìm thấy người dùng" });
-    }
-
-    // Check if user is already a member
-    const existingMember = await Member.findOne({ userId });
-    if (existingMember) {
+    }    // Check if user is already a member
+    if (user.role === "member") {
       return res.status(400).json({ message: "Người dùng này đã là hội viên" });
     }
 
-    // Create new member
-    const member = new Member({
-      userId,
-      gender,
-      dateOfBirth,
-      job,
-      address,
-      membershipStart: Date.now(),
-      membershipEnd
-    });
-
-    // Save member
-    await member.save();
-
-    // Update user role to member if not already
-    if (user.role !== "member") {
-      user.role = "member";
-      await user.save();
-    }
-
-    res.status(201).json({
+    // Update user with member role and member fields
+    user.role = "member";
+    user.gender = gender;
+    user.dateOfBirth = dateOfBirth;
+    user.job = job;
+    user.address = address;
+    user.membershipStart = Date.now();
+    user.membershipEnd = membershipEnd;
+    
+    await user.save();    res.status(201).json({
       success: true,
       message: "Thêm hội viên thành công",
       data: {
@@ -127,16 +103,13 @@ exports.createMemberFromExistingUser = async (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          role: user.role
-        },
-        member: {
-          _id: member._id,
-          gender: member.gender,
-          dateOfBirth: member.dateOfBirth,
-          job: member.job,
-          address: member.address,
-          membershipStart: member.membershipStart,
-          membershipEnd: member.membershipEnd
+          role: user.role,
+          gender: user.gender,
+          dateOfBirth: user.dateOfBirth,
+          job: user.job,
+          address: user.address,
+          membershipStart: user.membershipStart,
+          membershipEnd: user.membershipEnd
         }
       }
     });
@@ -154,36 +127,43 @@ exports.updateMember = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }
+    }    const { gender, dateOfBirth, job, address, membershipEnd, name, email, phone } = req.body;
+    const userId = req.params.id;
 
-    const { gender, dateOfBirth, job, address, membershipEnd } = req.body;
-    const memberId = req.params.id;
-
-    // Find member
-    const member = await Member.findById(memberId);
-    if (!member) {
+    // Find user with member role
+    const user = await User.findOne({ _id: userId, role: "member" });
+    if (!user) {
       return res.status(404).json({ message: "Không tìm thấy hội viên" });
     }
 
-    // Update member
-    member.gender = gender || member.gender;
-    member.dateOfBirth = dateOfBirth || member.dateOfBirth;
-    member.job = job || member.job;
-    member.address = address || member.address;
-    member.membershipEnd = membershipEnd || member.membershipEnd;
+    // Update user fields
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (gender) user.gender = gender;
+    if (dateOfBirth) user.dateOfBirth = dateOfBirth;
+    if (job) user.job = job;
+    if (address) user.address = address;
+    if (membershipEnd) user.membershipEnd = membershipEnd;
 
-    // Save updated member
-    await member.save();
-
-    // Get user information
-    const user = await User.findById(member.userId).select("-password");
-
-    res.status(200).json({
+    // Save updated user
+    await user.save();    res.status(200).json({
       success: true,
       message: "Cập nhật thông tin hội viên thành công",
       data: {
-        user,
-        member
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          gender: user.gender,
+          dateOfBirth: user.dateOfBirth,
+          job: user.job,
+          address: user.address,
+          membershipStart: user.membershipStart,
+          membershipEnd: user.membershipEnd
+        }
       }
     });
   } catch (error) {
@@ -197,11 +177,7 @@ exports.updateMember = async (req, res) => {
 // @access  Private (Admin)
 exports.getAllMembers = async (req, res) => {
   try {
-    const members = await Member.find().populate({
-      path: "userId",
-      select: "name email phone role",
-      model: "User"
-    });
+    const members = await User.find({ role: "member" }).select("-password");
 
     res.status(200).json({
       success: true,
@@ -219,21 +195,17 @@ exports.getAllMembers = async (req, res) => {
 // @access  Private (Admin)
 exports.getMemberById = async (req, res) => {
   try {
-    const memberId = req.params.id;
+    const userId = req.params.id;
 
-    const member = await Member.findById(memberId).populate({
-      path: "userId",
-      select: "name email phone role",
-      model: "User"
-    });
-
-    if (!member) {
+    const user = await User.findOne({ _id: userId, role: "member" }).select("-password");
+    
+    if (!user) {
       return res.status(404).json({ message: "Không tìm thấy hội viên" });
     }
 
     res.status(200).json({
       success: true,
-      data: member
+      data: user
     });
   } catch (error) {
     console.error(error);
@@ -246,19 +218,14 @@ exports.getMemberById = async (req, res) => {
 // @access  Private (Admin)
 exports.deleteMember = async (req, res) => {
   try {
-    const memberId = req.params.id;
+    const userId = req.params.id;
 
-    // Find member
-    const member = await Member.findById(memberId);
-    if (!member) {
+    // Find and delete user with member role
+    const result = await User.deleteOne({ _id: userId, role: "member" });
+    
+    if (result.deletedCount === 0) {
       return res.status(404).json({ message: "Không tìm thấy hội viên" });
     }
-
-    // Delete user associated with member
-    await User.findByIdAndDelete(member.userId);
-
-    // Delete member
-    await Member.findByIdAndDelete(memberId);
 
     res.status(200).json({
       success: true,
