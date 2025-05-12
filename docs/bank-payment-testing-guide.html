@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng dẫn kiểm tra tính năng thanh toán ngân hàng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #e53935;
+            border-bottom: 2px solid #e53935;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .note {
+            background-color: #fffde7;
+            border-left: 4px solid #ffd600;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .step {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #e53935;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hướng dẫn kiểm tra tính năng thanh toán ngân hàng</h1>
+    
+    <div class="note">
+        <strong>Lưu ý:</strong> Tài liệu này hướng dẫn cách kiểm tra tính năng thanh toán ngân hàng đã được tích hợp vào hệ thống.
+    </div>
+
+    <h2>Yêu cầu</h2>
+    <ul>
+        <li>Server đã được khởi động</li>
+        <li>Client frontend đã được khởi động</li>
+        <li>Tài khoản người dùng đã đăng ký</li>
+    </ul>
+
+    <h2>Các bước kiểm tra</h2>
+
+    <div class="step">
+        <h3>Bước 1: Đăng ký tài khoản mới (nếu chưa có)</h3>
+        <ul>
+            <li>Truy cập trang chủ của hệ thống</li>
+            <li>Nhấn nút "Đăng ký"</li>
+            <li>Hoàn thành quy trình đăng ký</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Bước 2: Chọn gói tập và thanh toán</h3>
+        <ul>
+            <li>Đăng nhập vào hệ thống</li>
+            <li>Chọn một gói tập phù hợp</li>
+            <li>Nhấn nút "Mua ngay" hoặc "Đăng ký"</li>
+            <li>Chọn phương thức thanh toán là "Banking" (chuyển khoản ngân hàng)</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Bước 3: Chọn ngân hàng</h3>
+        <ul>
+            <li>Trong trang thanh toán, chọn một ngân hàng từ danh sách (VietcomBank, TPBank, MBBank, BIDV)</li>
+            <li>Kiểm tra xem thông tin ngân hàng có hiển thị đúng không (logo, số tài khoản, chủ tài khoản)</li>
+            <li>Kiểm tra mã QR có được tạo đúng không</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Bước 4: Tạo đơn hàng</h3>
+        <ul>
+            <li>Nhấn nút "Thanh toán" để tạo đơn hàng</li>
+            <li>Kiểm tra xem đơn hàng có được tạo thành công không</li>
+            <li>Ghi lại mã đơn hàng để kiểm tra sau này</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Bước 5: Tải lên ảnh hóa đơn</h3>
+        <ul>
+            <li>Sau khi đơn hàng được tạo thành công, tải lên ảnh hóa đơn (có thể là ảnh chụp màn hình)</li>
+            <li>Kiểm tra xem ảnh có được hiển thị trước khi tải lên không</li>
+            <li>Nhấn nút "Xác nhận đã thanh toán" để hoàn tất quá trình</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Bước 6: Kiểm tra trạng thái đơn hàng trong admin panel</h3>
+        <ul>
+            <li>Đăng nhập vào trang quản trị với tài khoản admin</li>
+            <li>Vào mục "Quản lý đơn hàng"</li>
+            <li>Tìm đơn hàng vừa tạo theo mã đơn hàng</li>
+            <li>Kiểm tra thông tin đơn hàng và xác nhận ảnh hóa đơn đã được tải lên</li>
+            <li>Thay đổi trạng thái đơn hàng từ "Chờ thanh toán" sang "Đã thanh toán"</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Bước 7: Kiểm tra trạng thái thành viên</h3>
+        <ul>
+            <li>Đăng nhập lại với tài khoản người dùng vừa tạo đơn hàng</li>
+            <li>Vào mục "Gói tập của tôi" hoặc tương tự</li>
+            <li>Xác nhận gói tập đã được kích hoạt sau khi admin phê duyệt thanh toán</li>
+        </ul>
+    </div>
+
+    <h2>Kiểm tra bằng script tự động</h2>
+    <p>Bạn cũng có thể sử dụng script tự động để kiểm tra API thanh toán:</p>
+    <pre><code>// Chạy script kiểm tra
+cd server
+node scripts/test-payment-integration.js</code></pre>
+
+    <div class="note">
+        <strong>Lưu ý:</strong> Cần phải điền ID người dùng và ID gói tập vào biến TEST_USER_ID và TEST_PACKAGE_ID trong file script trước khi chạy.
+    </div>
+
+    <h2>Xử lý sự cố</h2>
+    <ul>
+        <li><strong>Lỗi không tạo được đơn hàng:</strong> Kiểm tra xem server đã khởi động chưa và kết nối đến cơ sở dữ liệu có thành công không.</li>
+        <li><strong>Lỗi không tải được ảnh:</strong> Kiểm tra thư mục lưu trữ <code>server/public/uploads/receipts</code> đã được tạo chưa và có quyền ghi không.</li>
+        <li><strong>Lỗi không hiển thị ngân hàng:</strong> Kiểm tra xem bankData.js có được import đúng không.</li>
+    </ul>
+</body>
+</html>

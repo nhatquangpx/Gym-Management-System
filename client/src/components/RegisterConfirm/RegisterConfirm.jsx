@@ -18,14 +18,65 @@ const RegisterConfirm = () => {
 
   const handleBack = () => {
     navigate('/register/personal', { state: registrationData });
-  };
-
-  const handleConfirm = () => {
-    console.log('Đăng ký thành công:', registrationData);
-    if (registrationData.package.type === "Tập với PT" && registrationData.trainer) {
-      navigate('/register/consult', { state: registrationData });
-    } else {
-      navigate('/payment', { state: registrationData });
+  };  const [isRegistering, setIsRegistering] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  
+  const handleConfirm = async () => {
+    console.log('Đăng ký thông tin:', registrationData);
+    
+    // Kiểm tra dữ liệu trước khi đăng ký
+    if (!registrationData?.account?.email || !registrationData?.package?.id) {
+      console.error('Dữ liệu đăng ký không đầy đủ:', registrationData);
+      alert('Thông tin đăng ký thiếu dữ liệu cần thiết. Vui lòng thử lại từ đầu.');
+      navigate('/register/package');
+      return;
+    }
+    
+    setIsRegistering(true);
+    setErrorMessage(null);
+    
+    try {
+      // Đăng ký tài khoản trước, sau đó chuyển đến trang thanh toán
+      const response = await fetch('http://localhost:8001/api/registration/register-member', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          account: registrationData.account,
+          personal: registrationData.personal,
+          packageInfo: registrationData.package,
+          trainer: registrationData.trainer
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Đăng ký không thành công');
+      }
+      
+      console.log('Đăng ký thành công:', data);
+      
+      // Lưu token đăng nhập
+      localStorage.setItem('authToken', data.data.token);
+      
+      // Lưu thông tin thanh toán
+      const paymentData = {
+        user: data.data.user,
+        order: data.data.order,
+        package: registrationData.package
+      };
+      
+      sessionStorage.setItem('paymentData', JSON.stringify(paymentData));
+        // Luôn chuyển đến trang thanh toán trước tiên
+      // Không còn lựa chọn khác - thanh toán là bắt buộc
+      navigate('/payment', { state: paymentData });
+    } catch (error) {
+      console.error('Lỗi đăng ký:', error);
+      setErrorMessage(error.message || 'Có lỗi xảy ra khi đăng ký, vui lòng thử lại.');
+    } finally {
+      setIsRegistering(false);
     }
   };
 
