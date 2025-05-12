@@ -1,0 +1,176 @@
+.paymentReturnContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+
+.statusCard {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.statusIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.loading {
+  background-color: #f3f4f6;
+}
+
+.success {
+  background-color: #dcfce7;
+}
+
+.failed {
+  background-color: #fee2e2;
+}
+
+.error {
+  background-color: #fef3c7;
+}
+
+.successIcon {
+  font-size: 40px;
+  color: #16a34a;
+}
+
+.failedIcon {
+  font-size: 40px;
+  color: #dc2626;
+}
+
+.errorIcon {
+  font-size: 40px;
+  color: #ea580c;
+}
+
+.statusTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.statusMessage {
+  font-size: 16px;
+  color: #666;
+  margin: 10px 0;
+}
+
+.redirectMessage {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #888;
+}
+
+/* Hiệu ứng loading */
+.loader {
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Debug information styling */
+.debugInfo {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  text-align: left;
+  font-family: monospace;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.debugInfo h4 {
+  margin-top: 0;
+  color: #6c757d;
+}
+
+.debugInfo pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Navigation buttons */
+.navigationButtons {
+  margin-top: 25px;
+}
+
+.navButton {
+  padding: 10px 20px;
+  background-color: #4a76a8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navButton:hover {
+  background-color: #3a5c85;
+}
+
+/* Payment info styling */
+.paymentInfoSection {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.paymentInfoSection h4 {
+  margin-top: 0;
+  color: #495057;
+  font-size: 16px;
+}
+
+.paymentDetailsList {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.paymentDetailsList li {
+  padding: 5px 0;
+  font-size: 14px;
+}
+
+.supportNote {
+  font-size: 13px;
+  color: #6c757d;
+  font-style: italic;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
