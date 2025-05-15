@@ -188,11 +188,11 @@ const PaymentPage = () => {
                     </div>
                     <div className={styles.bankingRow}>
                       <span className={styles.bankingLabel}>Chủ tài khoản:</span>
-                        <span className={styles.bankingValue}>GYMFLEX CENTER</span>
+                        <span className={styles.bankingValue}>GYMPRO CENTER</span>
                     </div>
                     <div className={styles.bankingRow}>
                       <span className={styles.bankingLabel}>Nội dung CK:</span>
-                        <span className={styles.bankingValue}>GYMFLEX {paymentData.account?.email || 'USER'}</span>
+                        <span className={styles.bankingValue}>GYMPRO {paymentData.account?.email || 'USER'}</span>
                     </div>
                   </div>
                 </div>
@@ -205,7 +205,7 @@ const PaymentPage = () => {
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QR Code" />
                   </div>
                   <p className={styles.momoInstruction}>
-                    Sử dụng ứng dụng MoMo để quét mã hoặc chuyển đến SĐT <strong>0987654321</strong> (GYMFLEX CENTER)
+                    Sử dụng ứng dụng MoMo để quét mã hoặc chuyển đến SĐT <strong>0987654321</strong> (GYMPRO CENTER)
                   </p>
                 </div>
               )}
