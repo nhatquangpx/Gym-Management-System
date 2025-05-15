@@ -4,7 +4,7 @@ const User = require('../models/User');
 const dotenv = require('dotenv');
 
 dotenv.config();
-const MONGO_URL='mongodb+srv://nhatquangpx:8sotamnhe@gymmanagement.8jghrjf.mongodb.net/?retryWrites=true&w=majority&appName=GymManagement'
+const MONGO_URL=MONGO_URL
 
 const MONGODB_URI = MONGO_URL;
 console.log(MONGODB_URI);
