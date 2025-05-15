@@ -7,6 +7,7 @@ import RegisterPersonal from './components/RegisterPersonal/RegisterPersonal';
 import RegisterConfirm from './components/RegisterConfirm/RegisterConfirm';
 import RegisterConsult from './components/RegisterConsult/RegisterConsult';
 import PaymentPage from './components/PaymentPage/PaymentPage';
+import PaymentReturn from './components/PaymentReturn/PaymentReturn';
 import ForgotPasswordPage from './components/ForgotPasswordPage/ForgotPasswordPage';
 import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPasswordSentPage';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
@@ -87,9 +88,9 @@ function App() {
         <Route path="/register/personal" element={<RegisterPersonal />} />
         <Route path="/register/confirm" element={<RegisterConfirm />} />
         <Route path="/register/consult" element={<RegisterConsult />} />
-        
-        {/* Trang thanh toán */}
+          {/* Trang thanh toán */}
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/payment/return" element={<PaymentReturn />} />
         
         {/* Các route khác */}
         <Route path="/register" element={<RegisterPage />} />

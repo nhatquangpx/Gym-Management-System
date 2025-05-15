@@ -1,0 +1,32 @@
+.orderConfirmation {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.orderSuccessMessage {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.orderSuccessMessage i {
+  font-size: 48px;
+  color: #4CAF50;
+  margin-bottom: 15px;
+}
+
+.orderSuccessMessage h3 {
+  color: var(--text-color);
+  font-size: 1.4em;
+  margin-bottom: 10px;
+}
+
+.orderSuccessMessage p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 5px 0;
+}

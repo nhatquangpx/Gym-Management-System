@@ -15,9 +15,9 @@ const RegisterConsult = () => {
       navigate('/register/package');
     }
   }, [location, navigate]);
-
-  const handleGoToLogin = () => { 
-    navigate('/login'); 
+  const handleContinueToPayment = () => { 
+    // Bắt buộc chuyển đến trang thanh toán thay vì đăng nhập
+    navigate('/payment', { state: registrationData }); 
   };
 
   if (!registrationData) {
@@ -68,22 +68,19 @@ const RegisterConsult = () => {
                   <small>Mở cửa: 6:00 - 22:00 hàng ngày</small>
                 </div>
               </div>
-            </div>
-
-            <div className={styles.note}>
+            </div>            <div className={styles.note}>
               <i className="material-icons">info</i>
               <p>
                 Đăng ký của bạn đã được ghi nhận. Huấn luyện viên <strong>{registrationData.trainer.name}</strong> sẽ liên hệ với bạn trong vòng 24 giờ để tư vấn chi tiết. 
-                Hiện tại bạn đã có thể đăng nhập và sẽ thấy gói tập ở trạng thái chờ xác nhận. Sau khi quản lý xác nhận, bạn có thể thanh toán gói tập.
+                Để kích hoạt tài khoản và gói tập của bạn, vui lòng tiếp tục để thanh toán ngay bây giờ. Tài khoản sẽ chỉ được kích hoạt sau khi thanh toán thành công.
               </p>
             </div>
           </div>
-        </div>
-        <Button 
+        </div>        <Button 
           className={styles.actionButton} 
-          onClick={handleGoToLogin} 
+          onClick={handleContinueToPayment} 
       >
-          Đi đến trang đăng nhập
+          Tiếp tục thanh toán
       </Button>
       </div>
     </div>
