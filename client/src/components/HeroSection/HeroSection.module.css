@@ -1,0 +1,179 @@
+.hero {
+  height: calc(100vh - 70px);
+  min-height: 600px;
+  background-image: url('https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  line-height: 1.2;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.heroTitle .highlight {
+  color: var(--primary-red);
+  position: relative;
+  display: inline-block;
+}
+
+.heroTitle .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary-red);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+
+  .heroSubtitle {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  }
+
+  .searchContainer {
+  display: flex;
+  max-width: 500px;
+  height: 46px; /* Thêm chiều cao cố định */
+  margin: 0 auto 30px auto;
+  border-radius: 25px; /* Giảm border-radius */
+  overflow: hidden;
+  background-color: rgba(255,255,255,0.1);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .searchInput {
+  flex-grow: 1;
+  height: 100%; /* Đảm bảo input cao bằng container */
+  padding: 0 20px; /* Điều chỉnh padding */
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  background-color: transparent;
+  color: white;
+  }
+
+.searchInput::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+.searchButton {
+  width: 46px; /* Chiều rộng bằng chiều cao */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-red);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.searchButton i {
+  color: white;
+  font-size: 20px;
+}
+
+.searchButton:hover {
+  background-color: #e0002d;
+}
+
+/* Điều chỉnh lại nút CTA */
+.ctaButton {
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px;
+  background-color: var(--primary-red);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  text-transform: uppercase; /* Thêm uppercase */
+  letter-spacing: 0.5px; /* Thêm letter-spacing */
+  box-shadow: 0 4px 15px rgba(255, 23, 68, 0.3); /* Thêm shadow */
+}
+
+.ctaButton i {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.ctaButton:hover {
+  background-color: #e0002d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 23, 68, 0.4); /* Tăng shadow khi hover */
+}
+
+.ctaButton:hover i {
+  transform: translateY(1px);
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+  
+  .searchContainer {
+    max-width: 90%;
+    height: 42px; /* Giảm chiều cao trên mobile */
+  }
+  
+  .searchButton {
+    width: 42px; /* Giảm kích thước button theo container */
+  }
+  
+  .ctaButton {
+    padding: 12px 28px;
+    font-size: 0.95rem;
+  }
+}

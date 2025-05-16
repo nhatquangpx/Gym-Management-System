@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './LoginForm.module.css';
+import { useAuth } from '../../contexts/AuthContext';
 import InputField from '../InputField/InputField';
 import PasswordField from '../PasswordField/PasswordField';
 import Button from '../Button/Button';
-import GoogleButton from '../GoogleButton/GoogleButton';
 import Divider from '../Divider/Divider';
+import GoogleButton from '../GoogleButton/GoogleButton';
+import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -23,12 +27,8 @@ const LoginForm = () => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value
     });
-
     if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: undefined
-      });
+      setErrors({ ...errors, [name]: undefined });
     }
   };
 
@@ -40,7 +40,6 @@ const LoginForm = () => {
       newErrors.username = 'Username/Email là bắt buộc';
       isValid = false;
     }
-
     if (!formData.password.trim()) {
       newErrors.password = 'Mật khẩu là bắt buộc';
       isValid = false;
@@ -54,25 +53,25 @@ const LoginForm = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Handle login logic here
-      console.log('Form submitted:', formData);
-      // Sau khi đăng nhập thành công, chuyển hướng đến trang dashboard
-      navigate('/dashboard');
+      // Giả lập đăng nhập thành công
+      login({
+        name: "User Test",
+        email: formData.username,
+        avatar: "https://i.pravatar.cc/150?img=3"
+      });
+      navigate('/');
     }
   };
 
-  const handleGoogleLogin = (e) => {
-    e.preventDefault();
-    // Handle Google login logic here
-    console.log('Google login clicked');
-    // Sau khi đăng nhập Google thành công, chuyển hướng đến trang dashboard
-    navigate('/dashboard');
+  const handleGoogleLogin = () => {
+    // Giả lập đăng nhập Google
+    login({
+      name: "Google User",
+      email: "google.user@gmail.com",
+      avatar: "https://i.pravatar.cc/150?img=4"
+    });
+    navigate('/');
   };
-
-  const handleForgotPassword = (e) => {
-    e.preventDefault();
-    navigate('/forgot-password');
-};
 
   return (
     <form className={styles.loginForm} onSubmit={handleSubmit} noValidate>
@@ -107,7 +106,9 @@ const LoginForm = () => {
           />
           <span>Ghi nhớ đăng nhập</span>
         </label>
-        <a href="#" className={styles.forgotPassword} onClick={handleForgotPassword}>Quên mật khẩu?</a>
+        <Link to="/forgot-password" className={styles.forgotPassword}>
+          Quên mật khẩu?
+        </Link>
       </div>
 
       <Button type="submit" className={styles.loginBtn}>
@@ -116,11 +117,10 @@ const LoginForm = () => {
 
       <Divider text="hoặc" />
 
-      {/* GoogleButton ở đây vẫn giữ text mặc định */}
-      <GoogleButton onClick={handleGoogleLogin} /> 
+      <GoogleButton onClick={handleGoogleLogin} text="Đăng nhập với Google" />
 
       <div className={styles.registerLink}>
-        Chưa có tài khoản? <a href="#" onClick={e => { e.preventDefault(); navigate('/register/package'); }}>Đăng ký ngay</a>
+        Chưa có tài khoản? <Link to="/register/package">Đăng ký ngay</Link>
       </div>
     </form>
   );
