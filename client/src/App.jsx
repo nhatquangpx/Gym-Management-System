@@ -12,6 +12,8 @@ import ForgotPasswordPage from './components/ForgotPasswordPage/ForgotPasswordPa
 import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPasswordSentPage';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 
+import HomePage from './pages/HomePage/HomePage'; // Giả sử bạn tạo HomePage trong thư mục pages
+
 // Admin components
 import AdminLayout from './admin/components/AdminLayout';
 import AdminLogin from './admin/pages/Login';
@@ -56,6 +58,16 @@ const EquipmentManagement = () => <div>Equipment Management Page</div>;
 const StaffManagement = () => <div>Staff Management Page</div>;
 const PackageManagement = () => <div>Package Management Page</div>;
 
+// Các trang chức năng từ Navbar
+const SchedulePage = () => <div>Trang Lịch tập</div>;
+const PackageTrackingPage = () => <div>Trang Theo dõi gói tập</div>;
+const NotificationPage = () => <div>Trang Thông báo</div>;
+const ComplaintPage = () => <div>Trang Khiếu nại</div>;
+// Trang chỉnh sửa thông tin, cài đặt
+const EditProfilePage = () => <div>Trang Chỉnh sửa thông tin</div>;
+const SettingsPage = () => <div>Trang Cài đặt</div>;
+
+
 import StaffLayout from './staff/layouts/StaffLayout';
 import StaffDashboard from './staff/pages/Dashboard';
 import StaffMembers from './staff/pages/Members';
@@ -70,11 +82,15 @@ import AddMember from './staff/pages/AddMember';
 import AddPackage from './staff/pages/AddPackage';
 import AddEquipment from './staff/pages/AddEquipment';
 
+import { AuthProvider } from './contexts/AuthContext';
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+        {/* Đặt HomePage làm trang mặc định */}
+          <Route path="/" element={<HomePage />} /> 
         <Route path="/login" element={<LoginPage />} />
         
         {/* Luồng quên mật khẩu */}
@@ -91,6 +107,15 @@ function App() {
           {/* Trang thanh toán */}
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/payment/return" element={<PaymentReturn />} />
+
+        {/* Các route chức năng từ Navbar */}
+        <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/my-packages" element={<PackageTrackingPage />} />
+        <Route path="/notifications" element={<NotificationPage />} />
+        <Route path="/complaints" element={<ComplaintPage />} />
+        {/* Route cho các mục trong dropdown user */}
+        <Route path="/profile/edit" element={<EditProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         
         {/* Các route khác */}
         <Route path="/register" element={<RegisterPage />} />
@@ -156,6 +181,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

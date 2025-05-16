@@ -1,0 +1,154 @@
+.packagesSection {
+  padding: 60px 20px;
+  background-color: #1f1f1f;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  color: var(--primary-red);
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.sectionSubtitle {
+  font-size: 1.1rem;
+  color: #b0b0b0;
+  margin-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.packagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.packageCard {
+  background-color: #2a2a2a;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border: 1px solid #333;
+}
+
+.packageCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.highlighted {
+    border: 2px solid var(--primary-red);
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.2);
+}
+
+.highlightBadge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-red);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+
+.packageType {
+  display: inline-block;
+  background-color: rgba(255, 23, 68, 0.15);
+  color: var(--primary-red);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.packageName {
+  font-size: 1.6rem;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.priceContainer {
+  margin-bottom: 15px;
+}
+
+.price {
+  font-size: 2rem;
+  color: var(--primary-red);
+  font-weight: bold;
+}
+
+.period {
+  font-size: 1rem;
+  color: #a0a0a0;
+  margin-left: 5px;
+}
+
+.packageDescription {
+  font-size: 0.95rem;
+  color: #c0c0c0;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  min-height: 60px; /* Đảm bảo chiều cao đồng đều */
+}
+
+.detailsLink {
+  color: var(--primary-red);
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+.detailsLink:hover {
+  color: #ff4081;
+  text-decoration: underline;
+}
+.detailsLink i {
+    margin-left: 5px;
+    font-size: 18px;
+}
+
+.promoSection {
+    background-color: #2a2a2a;
+    padding: 30px;
+    border-radius: 10px;
+    margin-top: 20px;
+    border: 1px dashed var(--primary-red);
+}
+.promoSection h4 {
+    font-size: 1.5rem;
+    color: var(--primary-red);
+    margin-bottom: 10px;
+}
+.promoSection p {
+    color: #e0e0e0;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+.promoButton {
+    background-color: var(--primary-red);
+    color: white;
+    padding: 10px 25px;
+}
+.promoButton:hover {
+    background-color: #e0002d;
+}

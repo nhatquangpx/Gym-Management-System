@@ -1,0 +1,12 @@
+.homePage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #181818; /* Màu nền chung cho trang */
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding-top: 70px; /* Bằng chiều cao Navbar để nội dung không bị che */
+  /* Thêm padding-top nếu Navbar của bạn cao hơn */
+}
