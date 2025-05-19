@@ -242,7 +242,6 @@ export default function EditOrder() {
           )}
         </div>
       </div>
-      </form>
     </div>
   );
 } 
