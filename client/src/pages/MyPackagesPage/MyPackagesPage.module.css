@@ -1,0 +1,329 @@
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1558611848-73f7eb4001a1?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  background-size: cover;
+  background-position: center;
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 100px 20px 50px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(25, 25, 25, 0.97);
+  padding: 40px 50px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.title {
+  text-align: center;
+  color: var(--primary-red);
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.currentPackageSection {
+  margin-bottom: 40px;
+}
+.currentPackageSection h2 {
+  color: var(--primary-red);
+  font-size: 1.3rem;
+  margin-bottom: 18px;
+}
+.packageInfoBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: rgba(40,40,40,0.95);
+  border-radius: 12px;
+  padding: 28px 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,255,255,0.07);
+  gap: 30px;
+}
+.packageInfoBox h3 {
+  color: var(--primary-red);
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+.packageInfoBox p {
+  margin: 6px 0;
+  color: #ccc;
+  font-size: 1rem;
+}
+.packageStats {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 160px;
+  align-items: flex-end;
+}
+.remainingBox, .statusBox {
+  background: #232323;
+  border-radius: 8px;
+  padding: 14px 18px;
+  text-align: right;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.remainingLabel, .statusLabel {
+  color: #aaa;
+  font-size: 0.95rem;
+}
+.remainingValue {
+  color: #4caf50;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: block;
+  margin-top: 4px;
+}
+.statusValue {
+  color: var(--primary-red);
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: block;
+  margin-top: 4px;
+}
+
+.historySection {
+  margin-top: 30px;
+}
+.historySection h2 {
+  color: var(--primary-red);
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+.historyTableWrapper {
+  overflow-x: auto;
+}
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(30,30,30,0.98);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.historyTable th, .historyTable td {
+  padding: 14px 10px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  color: #eee;
+  font-size: 1rem;
+}
+.historyTable th {
+  background: #232323;
+  color: var(--primary-red);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.historyTable tr:last-child td {
+  border-bottom: none;
+}
+
+.actionButtons {
+  margin-top: 18px;
+  display: flex;
+  gap: 16px;
+}
+.renewButton, .buyMoreButton, .registerButton {
+  background-color: var(--primary-red);
+  color: #fff;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.renewButton:hover, .buyMoreButton:hover, .registerButton:hover {
+  background-color: #e0002d;
+}
+
+.usageDatesCell {
+  background: #232323;
+  color: #eee;
+  padding: 18px 10px;
+  border-radius: 8px;
+}
+.usageDatesList {
+  margin-top: 8px;
+}
+.usageDatesList ul {
+  margin: 8px 0 0 0;
+  padding-left: 18px;
+}
+.usageDatesList li {
+  margin-bottom: 4px;
+  font-size: 0.98rem;
+}
+
+/* Style cho nút nhỏ trong bảng lịch sử */
+.historyTable button {
+  background: #444;
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.92rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.historyTable button:hover {
+  background: var(--primary-red);
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 25px 8px;
+  }
+  .packageInfoBox {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    padding: 18px 10px;
+  }
+  .packageStats {
+    flex-direction: row;
+    gap: 18px;
+    min-width: unset;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+  .remainingBox, .statusBox {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .mainContent {
+    padding: 80px 2px 30px;
+  }
+  .container {
+    padding: 10px 2px;
+  }
+  .title {
+    font-size: 1.3rem;
+  }
+  .packageInfoBox {
+    padding: 10px 2px;
+  }
+  .historyTable th, .historyTable td {
+    padding: 8px 2px;
+    font-size: 0.92rem;
+  }
+}
+
+.sessionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.sessionItem {
+  background: #292929;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 4px solid var(--primary-red);
+}
+.sessionDate {
+  color: var(--primary-red);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+.sessionWorkout {
+  color: #eee;
+  font-size: 0.98rem;
+}
+
+/* Modal thanh toán mới */
+.paymentModalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.paymentModal {
+  background: #232323;
+  border-radius: 16px;
+  padding: 36px 32px;
+  min-width: 340px;
+  max-width: 95vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  color: #fff;
+  text-align: center;
+}
+.paymentModalTitle {
+  color: var(--primary-red);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.paymentModalInfo p {
+  margin: 8px 0;
+  font-size: 1.05rem;
+}
+.paymentModalPrice {
+  color: #4caf50;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.paymentModalActions {
+  margin-top: 24px;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+.paymentModalPayBtn {
+  background: var(--primary-red);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  border: none;
+  transition: background 0.2s;
+}
+.paymentModalPayBtn:hover {
+  background: #e0002d;
+}
+.paymentModalCancelBtn {
+  background: #444;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  border: none;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.paymentModalCancelBtn:hover {
+  background: #666;
+}
+.paymentModalError {
+  color: #ff5252;
+  background: rgba(255,82,82,0.08);
+  border: 1px solid #ff5252;
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin: 10px 0;
+  font-size: 0.98rem;
+} 

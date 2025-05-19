@@ -13,8 +13,11 @@ import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPassw
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 import EditProfilePage from './pages/EditProfilePage/EditProfilePage';
 import SchedulePage from './pages/SchedulePage/SchedulePage'; // Trang mới
+import MyPackagesPage from './pages/MyPackagesPage/MyPackagesPage';
+import ComplaintsPage from './pages/ComplaintsPage/ComplaintsPage';
 
 import HomePage from './pages/HomePage/HomePage'; // Giả sử bạn tạo HomePage trong thư mục pages
+
 
 // Admin components
 import AdminLayout from './admin/components/AdminLayout';
@@ -61,9 +64,7 @@ const StaffManagement = () => <div>Staff Management Page</div>;
 const PackageManagement = () => <div>Package Management Page</div>;
 
 // Các trang chức năng từ Navbar
-const PackageTrackingPage = () => <div>Trang Theo dõi gói tập</div>;
 const NotificationPage = () => <div>Trang Thông báo</div>;
-const ComplaintPage = () => <div>Trang Khiếu nại</div>;
 // Trang chỉnh sửa thông tin, cài đặt
 const SettingsPage = () => <div>Trang Cài đặt</div>;
 
@@ -110,9 +111,9 @@ function App() {
 
         {/* Các route chức năng từ Navbar */}
         <Route path="/schedule" element={<SchedulePage />} />
-        <Route path="/my-packages" element={<PackageTrackingPage />} />
+        <Route path="/my-packages" element={<MyPackagesPage />} />
         <Route path="/notifications" element={<NotificationPage />} />
-        <Route path="/complaints" element={<ComplaintPage />} />
+        <Route path="/complaints" element={<ComplaintsPage />} />
         {/* Route cho các mục trong dropdown user */}
         <Route path="/profile/edit" element={<EditProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
