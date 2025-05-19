@@ -18,11 +18,26 @@ const Navbar = () => {
 
   const unreadNotifications = notifications.filter(n => !n.isRead).length;
 
-  const navItems = [
+  const homeNavItems = [
+    { name: 'Dịch Vụ', path: '#services-section' },
+    { name: 'Trang Thiết Bị', path: '#equipment-section' },
+    { name: 'Gói Tập', path: '#packages-section' },
+    { name: 'Huấn Luyện Viên', path: '#trainers-section' },
+    { name: 'Blog', path: '#blog-section' },
+  ];
+
+  const loggedInNavItems = [
     { name: 'Lịch tập', path: '/schedule' },
     { name: 'Gói tập của tôi', path: '/my-packages' },
     { name: 'Khiếu nại', path: '/complaints' },
   ];
+
+  const handleScrollToSection = (path) => {
+    const element = document.querySelector(path);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleAuthenticatedNavigation = (path) => {
     if (!isLoggedIn) {
@@ -35,24 +50,25 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-        setShowDropdown(false);
+    setShowDropdown(false);
     navigate('/');
-    };
+  };
+
+  const handleLogoClick = (e) => {
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const handleConfirmLogin = () => {
     setShowAuthModal(false);
     navigate('/login');
-    };
+  };
 
-  // Thêm hàm kiểm tra avatar
-  const getAvatarClass = (avatarUrl) => {
-    return avatarUrl ? '' : styles.defaultAvatar;
-};
-
-  // Thêm h��m xử lý click avatar
   const handleAvatarClick = () => {
     setShowDropdown(!showDropdown);
-};
+  };
 
   // Đóng dropdown khi click ra ngoài
   useEffect(() => {
@@ -63,31 +79,40 @@ const Navbar = () => {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
         setShowNotifications(false);
       }
-};
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-};
+    };
   }, []);
 
   return (
     <>
       <nav className={styles.navbar}>
         <div className={styles.navContainer}>
-          <Link to="/" className={styles.logoContainer}>
+          <Link to="/" className={styles.logoContainer} onClick={handleLogoClick}>
             <img src={logo} alt="GYMPRO Logo" className={styles.logo} />  
             <span className={styles.logoName}>GYMPRO</span>
           </Link>
 
           <ul className={styles.navMenu}>
-            {navItems.map((item) => (
+            {(isLoggedIn ? loggedInNavItems : homeNavItems).map((item) => (
               <li key={item.name} className={styles.navItem}>
-                <button 
-                  onClick={() => handleAuthenticatedNavigation(item.path)}
-                  className={styles.navLink}
-                >
-                  {item.name}
-                </button>
+                {isLoggedIn ? (
+                  <button 
+                    onClick={() => handleAuthenticatedNavigation(item.path)}
+                    className={styles.navLink}
+                  >
+                    {item.name}
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handleScrollToSection(item.path)}
+                    className={styles.navLink}
+                  >
+                    {item.name}
+                  </button>
+                )}
               </li>
             ))}
           </ul>
