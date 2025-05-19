@@ -1,0 +1,262 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8); /* Lớp phủ đậm hơn */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: #2c2c2c; /* Màu nền modal (xám đậm, khác lớp phủ) */
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6); /* Shadow đậm hơn */
+  width: 100%;
+  max-width: 650px; 
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-color); /* Màu chữ chính trong modal */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Viền nhẹ cho modal */
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Viền header rõ hơn */
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--primary-red);
+  font-weight: 600;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #cccccc; /* Màu icon close */
+  cursor: pointer;
+  font-size: 1.8rem;
+  padding: 5px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+.closeButton:hover {
+  color: var(--primary-red);
+}
+
+.modalBody {
+  flex-grow: 1;
+  overflow-y: auto; 
+  padding-right: 10px; 
+  margin-right: -10px; 
+}
+
+.addWorkoutForm {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #383838; /* Nền form thêm bài tập (xám nhạt hơn modalContent) */
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.addWorkoutForm h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--primary-red); /* Tiêu đề nhỏ màu đỏ */
+  font-size: 1.2rem;
+}
+
+.formRow {
+  margin-bottom: 15px;
+}
+
+/* Style cho select input và các InputField (nếu bạn dùng component InputField riêng) */
+.selectInput {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--input-bg); /* Sử dụng biến từ index.css */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Viền input rõ hơn */
+  border-radius: 6px;
+  color: var(--text-color); /* Màu chữ trong input */
+  font-size: 0.95rem;
+}
+.selectInput option {
+  background-color: #383838; /* Nền option */
+  color: var(--text-color);
+}
+.selectInput:focus {
+  border-color: var(--primary-red);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 23, 68, 0.4); /* Shadow focus rõ hơn */
+}
+
+/* Đảm bảo label của InputField cũng có màu dễ đọc */
+/* Ví dụ nếu InputField của bạn có class cho label là .InputField_label__* */
+:global(.InputField_label__*) {
+  color: #dddddd !important; /* Màu label sáng hơn */
+  margin-bottom: 6px !important;
+}
+
+.errorMsg {
+  color: #ff5252;
+  background: rgba(255,82,82,0.08);
+  border: 1px solid #ff5252;
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  font-size: 0.98rem;
+  text-align: center;
+}
+
+/* Đảm bảo label của InputField cũng có màu dễ đọc */
+:global(.InputField_label__*), .addWorkoutForm label {
+  color: #dddddd !important;
+  margin-bottom: 6px !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em;
+}
+
+.orSeparator {
+  text-align: center;
+  margin: 15px 0; /* Tăng margin */
+  color: #aaaaaa; /* Màu chữ sáng hơn */
+  font-style: italic;
+}
+
+.addButton { 
+  background-color: var(--primary-red) !important;
+  color: white !important;
+  width: 100%;
+  padding: 12px 15px !important; /* Tăng padding */
+  font-size: 1rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none !important; /* Bỏ border mặc định của button nếu có */
+  transition: background-color 0.2s ease !important;
+}
+.addButton:hover {
+  background-color: #e0002d !important; /* Màu đỏ đậm hơn khi hover */
+}
+.addButton .material-icons {
+  font-size: 1.2rem;
+}
+
+
+.workoutList h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--primary-red); /* Tiêu đề nhỏ màu đỏ */
+  font-size: 1.2rem;
+}
+
+.noWorkouts {
+  color: #aaaaaa; /* Chữ sáng hơn */
+  font-style: italic;
+  text-align: center;
+  padding: 15px 0;
+}
+
+.workoutList ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.workoutListItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 5px; /* Tăng padding */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Viền item list rõ hơn */
+}
+.workoutListItem:last-child {
+  border-bottom: none;
+}
+
+.workoutInfo strong {
+  font-size: 1rem;
+  color: var(--text-color);
+}
+.workoutInfo small {
+  font-size: 0.85rem;
+  color: #b0b0b0; /* Chữ chi tiết sáng hơn */
+  display: block;
+  margin-top: 3px;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #bbbbbb; /* Màu icon remove */
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s ease;
+}
+.removeButton:hover {
+  color: var(--primary-red);
+}
+.removeButton .material-icons {
+  font-size: 1.3rem;
+}
+
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Viền footer rõ hơn */
+  gap: 15px;
+}
+
+.actionButton { 
+  padding: 10px 25px !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  border: none !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.cancelButton { 
+  background-color: #555555 !important; /* Màu xám cho nút hủy */
+  color: white !important;
+}
+.cancelButton:hover {
+  background-color: #6c6c6c !important; /* Hover xám sáng hơn */
+}
+
+.saveButton { 
+  background-color: var(--primary-red) !important;
+  color: white !important;
+}
+.saveButton:hover {
+   background-color: #e0002d !important; /* Đỏ đậm hơn khi hover */
+}
+
+/* Responsive cho modal */
+@media (max-width: 600px) {
+  .modalHeader h3 {
+    font-size: 1.3rem;
+  }
+  .modalFooter {
+    flex-direction: column-reverse; 
+  }
+  .actionButton { 
+    width: 100%;
+  }
+}
