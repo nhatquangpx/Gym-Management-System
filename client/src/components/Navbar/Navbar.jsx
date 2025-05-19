@@ -29,7 +29,7 @@ const Navbar = () => {
   const loggedInNavItems = [
     { name: 'Lịch tập', path: '/schedule' },
     { name: 'Gói tập của tôi', path: '/my-packages' },
-    { name: 'Khiếu nại', path: '/complaints' },
+    { name: 'Đánh giá & Khiếu nại', path: '/complaints' },
   ];
 
   const handleScrollToSection = (path) => {
