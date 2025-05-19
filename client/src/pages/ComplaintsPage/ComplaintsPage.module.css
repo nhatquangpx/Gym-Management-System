@@ -1,0 +1,272 @@
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://plus.unsplash.com/premium_photo-1661284821625-9400498df354?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  background-size: cover;
+  background-position: center;
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 100px 20px 50px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.container {
+  width: 100%;
+  max-width: 700px;
+  background: rgba(25, 25, 25, 0.97);
+  padding: 40px 35px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.title {
+  text-align: center;
+  color: var(--primary-red);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+}
+
+.feedbackForm {
+  margin-bottom: 38px;
+}
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 35px;
+  margin-bottom: 25px;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+.label {
+  color: var(--text-color);
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.selectInput {
+  width: 100%;
+  padding: 10px 15px;
+  background: var(--input-bg);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cccccc'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 18px;
+}
+.selectInput option {
+  background-color: #2a2a2a;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+.textareaInput {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: var(--input-bg);
+  color: var(--text-color);
+  font-size: 0.98rem;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+.textareaInput:focus, .selectInput:focus {
+  border-color: var(--primary-red);
+  outline: none;
+  box-shadow: 0 0 8px rgba(255, 23, 68, 0.2);
+}
+
+.starRating {
+  display: flex;
+  gap: 6px;
+  font-size: 2rem;
+  user-select: none;
+}
+.filledStar {
+  color: var(--primary-red);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.filledStar:hover, .emptyStar:hover {
+  transform: scale(1.15);
+}
+.emptyStar {
+  color: #888;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.required {
+  color: var(--primary-red);
+  margin-left: 2px;
+}
+.errorMsg {
+  color: #ff5252;
+  font-size: 0.92rem;
+  margin-top: 4px;
+}
+.successMsg {
+  color: #4CAF50;
+  background-color: rgba(76, 175, 80, 0.15);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 18px;
+  font-weight: 500;
+  border: 1px solid #4CAF50;
+}
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-top: 18px;
+}
+.backButton, .submitButton {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.backButton {
+  background-color: #555;
+}
+.backButton:hover {
+  background-color: #666;
+}
+.submitButton {
+  background-color: var(--primary-red);
+}
+.submitButton:hover {
+  background-color: #e0002d;
+}
+
+/* Lịch sử đánh giá */
+.historySection {
+  margin-top: 30px;
+}
+.historySection h2 {
+  color: var(--primary-red);
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+}
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.historyItem {
+  background: #232323;
+  border-radius: 10px;
+  padding: 18px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  color: #eee;
+  border-left: 4px solid var(--primary-red);
+}
+.historyHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.historyType {
+  color: #ffd54f;
+  font-weight: 600;
+  font-size: 1rem;
+}
+.historyTarget {
+  color: var(--primary-red);
+  font-weight: 600;
+  font-size: 1rem;
+}
+.historyStars {
+  color: var(--primary-red);
+  font-size: 1.1rem;
+  margin-left: 8px;
+}
+.historyDate {
+  color: #aaa;
+  font-size: 0.95rem;
+  margin-left: auto;
+}
+.historyContent {
+  color: #eee;
+  font-size: 0.98rem;
+  margin-top: 4px;
+}
+
+.historyHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.filterSelect {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid #888;
+  background: #181818;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  margin-left: 18px;
+}
+.filterSelect:focus {
+  border-color: var(--primary-red);
+}
+.packageType {
+  color: #42a5f5;
+  font-weight: 700;
+  font-size: 1rem;
+}
+.trainerType {
+  color: #ffd54f;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 18px 4px;
+  }
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+@media (max-width: 600px) {
+  .mainContent {
+    padding: 80px 2px 30px;
+  }
+  .container {
+    padding: 8px 2px;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .buttonGroup {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  .backButton, .submitButton {
+    width: 100%;
+  }
+} 
