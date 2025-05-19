@@ -11,6 +11,7 @@ import PaymentReturn from './components/PaymentReturn/PaymentReturn';
 import ForgotPasswordPage from './components/ForgotPasswordPage/ForgotPasswordPage';
 import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPasswordSentPage';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
+import EditProfilePage from './pages/EditProfilePage/EditProfilePage';
 
 import HomePage from './pages/HomePage/HomePage'; // Giả sử bạn tạo HomePage trong thư mục pages
 
@@ -64,7 +65,6 @@ const PackageTrackingPage = () => <div>Trang Theo dõi gói tập</div>;
 const NotificationPage = () => <div>Trang Thông báo</div>;
 const ComplaintPage = () => <div>Trang Khiếu nại</div>;
 // Trang chỉnh sửa thông tin, cài đặt
-const EditProfilePage = () => <div>Trang Chỉnh sửa thông tin</div>;
 const SettingsPage = () => <div>Trang Cài đặt</div>;
 
 
