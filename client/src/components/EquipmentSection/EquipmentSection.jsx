@@ -54,7 +54,7 @@ const equipmentData = {
 
 const EquipmentSection = () => {
   return (
-    <section className={styles.equipmentSection}>
+    <section id="equipment-section" className={styles.equipmentSection}>
       <div className={styles.container}>
         <h2 className={styles.sectionTitle}>{equipmentData.title}</h2>
         <p className={styles.sectionSubtitle}>{equipmentData.subtitle}</p>

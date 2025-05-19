@@ -168,6 +168,7 @@
   height: 40px !important;
   border-radius: 50%;
   transition: all 0.3s ease;
+  top: 45%;
 }
 
 :global(.swiper-button-next:hover),

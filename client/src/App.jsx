@@ -12,6 +12,7 @@ import ForgotPasswordPage from './components/ForgotPasswordPage/ForgotPasswordPa
 import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPasswordSentPage';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 import EditProfilePage from './pages/EditProfilePage/EditProfilePage';
+import SchedulePage from './pages/SchedulePage/SchedulePage'; // Trang mới
 
 import HomePage from './pages/HomePage/HomePage'; // Giả sử bạn tạo HomePage trong thư mục pages
 
@@ -60,7 +61,6 @@ const StaffManagement = () => <div>Staff Management Page</div>;
 const PackageManagement = () => <div>Package Management Page</div>;
 
 // Các trang chức năng từ Navbar
-const SchedulePage = () => <div>Trang Lịch tập</div>;
 const PackageTrackingPage = () => <div>Trang Theo dõi gói tập</div>;
 const NotificationPage = () => <div>Trang Thông báo</div>;
 const ComplaintPage = () => <div>Trang Khiếu nại</div>;
