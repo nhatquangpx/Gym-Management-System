@@ -58,8 +58,8 @@ export default function Dashboard() {
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
         {stats.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ background: '#232323', color: '#fff', borderLeft: `4px solid ${stat.color}` }}>
+          <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex' }}>
+            <Card sx={{ background: '#232323', color: '#fff', borderLeft: `4px solid ${stat.color}`, width: '100%', minWidth: 0 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box>
