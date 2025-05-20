@@ -5,6 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { IconButton, Paper, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../components/StatusBadge/StatusBadge';
+import AddButton from '../../components/AddButton';
 
 export default function Members() {
   const members = [
@@ -14,7 +15,12 @@ export default function Members() {
   ];
   return (
     <div className="bg-[#181818] min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-6 text-white">Quản lý thành viên</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-white">Danh sách thành viên</h1>
+        <Link to="/admin/members/add">
+          <AddButton label="Thêm thành viên" />
+        </Link>
+      </div>
       <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
