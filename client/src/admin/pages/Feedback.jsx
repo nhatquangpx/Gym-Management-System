@@ -64,7 +64,7 @@ export default function Feedback() {
       <TableContainer component={Paper} className="shadow-lg rounded-lg">
         <Table>
           <TableHead>
-            <TableRow className="bg-gray-100">
+            <TableRow className="bg-[#1f1f1f] text-[#e53935] text-base">
               <TableCell>Hội viên</TableCell>
               <TableCell>Đánh giá</TableCell>
               <TableCell>Nội dung</TableCell>
@@ -75,7 +75,7 @@ export default function Feedback() {
           </TableHead>
           <TableBody>
             {feedback.map((item) => (
-              <TableRow key={item._id}>
+              <TableRow key={item._id} className="hover:bg-[#252525] transition">
                 <TableCell>{item.memberName}</TableCell>
                 <TableCell>
                   <Rating value={item.rating} readOnly />

@@ -19,9 +19,9 @@ export default function Packages() {
       <h1 className="text-2xl font-bold mb-6 text-white">Quản lý gói tập</h1>
       <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
-          <table className="min-w-full rounded-2xl">
+          <table className="min-w-full">
             <thead>
-              <tr className="bg-[#1f1f1f] text-[#e53935]">
+              <tr className="bg-[#1f1f1f] text-[#e53935] text-base">
                 <th className="py-3 px-4 text-left">Gói tập</th>
                 <th className="py-3 px-4 text-left">Giá</th>
                 <th className="py-3 px-4 text-left">Trạng thái</th>
@@ -30,9 +30,9 @@ export default function Packages() {
             </thead>
             <tbody>
               {packages.map((p) => (
-                <tr key={p.id} className="border-b border-[#333] hover:bg-[#252525] transition rounded-xl">
+                <tr key={p.id} className="border-b border-[#333] hover:bg-[#252525] transition">
                   <td className="py-2 px-4 flex items-center gap-3 text-white">
-                    <FitnessCenterIcon className="text-[#e53935]" />
+                    <FitnessCenterIcon className="text-[#e53935] mx-auto" />
                     <span>{p.name}</span>
                   </td>
                   <td className="py-2 px-4 text-[#D4D4D4]">{p.price}</td>

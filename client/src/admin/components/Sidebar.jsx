@@ -34,8 +34,9 @@ export default function Sidebar() {
   ];
   return (
     <aside className="w-64 bg-[#1f1f1f] shadow-2xl h-screen sticky top-0 flex flex-col border-r-4 border-[#e53935]">
-      <div className="p-6 text-2xl font-extrabold text-white border-b border-[#e53935] flex items-center justify-center bg-gradient-to-r from-[#e53935] to-[#b71c1c] shadow-lg">
-        <img src={logo} alt="GYMPRO Logo" style={{ height: 40, marginRight: 12 }} /> <span className="drop-shadow-lg tracking-wider">GYMPRO ADMIN</span>
+      <div className="py-8 px-4 text-2xl font-extrabold text-white border-b border-[#e53935] flex flex-col items-center justify-center bg-gradient-to-r from-[#e53935] to-[#b71c1c] shadow-lg">
+        <img src={logo} alt="GYMPRO Logo" style={{ height: 48, marginBottom: 8 }} />
+        <span className="drop-shadow-lg tracking-wider text-xl mt-1">GYMPRO ADMIN</span>
       </div>
       <nav className="mt-6 flex-1 overflow-y-auto">
         {menu.map((item) => (
