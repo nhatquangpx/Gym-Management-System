@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './RegisterPackage.module.css';
-import Button from '../Button/Button';
+import styles from './RegisterPackagePage.module.css';
+import Button from '../../components/Button/Button';
 
 const RegisterPackage = () => {
   const [packages, setPackages] = useState([]);

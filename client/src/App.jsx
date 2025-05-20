@@ -1,16 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './components/LoginPage/LoginPage';
-import RegisterPackage from './components/RegisterPackage/RegisterPackage';
-import RegisterPT from './components/RegisterPT/RegisterPT';
-import RegisterAccount from './components/RegisterAccount/RegisterAccount';
-import RegisterPersonal from './components/RegisterPersonal/RegisterPersonal';
-import RegisterConfirm from './components/RegisterConfirm/RegisterConfirm';
-import RegisterConsult from './components/RegisterConsult/RegisterConsult';
-import PaymentPage from './components/PaymentPage/PaymentPage';
-import PaymentReturn from './components/PaymentReturn/PaymentReturn';
-import ForgotPasswordPage from './components/ForgotPasswordPage/ForgotPasswordPage';
-import ResetPasswordSentPage from './components/ResetPasswordSentPage/ResetPasswordSentPage';
-import NotFoundPage from './components/NotFoundPage/NotFoundPage';
+import LoginPage from './pages/LoginPage/LoginPage';
+import RegisterPackagePage from './pages/RegisterPackagePage/RegisterPackagePage';
+import RegisterPTPage from './pages/RegisterPTPage/RegisterPTPage';
+import RegisterAccountPage from './pages/RegisterAccountPage/RegisterAccountPage';
+import RegisterPersonalPage from './pages/RegisterPersonalPage/RegisterPersonalPage';
+import RegisterConfirmPage from './pages/RegisterConfirmPage/RegisterConfirmPage';
+import RegisterConsultPage from './pages/RegisterConsultPage/RegisterConsultPage';
+import PaymentPage from './pages/PaymentPage/PaymentPage';
+import PaymentReturnPage from './pages/PaymentReturnPage/PaymentReturnPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage';
+import ResetPasswordSentPage from './pages/ResetPasswordSentPage/ResetPasswordSentPage';
+import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import EditProfilePage from './pages/EditProfilePage/EditProfilePage';
 import SchedulePage from './pages/SchedulePage/SchedulePage'; // Trang mới
 import MyPackagesPage from './pages/MyPackagesPage/MyPackagesPage';
@@ -99,15 +99,15 @@ function App() {
         <Route path="/reset-password-sent" element={<ResetPasswordSentPage />} />
 
         {/* Luồng đăng ký */}
-        <Route path="/register/package" element={<RegisterPackage />} />
-        <Route path="/register/pt" element={<RegisterPT />} />
-        <Route path="/register/account" element={<RegisterAccount />} />
-        <Route path="/register/personal" element={<RegisterPersonal />} />
-        <Route path="/register/confirm" element={<RegisterConfirm />} />
-        <Route path="/register/consult" element={<RegisterConsult />} />
+        <Route path="/register/package" element={<RegisterPackagePage />} />
+        <Route path="/register/pt" element={<RegisterPTPage />} />
+        <Route path="/register/account" element={<RegisterAccountPage />} />
+        <Route path="/register/personal" element={<RegisterPersonalPage />} />
+        <Route path="/register/confirm" element={<RegisterConfirmPage />} />
+        <Route path="/register/consult" element={<RegisterConsultPage />} />
           {/* Trang thanh toán */}
         <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/payment/return" element={<PaymentReturn />} />
+        <Route path="/payment/return" element={<PaymentReturnPage />} />
 
         {/* Các route chức năng từ Navbar */}
         <Route path="/schedule" element={<SchedulePage />} />

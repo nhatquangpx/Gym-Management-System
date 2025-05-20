@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import styles from './ResetPasswordSentPage.module.css';
-import Button from '../Button/Button';
+import Button from '../../components/Button/Button';
 import { useState } from 'react';
 
 const ResetPasswordSentPage = () => {

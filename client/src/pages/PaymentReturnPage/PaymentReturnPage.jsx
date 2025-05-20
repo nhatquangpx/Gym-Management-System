@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './PaymentReturn.module.css';
+import styles from './PaymentReturnPage.module.css';
 
 const PaymentReturn = () => {
   const [status, setStatus] = useState('loading');

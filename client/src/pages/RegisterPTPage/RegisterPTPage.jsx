@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './RegisterPT.module.css';
-import Button from '../Button/Button';
+import styles from './RegisterPTPage.module.css';
+import Button from '../../components/Button/Button';
 
 // Dữ liệu mẫu với ảnh người thật
 const trainers = [

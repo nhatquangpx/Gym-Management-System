@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './RegisterAccount.module.css';
-import InputField from '../InputField/InputField';
-import PasswordField from '../PasswordField/PasswordField';
-import Button from '../Button/Button';
-import Divider from '../Divider/Divider';
-import GoogleButton from '../GoogleButton/GoogleButton';
+import styles from './RegisterAccountPage.module.css';
+import InputField from '../../components/InputField/InputField';
+import PasswordField from '../../components/PasswordField/PasswordField';
+import Button from '../../components/Button/Button';
+import Divider from '../../components/Divider/Divider';
+import GoogleButton from '../../components/GoogleButton/GoogleButton';
 
 const RegisterAccount = () => {
   const navigate = useNavigate();

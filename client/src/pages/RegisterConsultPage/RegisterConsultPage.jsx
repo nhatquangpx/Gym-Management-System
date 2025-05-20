@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './RegisterConsult.module.css';
-import Button from '../Button/Button';
+import styles from './RegisterConsultPage.module.css';
+import Button from '../../components/Button/Button';
 
 const RegisterConsult = () => {
   const navigate = useNavigate();
