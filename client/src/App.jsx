@@ -82,6 +82,7 @@ import StaffAccount from './staff/pages/Account';
 import AddMember from './staff/pages/AddMember';
 import AddPackage from './staff/pages/AddPackage';
 import AddEquipment from './staff/pages/AddEquipment';
+import AddSchedule from './staff/pages/AddSchedule';
 
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -133,6 +134,7 @@ function App() {
           <Route path="equipment/add" element={<AddEquipment />} />
           <Route path="workouts" element={<StaffWorkouts />} />
           <Route path="schedules" element={<StaffSchedules />} />
+          <Route path="schedules/add" element={<AddSchedule />} />
           <Route path="feedback" element={<StaffFeedback />} />
           <Route path="statistics" element={<StaffStatistics />} />
           <Route path="account" element={<StaffAccount />} />
