@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from '../components/StatusBadge/StatusBadge';
+import AddButton from '../../components/AddButton';
 
 export default function Employees() {
   const employees = [
@@ -17,7 +18,12 @@ export default function Employees() {
   ];
   return (
     <div className="bg-[#181818] min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-6 text-white">Quản lý nhân viên / huấn luyện viên</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-white">Danh sách nhân viên/Huấn luyện viên</h1>
+        <Link to="/admin/employees/add">
+          <AddButton label="Thêm nhân viên/Huấn luyện viên" />
+        </Link>
+      </div>
       <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">

@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from '../components/StatusBadge/StatusBadge';
+import AddButton from '../../components/AddButton';
 
 export default function Packages() {
   const packages = [
@@ -16,7 +17,12 @@ export default function Packages() {
   ];
   return (
     <div className="bg-[#181818] min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-6 text-white">Quản lý gói tập</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-white">Quản lý gói tập</h1>
+        <Link to="/admin/packages/add">
+          <AddButton label="Thêm gói tập" />
+        </Link>
+      </div>
       <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full">
