@@ -86,6 +86,7 @@ import StaffAddMember from './staff/pages/AddMember';
 import StaffAddPackage from './staff/pages/AddPackage';
 import AddEquipment from './staff/pages/AddEquipment';
 import AddSchedule from './staff/pages/AddSchedule';
+import StaffOrders from './staff/pages/Orders';
 
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -134,10 +135,9 @@ function App() {
           <Route path="packages" element={<StaffPackages />} />
           <Route path="packages/add" element={<StaffAddPackage />} />
           <Route path="equipment" element={<StaffEquipment />} />
-          <Route path="equipment/add" element={<AddEquipment />} />
+          <Route path="orders" element={<StaffOrders />} />
           <Route path="workouts" element={<StaffWorkouts />} />
           <Route path="schedules" element={<StaffSchedules />} />
-          <Route path="schedules/add" element={<AddSchedule />} />
           <Route path="feedback" element={<StaffFeedback />} />
           <Route path="statistics" element={<StaffStatistics />} />
           <Route path="account" element={<StaffAccount />} />

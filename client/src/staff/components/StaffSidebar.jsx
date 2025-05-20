@@ -8,6 +8,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import logo from '../../assets/logo.svg';
 
 const menu = [
@@ -15,6 +16,7 @@ const menu = [
   { name: "Hội viên", path: "/staff/members", icon: <GroupIcon /> },
   { name: "Gói tập", path: "/staff/packages", icon: <FitnessCenterIcon /> },
   { name: "Thiết bị", path: "/staff/equipment", icon: <BuildIcon /> },
+  { name: "Đơn hàng", path: "/staff/orders", icon: <MonetizationOnIcon /> },
   { name: "Lịch sử tập luyện", path: "/staff/workouts", icon: <HistoryIcon /> },
   { name: "Lịch tập", path: "/staff/schedules", icon: <CalendarMonthIcon /> },
   { name: "Phản hồi", path: "/staff/feedback", icon: <FeedbackIcon /> },
