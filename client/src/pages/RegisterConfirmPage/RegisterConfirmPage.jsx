@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './RegisterConfirm.module.css';
-import Button from '../Button/Button';
+import styles from './RegisterConfirmPage.module.css';
+import Button from '../../components/Button/Button';
 
 const RegisterConfirm = () => {
   const navigate = useNavigate();
