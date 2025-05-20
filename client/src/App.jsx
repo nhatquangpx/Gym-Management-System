@@ -140,7 +140,7 @@ function App() {
         <Route path="/packages" element={<PackageManagement />} />
 
         {/* Admin routes */}
-        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         
         {/* Admin routes và layout */}
