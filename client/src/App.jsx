@@ -54,6 +54,9 @@ import WorkoutList from './admin/pages/WorkoutList';
 import ScheduleList from './admin/pages/ScheduleList';
 import ViewSchedule from './admin/pages/ViewSchedule';
 import EditSchedule from './admin/pages/EditSchedule';
+import AddMember from './admin/pages/AddMember';
+import AddEmployee from './admin/pages/AddEmployee';
+import AddPackage from './admin/pages/AddPackage';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
@@ -79,8 +82,8 @@ import StaffSchedules from './staff/pages/Schedules';
 import StaffFeedback from './staff/pages/Feedback';
 import StaffStatistics from './staff/pages/Statistics';
 import StaffAccount from './staff/pages/Account';
-import AddMember from './staff/pages/AddMember';
-import AddPackage from './staff/pages/AddPackage';
+import StaffAddMember from './staff/pages/AddMember';
+import StaffAddPackage from './staff/pages/AddPackage';
 import AddEquipment from './staff/pages/AddEquipment';
 import AddSchedule from './staff/pages/AddSchedule';
 
@@ -127,9 +130,9 @@ function App() {
         <Route path="/staff" element={<StaffLayout />}>
           <Route path="dashboard" element={<StaffDashboard />} />
           <Route path="members" element={<StaffMembers />} />
-          <Route path="members/add" element={<AddMember />} />
+          <Route path="members/add" element={<StaffAddMember />} />
           <Route path="packages" element={<StaffPackages />} />
-          <Route path="packages/add" element={<AddPackage />} />
+          <Route path="packages/add" element={<StaffAddPackage />} />
           <Route path="equipment" element={<StaffEquipment />} />
           <Route path="equipment/add" element={<AddEquipment />} />
           <Route path="workouts" element={<StaffWorkouts />} />
@@ -149,12 +152,15 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="members" element={<AdminMembers />} />
+          <Route path="members/add" element={<AddMember />} />
           <Route path="members/view/:id" element={<ViewMember />} />
           <Route path="members/edit/:id" element={<EditMember />} />
           <Route path="employees" element={<AdminEmployees />} />
+          <Route path="employees/add" element={<AddEmployee />} />
           <Route path="employees/view/:id" element={<ViewEmployee />} />
           <Route path="employees/edit/:id" element={<EditEmployee />} />
           <Route path="packages" element={<AdminPackages />} />
+          <Route path="packages/add" element={<AddPackage />} />
           <Route path="packages/view/:id" element={<ViewPackage />} />
           <Route path="packages/edit/:id" element={<EditPackage />} />
           <Route path="orders" element={<AdminOrders />} />

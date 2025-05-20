@@ -4,10 +4,10 @@ import {
   Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   IconButton, TextField, MenuItem, Select, InputLabel, FormControl
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AddButton from '../../components/AddButton';
 
 export default function StaffEquipment() {
   const navigate = useNavigate();
@@ -52,14 +52,10 @@ export default function StaffEquipment() {
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
         <Typography variant="h4" className="font-bold text-white">Danh sách thiết bị</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
+        <AddButton 
           onClick={() => navigate('/staff/equipment/add')}
-        >
-          Thêm thiết bị
-        </Button>
+          label="Thêm thiết bị"
+        />
       </Box>
       <Paper className="p-4 mb-4">
         <Box className="flex flex-wrap gap-4">
