@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './PaymentPage.module.css';
-import Button from '../Button/Button';
-import ReceiptUploader from '../ReceiptUploader/ReceiptUploader';
+import Button from '../../components/Button/Button';
+import ReceiptUploader from '../../components/ReceiptUploader/ReceiptUploader';
 
 const PaymentPage = () => {
   const navigate = useNavigate();

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import styles from './RegisterPersonal.module.css';
-import InputField from '../InputField/InputField';
-import Button from '../Button/Button';
+import styles from './RegisterPersonalPage.module.css';
+import InputField from '../../components/InputField/InputField';
+import Button from '../../components/Button/Button';
 
 const RegisterPersonal = () => {
   const navigate = useNavigate();
