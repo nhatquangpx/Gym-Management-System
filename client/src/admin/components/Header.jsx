@@ -28,12 +28,12 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between bg-[#1f1f1f] shadow-2xl px-10 py-5 mb-8 border-b-4 border-[#e53935]">
-      <div className="flex items-center gap-3">
+    <header className="flex items-center justify-between bg-[#1f1f1f] shadow-2xl px-10 py-6 mb-4 border-b-4 border-[#e53935]">
+      <div className="flex items-center gap-4">
         <img src={logo} alt="GYMPRO Logo" style={{ height: 40 }} />
-        <span className="text-3xl font-extrabold text-white tracking-wider drop-shadow-lg">GYMPRO ADMIN</span>
+        <span className="text-2xl font-extrabold text-white tracking-wider drop-shadow-lg">GYMPRO ADMIN</span>
       </div>
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-10">
         <button className="relative group">
           <NotificationsIcon className="text-[#e53935]" fontSize="large" />
           <span className="absolute -top-2 -right-2 bg-[#e53935] text-white text-xs rounded-full px-1.5 py-0.5 shadow-lg animate-bounce border-2 border-white">3</span>
