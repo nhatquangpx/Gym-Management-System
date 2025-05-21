@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
-import Button from '../components/Button/Button';
+import Button from "../../components/features/admin/Button/Button";
 
 export default function AddEmployee() {
   const navigate = useNavigate();

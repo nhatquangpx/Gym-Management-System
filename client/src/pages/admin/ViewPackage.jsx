@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import Button from '../components/Button/Button';
+import Button from "../../components/features/admin/Button/Button";
 
 const packages = [
   { id: 1, name: 'Gói 1 tháng', price: '500.000đ', status: 'Đang mở bán' },
