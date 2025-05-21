@@ -50,34 +50,39 @@ export default function StaffSchedules() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-white">Danh sách lịch tập</Typography>
+        <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-text)' }}>Danh sách lịch tập</Typography>
         <AddButton 
           onClick={() => navigate('/staff/schedules/add')}
           label="Thêm lịch tập"
         />
       </Box>
-      <Paper className="p-4 mb-4">
+      <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Hội viên"
             value={filter.member}
             onChange={e => setFilter(f => ({ ...f, member: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
           <TextField
             label="Huấn luyện viên"
             value={filter.trainer}
             onChange={e => setFilter(f => ({ ...f, trainer: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
           <FormControl size="small" style={{ minWidth: 120 }}>
-            <InputLabel>Trạng thái</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
             <Select
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+              sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="active">Đang hoạt động</MenuItem>
@@ -91,40 +96,41 @@ export default function StaffSchedules() {
             value={filter.startDate}
             onChange={e => setFilter(f => ({ ...f, startDate: e.target.value }))}
             size="small"
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{ shrink: true, style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
         </Box>
       </Paper>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: 'var(--admin-header)' }}>
             <TableRow>
-              <TableCell>Hội viên</TableCell>
-              <TableCell>Huấn luyện viên</TableCell>
-              <TableCell>Ngày bắt đầu</TableCell>
-              <TableCell>Ngày kết thúc</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell align="right">Hành động</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Hội viên</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Huấn luyện viên</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Ngày bắt đầu</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Ngày kết thúc</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Trạng thái</TableCell>
+              <TableCell align="right" sx={{ color: 'var(--admin-text)' }}>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={6}>Loading...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
             ) : filteredSchedules.length === 0 ? (
-              <TableRow><TableCell colSpan={6}>Không có lịch tập nào</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} sx={{ color: 'var(--admin-text)' }}>Không có lịch tập nào</TableCell></TableRow>
             ) : filteredSchedules.map(sc => (
               <TableRow key={sc._id}>
-                <TableCell>{sc.memberName}</TableCell>
-                <TableCell>{sc.trainerName}</TableCell>
-                <TableCell>{sc.startDate ? new Date(sc.startDate).toLocaleDateString() : ''}</TableCell>
-                <TableCell>{sc.endDate ? new Date(sc.endDate).toLocaleDateString() : ''}</TableCell>
-                <TableCell>{
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{sc.memberName}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{sc.trainerName}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{sc.startDate ? new Date(sc.startDate).toLocaleDateString() : ''}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{sc.endDate ? new Date(sc.endDate).toLocaleDateString() : ''}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{
                   sc.status === 'active' ? 'Đang hoạt động' :
                   sc.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'
                 }</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => navigate(`/staff/schedules/${sc._id}`)}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => navigate(`/staff/schedules/edit/${sc._id}`)}><EditIcon /></IconButton>
+                  <IconButton onClick={() => navigate(`/staff/schedules/${sc._id}`)} sx={{ color: 'var(--admin-text)' }}><VisibilityIcon /></IconButton>
+                  <IconButton onClick={() => navigate(`/staff/schedules/edit/${sc._id}`)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
                   <IconButton color="error" onClick={() => handleDelete(sc._id)}><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>

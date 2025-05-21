@@ -35,19 +35,86 @@ export default function AddSchedule() {
   };
 
   return (
-    <div className="p-6">
-      <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" style={{ background: '#232323' }}>
-        <Typography variant="h4" className="font-bold text-white mb-6">Thêm lịch tập mới</Typography>
+    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
+      <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+        <Typography variant="h4" className="font-bold mb-6" sx={{ color: 'var(--admin-text)' }}>Thêm lịch tập mới</Typography>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <TextField label="Tên lịch tập" name="name" value={form.name} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Hội viên" name="member" value={form.member} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Huấn luyện viên" name="trainer" value={form.trainer} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Ngày bắt đầu" name="startDate" type="date" value={form.startDate} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ shrink: true, style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Ngày kết thúc" name="endDate" type="date" value={form.endDate} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ shrink: true, style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Ghi chú" name="notes" value={form.notes} onChange={handleChange} fullWidth margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
+          <TextField 
+            label="Tên lịch tập" 
+            name="name" 
+            value={form.name} 
+            onChange={handleChange} 
+            fullWidth 
+            required 
+            margin="normal" 
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Hội viên" 
+            name="member" 
+            value={form.member} 
+            onChange={handleChange} 
+            fullWidth 
+            required 
+            margin="normal" 
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Huấn luyện viên" 
+            name="trainer" 
+            value={form.trainer} 
+            onChange={handleChange} 
+            fullWidth 
+            required 
+            margin="normal" 
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Ngày bắt đầu" 
+            name="startDate" 
+            type="date" 
+            value={form.startDate} 
+            onChange={handleChange} 
+            fullWidth 
+            required 
+            margin="normal" 
+            InputLabelProps={{ shrink: true, style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Ngày kết thúc" 
+            name="endDate" 
+            type="date" 
+            value={form.endDate} 
+            onChange={handleChange} 
+            fullWidth 
+            required 
+            margin="normal" 
+            InputLabelProps={{ shrink: true, style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Ghi chú" 
+            name="notes" 
+            value={form.notes} 
+            onChange={handleChange} 
+            fullWidth 
+            margin="normal" 
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
           <Box className="flex gap-4 mt-6">
-            <Button variant="contained" color="primary" type="submit" disabled={loading}>Lưu</Button>
-            <Button variant="outlined" onClick={() => navigate('/staff/schedules')}>Hủy</Button>
+            <Button variant="contained" color="primary" type="submit" disabled={loading} sx={{ backgroundColor: 'var(--admin-primary)', color: 'var(--trainer-text)', '&:hover': { backgroundColor: 'var(--admin-accent)' } }}>Lưu</Button>
+            <Button variant="outlined" onClick={() => navigate('/staff/schedules')} sx={{ color: 'var(--admin-text)', borderColor: 'var(--admin-border)', '&:hover': { borderColor: 'var(--admin-primary)' } }}>Hủy</Button>
           </Box>
         </form>
       </Paper>

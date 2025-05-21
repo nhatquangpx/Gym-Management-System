@@ -49,34 +49,41 @@ export default function StaffEquipment() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-white">Danh sách thiết bị</Typography>
+        <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-text)' }}>Danh sách thiết bị</Typography>
         <AddButton 
           onClick={() => navigate('/staff/equipment/add')}
           label="Thêm thiết bị"
         />
       </Box>
-      <Paper className="p-4 mb-4">
+      <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Tìm theo tên"
             value={filter.name}
             onChange={e => setFilter(f => ({ ...f, name: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Loại thiết bị"
             value={filter.type}
             onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <FormControl size="small" style={{ minWidth: 120 }}>
-            <InputLabel>Trạng thái</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
             <Select
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+              sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="active">Hoạt động</MenuItem>
@@ -86,34 +93,34 @@ export default function StaffEquipment() {
           </FormControl>
         </Box>
       </Paper>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: 'var(--admin-header)' }}>
             <TableRow>
-              <TableCell>Tên thiết bị</TableCell>
-              <TableCell>Loại</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Ngày bảo trì gần nhất</TableCell>
-              <TableCell align="right">Hành động</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Tên thiết bị</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Loại</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Trạng thái</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Ngày bảo trì gần nhất</TableCell>
+              <TableCell align="right" sx={{ color: 'var(--admin-text)' }}>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={5}>Loading...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={5} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
             ) : filteredEquipment.length === 0 ? (
-              <TableRow><TableCell colSpan={5}>Không có thiết bị nào</TableCell></TableRow>
+              <TableRow><TableCell colSpan={5} sx={{ color: 'var(--admin-text)' }}>Không có thiết bị nào</TableCell></TableRow>
             ) : filteredEquipment.map(eq => (
               <TableRow key={eq._id}>
-                <TableCell>{eq.name}</TableCell>
-                <TableCell>{eq.type}</TableCell>
-                <TableCell>{
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{eq.name}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{eq.type}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{
                   eq.status === 'active' ? 'Hoạt động' :
                   eq.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'
                 }</TableCell>
-                <TableCell>{eq.maintenanceDate ? new Date(eq.maintenanceDate).toLocaleDateString() : ''}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{eq.maintenanceDate ? new Date(eq.maintenanceDate).toLocaleDateString() : ''}</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => navigate(`/staff/equipment/${eq._id}`)}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => navigate(`/staff/equipment/edit/${eq._id}`)}><EditIcon /></IconButton>
+                  <IconButton onClick={() => navigate(`/staff/equipment/${eq._id}`)} sx={{ color: 'var(--admin-text)' }}><VisibilityIcon /></IconButton>
+                  <IconButton onClick={() => navigate(`/staff/equipment/edit/${eq._id}`)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
                   <IconButton color="error" onClick={() => handleDelete(eq._id)}><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>

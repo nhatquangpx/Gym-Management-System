@@ -33,12 +33,12 @@ export default function StaffAccount() {
   };
 
   return (
-    <div className="p-6">
-      <Typography variant="h4" className="font-bold text-white mb-8">Tài khoản cá nhân</Typography>
-      <Paper className="p-6 shadow-lg rounded-lg mb-8" style={{ background: '#232323' }}>
+    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
+      <Typography variant="h4" className="font-bold mb-8" sx={{ color: 'var(--admin-text)' }}>Tài khoản cá nhân</Typography>
+      <Paper className="p-6 shadow-lg rounded-lg mb-8" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex items-center gap-6 mb-6">
           <Avatar src={info.avatar} alt={info.name} sx={{ width: 64, height: 64 }} />
-          <Typography variant="h5" className="font-bold text-white">{info.name}</Typography>
+          <Typography variant="h5" className="font-bold" sx={{ color: 'var(--admin-text)' }}>{info.name}</Typography>
         </Box>
         <form onSubmit={handleUpdate} className="space-y-4">
           <TextField
@@ -48,8 +48,9 @@ export default function StaffAccount() {
             onChange={handleChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{ style: { color: '#fff' } }}
-            InputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Email"
@@ -58,8 +59,9 @@ export default function StaffAccount() {
             onChange={handleChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{ style: { color: '#fff' } }}
-            InputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Số điện thoại"
@@ -68,14 +70,15 @@ export default function StaffAccount() {
             onChange={handleChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{ style: { color: '#fff' } }}
-            InputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
-          <Button type="submit" variant="contained" color="primary">Cập nhật thông tin</Button>
+          <Button type="submit" variant="contained" sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}>Cập nhật thông tin</Button>
         </form>
       </Paper>
-      <Paper className="p-6 shadow-lg rounded-lg" style={{ background: '#232323' }}>
-        <Typography variant="h6" className="font-bold text-white mb-4">Đổi mật khẩu</Typography>
+      <Paper className="p-6 shadow-lg rounded-lg" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+        <Typography variant="h6" className="font-bold mb-4" sx={{ color: 'var(--admin-text)' }}>Đổi mật khẩu</Typography>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <TextField
             label="Mật khẩu cũ"
@@ -85,8 +88,9 @@ export default function StaffAccount() {
             onChange={handlePasswordChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{ style: { color: '#fff' } }}
-            InputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Mật khẩu mới"
@@ -96,8 +100,9 @@ export default function StaffAccount() {
             onChange={handlePasswordChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{ style: { color: '#fff' } }}
-            InputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Xác nhận mật khẩu mới"
@@ -107,10 +112,11 @@ export default function StaffAccount() {
             onChange={handlePasswordChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{ style: { color: '#fff' } }}
-            InputProps={{ style: { color: '#fff' } }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
-          <Button type="submit" variant="contained" color="primary">Đổi mật khẩu</Button>
+          <Button type="submit" variant="contained" sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}>Đổi mật khẩu</Button>
         </form>
       </Paper>
     </div>
