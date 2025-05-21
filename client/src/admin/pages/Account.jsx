@@ -18,21 +18,30 @@ export default function Account() {
   };
 
   return (
-    <Box sx={{ p: 3, background: '#181818', minHeight: '100vh' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#fff', fontWeight: 700 }}>
+    <Box sx={{ p: 3, backgroundColor: 'var(--admin-bg)', minHeight: '100vh', color: 'var(--admin-text)' }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>
         Tài khoản admin
       </Typography>
-      <Paper sx={{ p: 4, background: '#232323', color: '#fff', maxWidth: 400, mx: 'auto', borderRadius: 4, boxShadow: 6 }}>
+      <Paper sx={{ p: 4, backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)', maxWidth: 400, mx: 'auto', borderRadius: 4, boxShadow: 6 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <Avatar src={user.avatar} alt={user.name} sx={{ width: 120, height: 120, mb: 2, border: '4px solid #e53935', boxShadow: '0 4px 24px #e5393533' }} />
-          <Typography variant="h5" gutterBottom sx={{ color: '#fff', fontWeight: 700 }}>{user.name}</Typography>
-          <Typography variant="body1" color="#e53935" gutterBottom sx={{ fontWeight: 600 }}>{user.role}</Typography>
-          <Typography variant="body2" color="#D4D4D4">Email: {user.email}</Typography>
-          <Typography variant="body2" color="#D4D4D4">SĐT: {user.phone}</Typography>
+          <Avatar src={user.avatar} alt={user.name} sx={{ width: 120, height: 120, mb: 2, border: '4px solid var(--admin-primary)', boxShadow: '0 4px 24px rgba(var(--admin-primary-rgb), 0.2)' }} />
+          <Typography variant="h5" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>{user.name}</Typography>
+          <Typography variant="body1" sx={{ color: 'var(--admin-primary)', fontWeight: 600 }} gutterBottom >{user.role}</Typography>
+          <Typography variant="body2" sx={{ color: 'var(--admin-text)' }}>Email: {user.email}</Typography>
+          <Typography variant="body2" sx={{ color: 'var(--admin-text)' }}>SĐT: {user.phone}</Typography>
           <Button
             variant="outlined"
-            startIcon={<EditIcon sx={{ color: '#e53935' }} />}
-            sx={{ mt: 3, color: '#e53935', borderColor: '#e53935', '&:hover': { borderColor: '#e53935', background: '#1f1f1f' } }}
+            startIcon={<EditIcon sx={{ color: 'var(--admin-primary)' }} />}
+            sx={{
+              mt: 3,
+              color: 'var(--admin-primary)',
+              borderColor: 'var(--admin-primary)',
+              '&:hover': {
+                borderColor: 'var(--admin-primary-dark)',
+                color: 'var(--admin-primary-dark)',
+                backgroundColor: 'rgba(var(--admin-primary-rgb), 0.1)'
+              }
+            }}
             onClick={handleEdit}
           >
             Chỉnh sửa thông tin

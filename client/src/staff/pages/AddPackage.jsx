@@ -33,17 +33,72 @@ export default function AddPackage() {
   };
 
   return (
-    <div className="p-6">
-      <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" style={{ background: '#232323' }}>
-        <Typography variant="h4" className="font-bold text-white mb-6">Thêm gói tập mới</Typography>
+    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
+      <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+        <Typography variant="h4" className="font-bold mb-6" sx={{ color: 'var(--admin-text)' }}>Thêm gói tập mới</Typography>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <TextField label="Tên gói tập" name="name" value={form.name} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Giá" name="price" value={form.price} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Thời hạn" name="duration" value={form.duration} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
-          <TextField label="Mô tả" name="description" value={form.description} onChange={handleChange} fullWidth multiline rows={3} margin="normal" InputLabelProps={{ style: { color: '#fff' } }} InputProps={{ style: { color: '#fff' } }} />
+          <TextField 
+            label="Tên gói tập"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Giá"
+            name="price"
+            value={form.price}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Thời hạn"
+            name="duration"
+            value={form.duration}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
+          <TextField 
+            label="Mô tả"
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            fullWidth
+            multiline
+            rows={3}
+            margin="normal"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+          />
           <Box className="flex gap-4 mt-6">
-            <Button variant="contained" color="primary" type="submit" disabled={loading}>Lưu</Button>
-            <Button variant="outlined" onClick={() => navigate('/staff/packages')}>Hủy</Button>
+            <Button 
+              variant="contained"
+              sx={{ 
+                backgroundColor: 'var(--admin-primary)',
+                '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
+              }}
+              type="submit"
+              disabled={loading}
+            >
+              Lưu
+            </Button>
+            <Button variant="outlined" onClick={() => navigate('/staff/packages')} sx={{ color: 'var(--admin-text)', borderColor: 'var(--admin-border)', '&:hover': { borderColor: 'var(--admin-primary)', color: 'var(--admin-primary)' } }}>Hủy</Button>
           </Box>
         </form>
       </Paper>

@@ -48,17 +48,17 @@ export default function StaffStatistics() {
   }, []);
 
   return (
-    <div>
-      <Typography variant="h4" className="font-bold text-white mb-8">Thống kê & Báo cáo</Typography>
+    <div style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)', padding: '1.5rem' }}>
+      <Typography variant="h4" className="font-bold mb-8" sx={{ color: 'var(--admin-text)' }}>Thống kê & Báo cáo</Typography>
       <Grid container spacing={4}>
         {statsConfig.map((item) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={item.key}>
-            <Paper className="p-6 flex flex-col items-center shadow-lg rounded-xl" style={{ background: '#232323' }}>
+            <Paper className="p-6 flex flex-col items-center shadow-lg rounded-xl" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
               <Box className="mb-2" style={{ color: item.color }}>{item.icon}</Box>
-              <Typography variant="h5" className="font-bold text-white mb-1">
+              <Typography variant="h5" className="font-bold mb-1" sx={{ color: 'var(--admin-text)' }}>
                 {loading ? '...' : (item.format ? item.format(stats[item.key]) : stats[item.key])}
               </Typography>
-              <Typography className="text-[#D4D4D4] text-base">{item.label}</Typography>
+              <Typography className="text-base" sx={{ color: 'var(--admin-text)' }}>{item.label}</Typography>
             </Paper>
           </Grid>
         ))}
