@@ -5,7 +5,7 @@ export const banks = [
     name: 'Vietcombank',
     logo: 'https://inkythuatso.com/uploads/thumbnails/800/2021/09/logo-vietcombank-inkythuatso-01-28-16-01-06.jpg',
     accountNumber: '1234567890',
-    accountName: 'GYMFLEX CENTER',
+    accountName: 'GYMPRO CENTER',
     qrPrefix: 'https://img.vietqr.io/image/vietcombank-1234567890-compact2.jpg?amount='
   },
   {
@@ -13,7 +13,7 @@ export const banks = [
     name: 'TPBank',
     logo: 'https://upload.wikimedia.org/wikipedia/vi/f/fe/TPBank_logo.png',
     accountNumber: '0987654321',
-    accountName: 'GYMFLEX CENTER',
+    accountName: 'GYMPRO CENTER',
     qrPrefix: 'https://img.vietqr.io/image/tpbank-0987654321-compact2.jpg?amount='
   },
   {
@@ -21,7 +21,7 @@ export const banks = [
     name: 'MB Bank',
     logo: 'https://inkythuatso.com/uploads/thumbnails/800/2021/11/logo-mb-bank-inkythuatso-11-10-24-27.jpg',
     accountNumber: '0123456789',
-    accountName: 'GYMFLEX CENTER',
+    accountName: 'GYMPRO CENTER',
     qrPrefix: 'https://img.vietqr.io/image/mb-0123456789-compact2.jpg?amount='
   },
   {
@@ -29,7 +29,7 @@ export const banks = [
     name: 'BIDV',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/BIDV_logo.png',
     accountNumber: '9876543210',
-    accountName: 'GYMFLEX CENTER',
+    accountName: 'GYMPRO CENTER',
     qrPrefix: 'https://img.vietqr.io/image/bidv-9876543210-compact2.jpg?amount='
   }
 ];
