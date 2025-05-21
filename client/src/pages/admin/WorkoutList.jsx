@@ -52,7 +52,7 @@ export default function WorkoutList() {
   return (
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-white">Lịch sử tập luyện</Typography>
+        <Typography variant="h4" className="font-bold text-[var(--admin-text)]">Lịch sử tập luyện</Typography>
         <Button
           variant="contained"
           color="primary"

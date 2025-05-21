@@ -49,7 +49,7 @@ export default function Equipment() {
   return (
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-gray-800">
+        <Typography variant="h4" className="font-bold text-[var(--admin-text)]">
           Quản lý thiết bị
         </Typography>
         <Button

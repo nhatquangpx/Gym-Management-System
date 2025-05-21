@@ -39,13 +39,13 @@ export default function EditProfile() {
   };
 
   return (
-    <Box sx={{ p: 3, background: '#181818', minHeight: '100vh' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#fff', fontWeight: 700 }}>
+    <Box sx={{ p: 3, backgroundColor: 'var(--admin-bg)', minHeight: '100vh', color: 'var(--admin-text)' }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>
         Chỉnh sửa thông tin cá nhân
       </Typography>
-      <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto', borderRadius: 4, boxShadow: 6, background: '#232323', color: '#fff' }}>
+      <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto', borderRadius: 4, boxShadow: 6, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-          <Avatar src={form.avatar} alt={form.name} sx={{ width: 100, height: 100, mb: 2, border: '4px solid #e53935', boxShadow: '0 4px 24px #e5393533' }} />
+          <Avatar src={form.avatar} alt={form.name} sx={{ width: 100, height: 100, mb: 2, border: '4px solid var(--admin-primary)', boxShadow: '0 4px 24px rgba(var(--admin-primary-rgb), 0.2)' }} />
         </Box>
         <form onSubmit={handleSave}>
           <Grid container spacing={2}>
@@ -58,10 +58,10 @@ export default function EditProfile() {
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: (
-                    <Person sx={{ mr: 1, color: '#e53935' }} />
+                    <Person sx={{ mr: 1, color: 'var(--admin-primary)' }} />
                   ),
                 }}
-                sx={{ input: { color: '#fff' }, label: { color: '#D4D4D4' }, bgcolor: '#181818', borderRadius: 2, mb: 2 }}
+                sx={{ input: { color: 'var(--admin-text)' }, label: { color: 'var(--admin-text-secondary)' }, bgcolor: 'var(--admin-header)', borderRadius: 2, mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'var(--admin-border)' }, '&:hover fieldset': { borderColor: 'var(--admin-primary)' }, '&.Mui-focused fieldset': { borderColor: 'var(--admin-primary)' } }}}
               />
             </Grid>
             <Grid item xs={12}>
@@ -73,10 +73,10 @@ export default function EditProfile() {
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: (
-                    <Email sx={{ mr: 1, color: '#e53935' }} />
+                    <Email sx={{ mr: 1, color: 'var(--admin-primary)' }} />
                   ),
                 }}
-                sx={{ input: { color: '#fff' }, label: { color: '#D4D4D4' }, bgcolor: '#181818', borderRadius: 2, mb: 2 }}
+                sx={{ input: { color: 'var(--admin-text)' }, label: { color: 'var(--admin-text-secondary)' }, bgcolor: 'var(--admin-header)', borderRadius: 2, mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'var(--admin-border)' }, '&:hover fieldset': { borderColor: 'var(--admin-primary)' }, '&.Mui-focused fieldset': { borderColor: 'var(--admin-primary)' } }}}
               />
             </Grid>
             <Grid item xs={12}>
@@ -88,10 +88,10 @@ export default function EditProfile() {
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: (
-                    <Phone sx={{ mr: 1, color: '#e53935' }} />
+                    <Phone sx={{ mr: 1, color: 'var(--admin-primary)' }} />
                   ),
                 }}
-                sx={{ input: { color: '#fff' }, label: { color: '#D4D4D4' }, bgcolor: '#181818', borderRadius: 2, mb: 2 }}
+                sx={{ input: { color: 'var(--admin-text)' }, label: { color: 'var(--admin-text-secondary)' }, bgcolor: 'var(--admin-header)', borderRadius: 2, mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'var(--admin-border)' }, '&:hover fieldset': { borderColor: 'var(--admin-primary)' }, '&.Mui-focused fieldset': { borderColor: 'var(--admin-primary)' } }}}
               />
             </Grid>
             <Grid item xs={12}>
@@ -103,10 +103,10 @@ export default function EditProfile() {
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: (
-                    <LocationOn sx={{ mr: 1, color: '#e53935' }} />
+                    <LocationOn sx={{ mr: 1, color: 'var(--admin-primary)' }} />
                   ),
                 }}
-                sx={{ input: { color: '#fff' }, label: { color: '#D4D4D4' }, bgcolor: '#181818', borderRadius: 2, mb: 2 }}
+                sx={{ input: { color: 'var(--admin-text)' }, label: { color: 'var(--admin-text-secondary)' }, bgcolor: 'var(--admin-header)', borderRadius: 2, mb: 2, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'var(--admin-border)' }, '&:hover fieldset': { borderColor: 'var(--admin-primary)' }, '&.Mui-focused fieldset': { borderColor: 'var(--admin-primary)' } }}}
               />
             </Grid>
           </Grid>
@@ -114,7 +114,7 @@ export default function EditProfile() {
             <Button
               variant="outlined"
               startIcon={<ArrowBack />}
-              sx={{ color: '#e53935', borderColor: '#e53935', '&:hover': { borderColor: '#e53935', background: '#1f1f1f' } }}
+              sx={{ color: 'var(--admin-primary)', borderColor: 'var(--admin-primary)', '&:hover': { borderColor: 'var(--admin-primary-dark)', background: 'rgba(var(--admin-primary-rgb), 0.1)' } }}
               onClick={() => navigate('/admin/account')}
             >
               Hủy
@@ -123,7 +123,7 @@ export default function EditProfile() {
               type="submit"
               variant="contained"
               startIcon={<Save />}
-              sx={{ bgcolor: '#e53935', fontWeight: 700, '&:hover': { bgcolor: '#b71c1c' } }}
+              sx={{ bgcolor: 'var(--admin-primary)', fontWeight: 700, '&:hover': { bgcolor: 'var(--admin-primary-dark)' } }}
             >
               Lưu thay đổi
             </Button>
