@@ -24,27 +24,27 @@ export default function AddPackage() {
     }
   };
   return (
-    <div className="bg-[#181818] min-h-screen p-6 text-white">
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <h1 className="text-2xl font-bold mb-6">Thêm gói tập mới</h1>
-      <form className="bg-[#232323] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
+      <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block mb-1">Tên gói</label>
-          <input name="name" value={form.name} onChange={handleChange} className="w-full p-2 rounded bg-[#181818] text-white border border-[#444]" />
+          <label className="block mb-1 text-[var(--admin-text)]">Tên gói</label>
+          <input name="name" value={form.name} onChange={handleChange} className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" />
         </div>
         <div className="mb-4">
-          <label className="block mb-1">Giá</label>
-          <input name="price" value={form.price} onChange={handleChange} className="w-full p-2 rounded bg-[#181818] text-white border border-[#444]" />
+          <label className="block mb-1 text-[var(--admin-text)]">Giá</label>
+          <input name="price" value={form.price} onChange={handleChange} className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" />
         </div>
         <div className="mb-4">
-          <label className="block mb-1">Trạng thái</label>
-          <select name="status" value={form.status} onChange={handleChange} className="w-full p-2 rounded bg-[#181818] text-white border border-[#444]">
+          <label className="block mb-1 text-[var(--admin-text)]">Trạng thái</label>
+          <select name="status" value={form.status} onChange={handleChange} className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]">
             <option value="Đang mở bán">Đang mở bán</option>
             <option value="Tạm dừng">Tạm dừng</option>
           </select>
         </div>
         <div className="flex gap-3">
-          <Button type="submit">Lưu</Button>
-          <Link to="/admin/packages"><Button type="button">Hủy</Button></Link>
+          <Button type="submit" color="primary">Lưu</Button>
+          <Link to="/admin/packages"><Button type="button" color="secondary">Hủy</Button></Link>
         </div>
       </form>
     </div>

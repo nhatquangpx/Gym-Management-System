@@ -10,17 +10,17 @@ const members = [
 export default function ViewMember() {
   const { id } = useParams();
   const member = members.find(m => m.id === Number(id));
-  if (!member) return <div className="text-white p-6">Không tìm thấy thành viên.</div>;
+  if (!member) return <div className="text-[var(--admin-text)] p-6">Không tìm thấy thành viên.</div>;
   return (
-    <div className="bg-[#181818] min-h-screen p-6 text-white">
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <h1 className="text-2xl font-bold mb-6">Thông tin thành viên</h1>
-      <div className="bg-[#232323] rounded-lg shadow p-6 max-w-lg mx-auto">
+      <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto">
         <div className="mb-4"><b>Tên:</b> {member.name}</div>
         <div className="mb-4"><b>Email:</b> {member.email}</div>
         <div className="mb-4"><b>Số điện thoại:</b> {member.phone}</div>
         <div className="mb-4"><b>Trạng thái:</b> {member.status}</div>
         <div className="mb-4"><b>Ngày tham gia:</b> {member.joinDate}</div>
-        <Link to="/admin/members"><Button>Quay lại</Button></Link>
+        <Link to="/admin/members"><Button color="secondary">Quay lại</Button></Link>
       </div>
     </div>
   );

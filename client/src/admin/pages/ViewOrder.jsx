@@ -10,16 +10,16 @@ const orders = [
 export default function ViewOrder() {
   const { id } = useParams();
   const order = orders.find(o => o.id === Number(id));
-  if (!order) return <div className="text-white p-6">Không tìm thấy đơn hàng.</div>;
+  if (!order) return <div className="text-[var(--admin-text)] p-6">Không tìm thấy đơn hàng.</div>;
   return (
-    <div className="bg-[#181818] min-h-screen p-6 text-white">
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <h1 className="text-2xl font-bold mb-6">Thông tin đơn hàng</h1>
-      <div className="bg-[#232323] rounded-lg shadow p-6 max-w-lg mx-auto">
+      <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto">
         <div className="mb-4"><b>Khách hàng:</b> {order.customer}</div>
         <div className="mb-4"><b>Gói tập:</b> {order.package}</div>
         <div className="mb-4"><b>Tổng tiền:</b> {order.total}</div>
         <div className="mb-4"><b>Trạng thái:</b> {order.status}</div>
-        <Link to="/admin/orders"><Button>Quay lại</Button></Link>
+        <Link to="/admin/orders"><Button color="secondary">Quay lại</Button></Link>
       </div>
     </div>
   );

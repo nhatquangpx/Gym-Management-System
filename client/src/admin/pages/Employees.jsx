@@ -17,18 +17,18 @@ export default function Employees() {
     { id: 3, name: "Trần Văn F", role: "Huấn luyện viên", phone: "0922333444", status: "Đang làm việc", avatar: "https://i.pravatar.cc/150?img=6" },
   ];
   return (
-    <div className="bg-[#181818] min-h-screen p-6">
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">Danh sách nhân viên/Huấn luyện viên</h1>
+        <h1 className="text-2xl font-bold text-[var(--admin-text)]">Danh sách nhân viên/Huấn luyện viên</h1>
         <Link to="/admin/employees/add">
           <AddButton label="Thêm nhân viên/Huấn luyện viên" />
         </Link>
       </div>
-      <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
             <thead>
-              <tr className="bg-[#1f1f1f] text-[#e53935]">
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-left">Nhân sự</th>
                 <th className="py-3 px-4 text-left">Chức vụ</th>
                 <th className="py-3 px-4 text-left">Số điện thoại</th>
@@ -38,21 +38,21 @@ export default function Employees() {
             </thead>
             <tbody>
               {employees.map((e) => (
-                <tr key={e.id} className="border-b border-[#333] hover:bg-[#252525] transition rounded-xl">
-                  <td className="py-2 px-4 flex items-center gap-3 text-white">
+                <tr key={e.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                  <td className="py-2 px-4 flex items-center gap-3 text-[var(--admin-text)]">
                     <Avatar src={e.avatar} alt={e.name} />
                     <span>{e.name}</span>
                   </td>
-                  <td className="py-2 px-4 text-[#D4D4D4]">{e.role}</td>
-                  <td className="py-2 px-4 text-[#D4D4D4]">{e.phone}</td>
+                  <td className="py-2 px-4 text-[var(--admin-text)]">{e.role}</td>
+                  <td className="py-2 px-4 text-[var(--admin-text)]">{e.phone}</td>
                   <td className="py-2 px-4">
                     <StatusBadge status={e.status} />
                   </td>
                   <td className="py-2 px-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/employees/view/${e.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/employees/edit/${e.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/employees/view/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/employees/edit/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>

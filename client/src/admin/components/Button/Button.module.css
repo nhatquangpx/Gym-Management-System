@@ -14,4 +14,23 @@
   background: #b71c1c;
   box-shadow: 0 4px 18px 0 #e5393555;
   transform: translateY(-2px) scale(1.03);
+}
+
+.button.primary {
+  background: var(--admin-primary);
+  box-shadow: 0 2px 12px 0 rgba(79, 140, 255, 0.3);
+}
+.button.primary:hover {
+  background: #3a7bec;
+  box-shadow: 0 4px 18px 0 rgba(79, 140, 255, 0.5);
+}
+
+.button.secondary {
+  background: var(--admin-border);
+  color: var(--admin-text);
+  box-shadow: none;
+}
+.button.secondary:hover {
+  background: var(--admin-accent);
+  box-shadow: none;
 } 

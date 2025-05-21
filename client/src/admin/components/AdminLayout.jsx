@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 
 export default function AdminLayout() {
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#181818' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: 'var(--admin-bg)' }}>
       <Sidebar />
       <Box sx={{ flexGrow: 1 }}>
         <Header />

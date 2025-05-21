@@ -26,9 +26,9 @@ const menu = [
 
 export default function StaffSidebar() {
   return (
-    <aside className="w-64 bg-[#1f1f1f] shadow-2xl h-screen sticky top-0 flex flex-col border-r-4 border-[#e53935]">
-      <div className="p-6 text-2xl font-extrabold text-white border-b border-[#e53935] flex items-center justify-center bg-gradient-to-r from-[#e53935] to-[#b71c1c] shadow-lg">
-        <img src={logo} alt="GYMPRO Logo" style={{ height: 40, marginRight: 12 }} /> <span className="drop-shadow-lg tracking-wider">GYMPRO STAFF</span>
+    <aside className="w-64 bg-[var(--admin-sidebar)] shadow-lg h-screen sticky top-0 flex flex-col border-r border-[var(--admin-border)]">
+      <div className="p-6 text-2xl font-extrabold text-[var(--admin-text)] border-b border-[var(--admin-border)] flex items-center justify-center bg-[var(--admin-header)]">
+        <img src={logo} alt="GYMPRO Logo" style={{ height: 40, marginRight: 12 }} /> <span className="tracking-wider">GYMPRO STAFF</span>
       </div>
       <nav className="mt-6 flex-1 overflow-y-auto">
         {menu.map((item) => (
@@ -38,17 +38,17 @@ export default function StaffSidebar() {
             className={({ isActive }) =>
               `flex items-center px-6 py-3 text-lg transition-all duration-300 mb-2 font-medium gap-3 ` +
               (isActive
-                ? "bg-[#e53935] text-white shadow-lg font-bold border-l-8 border-[#e53935] ring-2 ring-[#e53935]/40"
-                : "text-[#D4D4D4] hover:bg-[#2d2d2d] hover:text-[#e53935] hover:pl-8")
+                ? "bg-[var(--admin-accent)] text-[var(--admin-primary)] shadow-lg font-bold border-l-4 border-[var(--admin-primary)]"
+                : "text-[var(--admin-text)] hover:bg-[var(--admin-accent)] hover:text-[var(--admin-primary)] hover:pl-8")
             }
             end
           >
-            <span className="text-2xl drop-shadow-lg">{item.icon}</span>
+            <span className="text-2xl">{item.icon}</span>
             {item.name}
           </NavLink>
         ))}
       </nav>
-      <div className="p-4 text-[#D4D4D4] text-sm text-center border-t border-[#e53935] opacity-70 mt-auto bg-[#1f1f1f]">GymPro © 2024</div>
+      <div className="p-4 text-[var(--admin-text)] text-sm text-center border-t border-[var(--admin-border)] opacity-70 mt-auto bg-[var(--admin-sidebar)]">GymPro © 2024</div>
     </aside>
   );
 } 
