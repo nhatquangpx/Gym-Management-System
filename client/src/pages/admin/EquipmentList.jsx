@@ -51,7 +51,7 @@ export default function EquipmentList() {
   return (
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-white">Danh sách thiết bị</Typography>
+        <Typography variant="h4" className="font-bold text-[var(--admin-text)]">Danh sách thiết bị</Typography>
         <Button
           variant="contained"
           color="primary"
