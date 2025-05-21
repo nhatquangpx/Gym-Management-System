@@ -94,31 +94,38 @@ export default function StaffOrders() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-white">Quản lý đơn hàng</Typography>
+        <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-text)' }}>Quản lý đơn hàng</Typography>
         <AddButton label="Tạo đơn hàng thủ công" onClick={() => alert('Chức năng này chỉ demo UI!')} />
       </Box>
-      <Paper className="p-4 mb-4">
+      <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Khách hàng"
             value={filter.user}
             onChange={e => setFilter(f => ({ ...f, user: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Gói tập"
             value={filter.package}
             onChange={e => setFilter(f => ({ ...f, package: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <FormControl size="small" style={{ minWidth: 140 }}>
-            <InputLabel>Trạng thái</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
             <Select
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+              sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
             >
               {statusOptions.map(opt => (
                 <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
@@ -127,41 +134,41 @@ export default function StaffOrders() {
           </FormControl>
         </Box>
       </Paper>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: 'var(--admin-header)' }}>
             <TableRow>
-              <TableCell>Khách hàng</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Gói tập</TableCell>
-              <TableCell>Giá</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Ngày tạo</TableCell>
-              <TableCell>Loại thanh toán</TableCell>
-              <TableCell align="right">Hành động</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Khách hàng</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Email</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Gói tập</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Giá</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Trạng thái</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Ngày tạo</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Loại thanh toán</TableCell>
+              <TableCell align="right" sx={{ color: 'var(--admin-text)' }}>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={8}>Loading...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={8} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
             ) : filteredOrders.length === 0 ? (
-              <TableRow><TableCell colSpan={8}>Không có đơn hàng nào</TableCell></TableRow>
+              <TableRow><TableCell colSpan={8} sx={{ color: 'var(--admin-text)' }}>Không có đơn hàng nào</TableCell></TableRow>
             ) : filteredOrders.map(order => (
               <TableRow key={order._id}>
-                <TableCell>{order.user.name}</TableCell>
-                <TableCell>{order.user.email}</TableCell>
-                <TableCell>{order.package.name}</TableCell>
-                <TableCell>{order.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</TableCell>
-                <TableCell>{
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.user.name}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.user.email}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.package.name}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{
                   order.status === 'pending' ? 'Chờ thanh toán' :
                   order.status === 'paid' ? 'Đã thanh toán' :
                   'Thất bại'
                 }</TableCell>
-                <TableCell>{new Date(order.createdAt).toLocaleString('vi-VN')}</TableCell>
-                <TableCell>{order.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{new Date(order.createdAt).toLocaleString('vi-VN')}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => handleView(order)}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => handleEdit(order)}><EditIcon /></IconButton>
+                  <IconButton onClick={() => handleView(order)} sx={{ color: 'var(--admin-text)' }}><VisibilityIcon /></IconButton>
+                  <IconButton onClick={() => handleEdit(order)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
                   <IconButton color="error" onClick={() => handleDelete(order._id)}><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>
@@ -171,48 +178,49 @@ export default function StaffOrders() {
       </TableContainer>
 
       {/* Chi tiết đơn hàng */}
-      <Dialog open={openDetail} onClose={() => setOpenDetail(false)}>
-        <DialogTitle>Chi tiết đơn hàng</DialogTitle>
-        <DialogContent dividers>
+      <Dialog open={openDetail} onClose={() => setOpenDetail(false)} PaperProps={{ sx: { backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' } }}>
+        <DialogTitle sx={{ color: 'var(--admin-text)' }}>Chi tiết đơn hàng</DialogTitle>
+        <DialogContent dividers sx={{ color: 'var(--admin-text)', borderColor: 'var(--admin-border)' }}>
           {selectedOrder && (
             <Box>
-              <Typography><b>Khách hàng:</b> {selectedOrder.user.name}</Typography>
-              <Typography><b>Email:</b> {selectedOrder.user.email}</Typography>
-              <Typography><b>Gói tập:</b> {selectedOrder.package.name}</Typography>
-              <Typography><b>Giá:</b> {selectedOrder.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Typography>
-              <Typography><b>Trạng thái:</b> {selectedOrder.status === 'pending' ? 'Chờ thanh toán' : selectedOrder.status === 'paid' ? 'Đã thanh toán' : 'Thất bại'}</Typography>
-              <Typography><b>Ngày tạo:</b> {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}</Typography>
-              <Typography><b>Loại thanh toán:</b> {selectedOrder.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}</Typography>
+              <Typography sx={{ color: 'var(--admin-text)' }}><b>Khách hàng:</b> {selectedOrder.user.name}</Typography>
+              <Typography sx={{ color: 'var(--admin-text)' }}><b>Email:</b> {selectedOrder.user.email}</Typography>
+              <Typography sx={{ color: 'var(--admin-text)' }}><b>Gói tập:</b> {selectedOrder.package.name}</Typography>
+              <Typography sx={{ color: 'var(--admin-text)' }}><b>Giá:</b> {selectedOrder.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Typography>
+              <Typography sx={{ color: 'var(--admin-text)' }}><b>Trạng thái:</b> {selectedOrder.status === 'pending' ? 'Chờ thanh toán' : selectedOrder.status === 'paid' ? 'Đã thanh toán' : 'Thất bại'}</Typography>
+              <Typography sx={{ color: 'var(--admin-text)' }}><b>Ngày tạo:</b> {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}</Typography>
+              <Typography sx={{ color: 'var(--admin-text)' }}><b>Loại thanh toán:</b> {selectedOrder.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}</Typography>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDetail(false)}>Đóng</Button>
+          <Button onClick={() => setOpenDetail(false)} sx={{ color: 'var(--admin-text)' }}>Đóng</Button>
         </DialogActions>
       </Dialog>
 
       {/* Cập nhật trạng thái đơn hàng */}
-      <Dialog open={openEdit} onClose={() => setOpenEdit(false)}>
-        <DialogTitle>Cập nhật trạng thái đơn hàng</DialogTitle>
-        <DialogContent dividers>
+      <Dialog open={openEdit} onClose={() => setOpenEdit(false)} PaperProps={{ sx: { backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' } }}>
+        <DialogTitle sx={{ color: 'var(--admin-text)' }}>Cập nhật trạng thái đơn hàng</DialogTitle>
+        <DialogContent dividers sx={{ color: 'var(--admin-text)', borderColor: 'var(--admin-border)' }}>
           {selectedOrder && (
             <FormControl fullWidth>
-              <InputLabel>Trạng thái</InputLabel>
+              <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
               <Select
                 value={selectedOrder.status}
                 label="Trạng thái"
                 onChange={handleStatusChange}
+                sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
               >
                 {statusOptions.filter(opt => opt.value).map(opt => (
-                  <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+                  <MenuItem key={opt.value} value={opt.value} sx={{ color: 'var(--admin-text)' }}>{opt.label}</MenuItem>
                 ))}
               </Select>
             </FormControl>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenEdit(false)}>Hủy</Button>
-          <Button variant="contained" onClick={handleSaveStatus}>Lưu</Button>
+          <Button onClick={() => setOpenEdit(false)} sx={{ color: 'var(--admin-text)' }}>Hủy</Button>
+          <Button variant="contained" onClick={handleSaveStatus} sx={{ backgroundColor: 'var(--admin-primary)', color: 'var(--trainer-text)', '&:hover': { backgroundColor: 'var(--admin-accent)' } }}>Lưu</Button>
         </DialogActions>
       </Dialog>
     </div>

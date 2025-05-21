@@ -50,38 +50,48 @@ export default function StaffWorkouts() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-white">Lịch sử tập luyện</Typography>
+        <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-text)' }}>Lịch sử tập luyện</Typography>
         <Button
           variant="contained"
-          color="primary"
+          sx={{ 
+            backgroundColor: 'var(--admin-primary)',
+            '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
+          }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/staff/workouts/add')}
         >
           Thêm buổi tập
         </Button>
       </Box>
-      <Paper className="p-4 mb-4">
+      <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Hội viên"
             value={filter.member}
             onChange={e => setFilter(f => ({ ...f, member: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Huấn luyện viên"
             value={filter.trainer}
             onChange={e => setFilter(f => ({ ...f, trainer: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <FormControl size="small" style={{ minWidth: 120 }}>
-            <InputLabel>Trạng thái</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
             <Select
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+              sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="scheduled">Đã lên lịch</MenuItem>
@@ -96,41 +106,46 @@ export default function StaffWorkouts() {
             value={filter.date}
             onChange={e => setFilter(f => ({ ...f, date: e.target.value }))}
             size="small"
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{ 
+              shrink: true,
+              style: { color: 'var(--admin-text)' }
+            }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
         </Box>
       </Paper>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: 'var(--admin-header)' }}>
             <TableRow>
-              <TableCell>Ngày tập</TableCell>
-              <TableCell>Hội viên</TableCell>
-              <TableCell>Huấn luyện viên</TableCell>
-              <TableCell>Thời lượng</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell align="right">Hành động</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Ngày tập</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Hội viên</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Huấn luyện viên</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Thời lượng</TableCell>
+              <TableCell sx={{ color: 'var(--admin-text)' }}>Trạng thái</TableCell>
+              <TableCell align="right" sx={{ color: 'var(--admin-text)' }}>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={6}>Loading...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
             ) : filteredWorkouts.length === 0 ? (
-              <TableRow><TableCell colSpan={6}>Không có buổi tập nào</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} sx={{ color: 'var(--admin-text)' }}>Không có buổi tập nào</TableCell></TableRow>
             ) : filteredWorkouts.map(wk => (
               <TableRow key={wk._id}>
-                <TableCell>{wk.date ? new Date(wk.date).toLocaleDateString() : ''}</TableCell>
-                <TableCell>{wk.memberName}</TableCell>
-                <TableCell>{wk.trainerName}</TableCell>
-                <TableCell>{wk.duration} phút</TableCell>
-                <TableCell>{
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{wk.date ? new Date(wk.date).toLocaleDateString() : ''}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{wk.memberName}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{wk.trainerName}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{wk.duration} phút</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{
                   wk.status === 'completed' ? 'Hoàn thành' :
                   wk.status === 'in-progress' ? 'Đang diễn ra' :
                   wk.status === 'scheduled' ? 'Đã lên lịch' : 'Đã hủy'
                 }</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => navigate(`/staff/workouts/${wk._id}`)}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => navigate(`/staff/workouts/edit/${wk._id}`)}><EditIcon /></IconButton>
+                  <IconButton onClick={() => navigate(`/staff/workouts/${wk._id}`)} sx={{ color: 'var(--admin-text)' }}><VisibilityIcon /></IconButton>
+                  <IconButton onClick={() => navigate(`/staff/workouts/edit/${wk._id}`)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
                   <IconButton color="error" onClick={() => handleDelete(wk._id)}><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>

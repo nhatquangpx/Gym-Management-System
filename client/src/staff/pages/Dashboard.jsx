@@ -7,11 +7,11 @@ import HistoryIcon from '@mui/icons-material/History';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 
 const statsConfig = [
-  { label: 'Hội viên', icon: <GroupIcon fontSize="large" />, key: 'members', color: '#e53935' },
-  { label: 'Gói tập', icon: <FitnessCenterIcon fontSize="large" />, key: 'packages', color: '#b71c1c' },
-  { label: 'Thiết bị', icon: <BuildIcon fontSize="large" />, key: 'equipment', color: '#fbc02d' },
-  { label: 'Buổi tập', icon: <HistoryIcon fontSize="large" />, key: 'workouts', color: '#1976d2' },
-  { label: 'Phản hồi', icon: <FeedbackIcon fontSize="large" />, key: 'feedback', color: '#43a047' },
+  { label: 'Hội viên', icon: <GroupIcon fontSize="large" />, key: 'members', color: 'var(--admin-primary)' },
+  { label: 'Gói tập', icon: <FitnessCenterIcon fontSize="large" />, key: 'packages', color: 'var(--admin-primary)' },
+  { label: 'Thiết bị', icon: <BuildIcon fontSize="large" />, key: 'equipment', color: 'var(--admin-primary)' },
+  { label: 'Buổi tập', icon: <HistoryIcon fontSize="large" />, key: 'workouts', color: 'var(--admin-primary)' },
+  { label: 'Phản hồi', icon: <FeedbackIcon fontSize="large" />, key: 'feedback', color: 'var(--admin-primary)' },
 ];
 
 export default function StaffDashboard() {
@@ -44,17 +44,17 @@ export default function StaffDashboard() {
   }, []);
 
   return (
-    <div>
-      <Typography variant="h4" className="font-bold text-white mb-8">Dashboard tổng quan</Typography>
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6">
+      <Typography variant="h4" className="font-bold text-[var(--admin-text)] mb-8">Dashboard tổng quan</Typography>
       <Grid container spacing={4}>
         {statsConfig.map((item) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={item.key}>
-            <Paper className="p-6 flex flex-col items-center shadow-lg rounded-xl" style={{ background: '#232323' }}>
+            <Paper className="p-6 flex flex-col items-center shadow-lg rounded-xl" style={{ background: 'var(--admin-sidebar)' }}>
               <Box className="mb-2" style={{ color: item.color }}>{item.icon}</Box>
-              <Typography variant="h5" className="font-bold text-white mb-1">
+              <Typography variant="h5" className="font-bold text-[var(--admin-text)] mb-1">
                 {loading ? '...' : stats[item.key]}
               </Typography>
-              <Typography className="text-[#D4D4D4] text-base">{item.label}</Typography>
+              <Typography className="text-[var(--admin-text)] text-base">{item.label}</Typography>
             </Paper>
           </Grid>
         ))}
