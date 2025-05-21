@@ -1,0 +1,147 @@
+.dashboard {
+  padding: 24px;
+}
+
+.title {
+  margin-bottom: 32px;
+  color: var(--trainer-primary);
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.statCard {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.statCard h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1em;
+  color: #666;
+  font-weight: 600;
+}
+
+.statNumber {
+  margin: 0;
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--trainer-primary);
+}
+
+.section {
+  background-color: white;
+  padding: 32px 24px 28px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 32px;
+}
+
+.section h2 {
+  margin: 0 0 20px 0;
+  color: var(--trainer-primary);
+  font-size: 1.3em;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-left: 4px solid var(--trainer-primary);
+  padding-left: 12px;
+}
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheduleItem {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.time {
+  width: 80px;
+  font-weight: 500;
+  color: var(--trainer-primary);
+}
+
+.student {
+  flex: 1;
+  margin: 0 16px;
+}
+
+.type {
+  padding: 4px 12px;
+  background-color: var(--trainer-accent);
+  color: var(--trainer-primary);
+  border-radius: 4px;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.progressList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.progressItem {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+
+.studentInfo {
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.studentInfo h4 {
+  margin: 0;
+  color: var(--trainer-text);
+  font-size: 1.08em;
+  font-weight: 600;
+}
+
+.studentInfo p {
+  margin: 0;
+  color: #888;
+  font-size: 0.98em;
+}
+
+.progressBar {
+  flex: 1;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  position: relative;
+  margin: 0 16px;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--trainer-primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  min-width: 48px;
+  text-align: right;
+  font-size: 1em;
+  color: var(--trainer-primary);
+  font-weight: 600;
+} 

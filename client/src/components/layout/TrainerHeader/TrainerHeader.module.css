@@ -1,0 +1,192 @@
+.header {
+  height: 80px;
+  background-color: var(--trainer-header);
+  border-bottom: 1px solid var(--trainer-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  position: fixed;
+  top: 0;
+  left: 290px;
+  width: calc(100vw - 290px);
+  z-index: 101;
+  box-shadow: 0 1px 0 var(--trainer-border);
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.logo {
+  height: 32px;
+}
+
+.rightSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.notifications {
+  position: relative;
+}
+
+.notificationButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+}
+
+.icon {
+  font-size: 1.5em;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #f44336;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 0.8em;
+}
+
+.notificationDropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  width: 320px;
+  background-color: white;
+  border: 1px solid var(--trainer-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  z-index: 1000;
+}
+
+.notificationItem {
+  padding: 16px;
+  border-bottom: 1px solid var(--trainer-border);
+}
+
+.notificationItem.unread {
+  background-color: var(--trainer-accent);
+}
+
+.notificationItem h4 {
+  margin: 0 0 4px 0;
+  font-size: 1em;
+}
+
+.notificationItem p {
+  margin: 0 0 4px 0;
+  font-size: 0.95em;
+  color: #666;
+}
+
+.notificationItem small {
+  color: #999;
+  font-size: 0.85em;
+}
+
+.userMenu {
+  position: relative;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 24px;
+  transition: background 0.2s;
+}
+
+.userButton:hover {
+  background: var(--trainer-accent);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--trainer-primary);
+}
+
+.userName {
+  font-size: 1.1em;
+  color: var(--trainer-text);
+  font-weight: 500;
+}
+
+.userDropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background-color: white;
+  border: 1px solid var(--trainer-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  z-index: 1000;
+  min-width: 260px;
+  padding: 12px 0 8px 0;
+}
+
+.userInfoBox {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px 16px 24px;
+  border-bottom: 1px solid var(--trainer-border);
+  margin-bottom: 8px;
+}
+
+.dropdownAvatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--trainer-primary);
+}
+
+.dropdownName {
+  font-weight: 600;
+  color: var(--trainer-text);
+  font-size: 1.1em;
+}
+
+.dropdownEmail {
+  color: #888;
+  font-size: 0.95em;
+}
+
+.dropdownRole {
+  color: var(--trainer-primary);
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.userDropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 24px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  color: var(--trainer-text);
+  transition: background 0.2s;
+}
+
+.userDropdown button:hover {
+  background-color: var(--trainer-accent);
+} 
