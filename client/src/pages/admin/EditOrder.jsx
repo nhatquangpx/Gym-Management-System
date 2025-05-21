@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import Button from '../components/Button/Button';
+import Button from "../../components/features/admin/Button/Button";
 
 const orders = [
   { id: 1, customer: 'Nguyễn Văn A', package: 'Gói 1 tháng', total: '500.000đ', status: 'Đã thanh toán' },

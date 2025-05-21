@@ -4,7 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { IconButton, Paper, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
-import StatusBadge from '../components/StatusBadge/StatusBadge';
+import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
 
 export default function Members() {

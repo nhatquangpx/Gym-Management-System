@@ -9,7 +9,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import logo from '../../assets/logo.svg';
+import logo from "../../../assets/logo.svg";
 
 const menu = [
   { name: "Dashboard", path: "/staff/dashboard", icon: <DashboardIcon /> },

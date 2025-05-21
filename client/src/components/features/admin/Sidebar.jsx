@@ -9,7 +9,7 @@ import BuildIcon from '@mui/icons-material/Build';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import HistoryIcon from '@mui/icons-material/History';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import logo from '../../assets/logo.svg';
+import logo from "../../../assets/logo.svg";
 
 const menu = [
   { name: "Dashboard", path: "/admin/dashboard", icon: <DashboardIcon /> },

@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import Button from '../components/Button/Button';
+import Button from "../../components/features/admin/Button/Button";
 
 const members = [
   { id: 1, name: 'Nguyễn Văn A', email: 'nguyenvana@gmail.com', phone: '0901234567', status: 'Đang hoạt động', joinDate: '01/01/2023' },

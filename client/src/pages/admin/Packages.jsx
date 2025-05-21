@@ -6,7 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Link } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
-import StatusBadge from '../components/StatusBadge/StatusBadge';
+import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
 
 export default function Packages() {
