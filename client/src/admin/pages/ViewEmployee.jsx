@@ -10,16 +10,16 @@ const employees = [
 export default function ViewEmployee() {
   const { id } = useParams();
   const emp = employees.find(e => e.id === Number(id));
-  if (!emp) return <div className="text-white p-6">Không tìm thấy nhân viên.</div>;
+  if (!emp) return <div className="text-[var(--admin-text)] p-6">Không tìm thấy nhân viên.</div>;
   return (
-    <div className="bg-[#181818] min-h-screen p-6 text-white">
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <h1 className="text-2xl font-bold mb-6">Thông tin nhân viên</h1>
-      <div className="bg-[#232323] rounded-lg shadow p-6 max-w-lg mx-auto">
+      <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto">
         <div className="mb-4"><b>Tên:</b> {emp.name}</div>
         <div className="mb-4"><b>Chức vụ:</b> {emp.role}</div>
         <div className="mb-4"><b>Số điện thoại:</b> {emp.phone}</div>
         <div className="mb-4"><b>Trạng thái:</b> {emp.status}</div>
-        <Link to="/admin/employees"><Button>Quay lại</Button></Link>
+        <Link to="/admin/employees"><Button color="secondary">Quay lại</Button></Link>
       </div>
     </div>
   );

@@ -30,6 +30,15 @@ code {
   --trainer-text: #222b45;
   --trainer-accent: #e3f0ff;
 
+  /* Admin and Staff colors - matching trainer theme */
+  --admin-bg: #f6f7fb;
+  --admin-primary: #4f8cff;
+  --admin-sidebar: #fff;
+  --admin-header: #f9fafc;
+  --admin-border: #e5e7eb;
+  --admin-text: #222b45;
+  --admin-accent: #e3f0ff;
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;

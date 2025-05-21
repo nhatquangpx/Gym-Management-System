@@ -16,18 +16,18 @@ export default function Packages() {
     { id: 3, name: "Gói 6 tháng", price: "2.000.000đ", status: "Tạm dừng" },
   ];
   return (
-    <div className="bg-[#181818] min-h-screen p-6">
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-white">Quản lý gói tập</h1>
+        <h1 className="text-2xl font-bold text-[var(--admin-text)]">Quản lý gói tập</h1>
         <Link to="/admin/packages/add">
           <AddButton label="Thêm gói tập" />
         </Link>
       </div>
-      <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
-              <tr className="bg-[#1f1f1f] text-[#e53935] text-base">
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)] text-base">
                 <th className="py-3 px-4 text-left">Gói tập</th>
                 <th className="py-3 px-4 text-left">Giá</th>
                 <th className="py-3 px-4 text-left">Trạng thái</th>
@@ -36,20 +36,20 @@ export default function Packages() {
             </thead>
             <tbody>
               {packages.map((p) => (
-                <tr key={p.id} className="border-b border-[#333] hover:bg-[#252525] transition">
-                  <td className="py-2 px-4 flex items-center gap-3 text-white">
-                    <FitnessCenterIcon className="text-[#e53935] mx-auto" />
+                <tr key={p.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
+                  <td className="py-2 px-4 flex items-center gap-3 text-[var(--admin-text)]">
+                    <FitnessCenterIcon className="text-[var(--admin-primary)] mx-auto" />
                     <span>{p.name}</span>
                   </td>
-                  <td className="py-2 px-4 text-[#D4D4D4]">{p.price}</td>
+                  <td className="py-2 px-4 text-[var(--admin-text)]">{p.price}</td>
                   <td className="py-2 px-4">
                     <StatusBadge status={p.status} />
                   </td>
                   <td className="py-2 px-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/packages/view/${p.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/packages/edit/${p.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/packages/view/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/packages/edit/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>

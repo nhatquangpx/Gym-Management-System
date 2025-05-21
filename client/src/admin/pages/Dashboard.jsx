@@ -23,50 +23,50 @@ export default function Dashboard() {
     {
       title: 'Tổng thành viên',
       value: '150',
-      icon: <People sx={{ fontSize: 40, color: '#e53935' }} />,
+      icon: <People sx={{ fontSize: 40, color: 'var(--admin-primary)' }} />,
       trend: '+10%',
-      color: '#e53935',
+      color: 'var(--admin-primary)',
     },
     {
       title: 'Gói tập đang hoạt động',
       value: '3',
-      icon: <FitnessCenter sx={{ fontSize: 40, color: '#e53935' }} />,
+      icon: <FitnessCenter sx={{ fontSize: 40, color: 'var(--admin-primary)' }} />,
       trend: '0%',
-      color: '#D4D4D4',
+      color: 'var(--admin-text)',
     },
     {
       title: 'Đơn hàng mới',
       value: '12',
-      icon: <ShoppingCart sx={{ fontSize: 40, color: '#e53935' }} />,
+      icon: <ShoppingCart sx={{ fontSize: 40, color: 'var(--admin-primary)' }} />,
       trend: '+5%',
-      color: '#e53935',
+      color: 'var(--admin-primary)',
     },
     {
       title: 'Doanh thu tháng',
       value: '15.000.000đ',
-      icon: <AttachMoney sx={{ fontSize: 40, color: '#e53935' }} />,
+      icon: <AttachMoney sx={{ fontSize: 40, color: 'var(--admin-primary)' }} />,
       trend: '+20%',
-      color: '#e53935',
+      color: 'var(--admin-primary)',
     },
   ];
 
   return (
-    <Box sx={{ p: 3, background: '#181818', minHeight: '100vh' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#fff', fontWeight: 700 }}>
+    <Box sx={{ p: 3, background: 'var(--admin-bg)', minHeight: '100vh' }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>
         Tổng quan
       </Typography>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
         {stats.map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex' }}>
-            <Card sx={{ background: '#232323', color: '#fff', borderLeft: `4px solid ${stat.color}`, width: '100%', minWidth: 0 }}>
+            <Card sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderLeft: `4px solid ${stat.color}`, width: '100%', minWidth: 0 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box>
-                    <Typography variant="h6" color="#D4D4D4" gutterBottom>
+                    <Typography variant="h6" color="var(--admin-text)" gutterBottom>
                       {stat.title}
                     </Typography>
-                    <Typography variant="h4" component="div" sx={{ color: '#fff', fontWeight: 700 }}>
+                    <Typography variant="h4" component="div" sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>
                       {stat.value}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
@@ -86,34 +86,34 @@ export default function Dashboard() {
 
       <Grid container spacing={3} sx={{ mt: 3 }}>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, background: '#232323', color: '#fff' }}>
+          <Paper sx={{ p: 2, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
             <CardHeader
-              title={<span style={{ color: '#fff', fontWeight: 600 }}>Hoạt động gần đây</span>}
+              title={<span style={{ color: 'var(--admin-text)', fontWeight: 600 }}>Hoạt động gần đây</span>}
               action={
                 <IconButton>
-                  <MoreVert sx={{ color: '#e53935' }} />
+                  <MoreVert sx={{ color: 'var(--admin-primary)' }} />
                 </IconButton>
               }
-              sx={{ borderBottom: '1px solid #333' }}
+              sx={{ borderBottom: '1px solid var(--admin-border)' }}
             />
-            <Divider sx={{ borderColor: '#333' }} />
+            <Divider sx={{ borderColor: 'var(--admin-border)' }} />
             <CardContent>
               {/* Thêm danh sách hoạt động gần đây ở đây */}
             </CardContent>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, background: '#232323', color: '#fff' }}>
+          <Paper sx={{ p: 2, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
             <CardHeader
-              title={<span style={{ color: '#fff', fontWeight: 600 }}>Thống kê doanh thu</span>}
+              title={<span style={{ color: 'var(--admin-text)', fontWeight: 600 }}>Thống kê doanh thu</span>}
               action={
                 <IconButton>
-                  <MoreVert sx={{ color: '#e53935' }} />
+                  <MoreVert sx={{ color: 'var(--admin-primary)' }} />
                 </IconButton>
               }
-              sx={{ borderBottom: '1px solid #333' }}
+              sx={{ borderBottom: '1px solid var(--admin-border)' }}
             />
-            <Divider sx={{ borderColor: '#333' }} />
+            <Divider sx={{ borderColor: 'var(--admin-border)' }} />
             <CardContent>
               {/* Thêm biểu đồ doanh thu ở đây */}
             </CardContent>
