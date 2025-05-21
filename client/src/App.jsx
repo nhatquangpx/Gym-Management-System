@@ -88,6 +88,10 @@ import AddEquipment from './staff/pages/AddEquipment';
 import AddSchedule from './staff/pages/AddSchedule';
 import StaffOrders from './staff/pages/Orders';
 
+// Trainer components
+import TrainerLayout from './components/layout/TrainerLayout';
+import TrainerDashboard from './pages/trainer/DashboardPage/DashboardPage';
+
 import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
@@ -185,6 +189,17 @@ function App() {
             <Route path="profile" element={<AdminProfile />} />
             <Route path="profile/edit" element={<EditProfile />} />
             <Route path="account" element={<AdminAccount />} />
+          </Route>
+
+          {/* Trainer routes */}
+          <Route path="/trainer" element={<TrainerLayout />}>
+            <Route path="dashboard" element={<TrainerDashboard />} />
+            <Route path="students" element={<div>Quản lý học viên</div>} />
+            <Route path="schedule" element={<div>Lịch tập</div>} />
+            <Route path="workouts" element={<div>Ghi nhận buổi tập</div>} />
+            <Route path="guidance" element={<div>Hướng dẫn tập luyện</div>} />
+            <Route path="progress" element={<div>Đánh giá tiến độ</div>} />
+            <Route path="settings" element={<div>Cài đặt</div>} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
