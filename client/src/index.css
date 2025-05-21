@@ -22,6 +22,13 @@ code {
   --text-color: #ffffff;
   --input-bg: rgba(255, 255, 255, 0.1);
   --error-color: #ff4444;
+  --trainer-bg: #f6f7fb;
+  --trainer-primary: #4f8cff;
+  --trainer-sidebar: #fff;
+  --trainer-header: #f9fafc;
+  --trainer-border: #e5e7eb;
+  --trainer-text: #222b45;
+  --trainer-accent: #e3f0ff;
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
