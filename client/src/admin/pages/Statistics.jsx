@@ -14,13 +14,13 @@ export default function Statistics() {
     { id: 3, name: "Thống kê gói tập", value: "3", status: "Đang cập nhật" },
   ];
   return (
-    <div className="bg-[#181818] min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-6 text-white">Thống kê</h1>
-      <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6">
+      <h1 className="text-2xl font-bold mb-6 text-[var(--admin-text)]">Thống kê</h1>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
             <thead>
-              <tr className="bg-[#1f1f1f] text-[#e53935]">
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-left">Tên thống kê</th>
                 <th className="py-3 px-4 text-left">Giá trị</th>
                 <th className="py-3 px-4 text-left">Trạng thái</th>
@@ -29,20 +29,20 @@ export default function Statistics() {
             </thead>
             <tbody>
               {statistics.map((s) => (
-                <tr key={s.id} className="border-b border-[#333] hover:bg-[#252525] transition rounded-xl">
-                  <td className="py-2 px-4 flex items-center gap-3 text-white">
-                    <BarChartIcon className="text-[#e53935]" />
+                <tr key={s.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                  <td className="py-2 px-4 flex items-center gap-3 text-[var(--admin-text)]">
+                    <BarChartIcon className="text-[var(--admin-primary)]" />
                     <span>{s.name}</span>
                   </td>
-                  <td className="py-2 px-4 text-[#D4D4D4]">{s.value}</td>
+                  <td className="py-2 px-4 text-[var(--admin-text)]">{s.value}</td>
                   <td className="py-2 px-4">
                     <StatusBadge status={s.status} />
                   </td>
                   <td className="py-2 px-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>

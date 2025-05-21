@@ -15,13 +15,13 @@ export default function Orders() {
     { id: 3, customer: "Lê Văn C", package: "Gói 6 tháng", total: "2.000.000đ", status: "Đã hủy" },
   ];
   return (
-    <div className="bg-[#181818] min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-6 text-white">Quản lý đơn hàng</h1>
-      <Paper sx={{ background: '#232323', color: '#fff', borderRadius: 4, boxShadow: 6 }}>
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6">
+      <h1 className="text-2xl font-bold mb-6 text-[var(--admin-text)]">Quản lý đơn hàng</h1>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
             <thead>
-              <tr className="bg-[#1f1f1f] text-[#e53935]">
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-left">Khách hàng</th>
                 <th className="py-3 px-4 text-left">Gói tập</th>
                 <th className="py-3 px-4 text-left">Tổng tiền</th>
@@ -31,21 +31,21 @@ export default function Orders() {
             </thead>
             <tbody>
               {orders.map((o) => (
-                <tr key={o.id} className="border-b border-[#333] hover:bg-[#252525] transition rounded-xl">
-                  <td className="py-2 px-4 flex items-center gap-3 text-white">
-                    <ShoppingCartIcon className="text-[#e53935]" />
+                <tr key={o.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                  <td className="py-2 px-4 flex items-center gap-3 text-[var(--admin-text)]">
+                    <ShoppingCartIcon className="text-[var(--admin-primary)]" />
                     <span>{o.customer}</span>
                   </td>
-                  <td className="py-2 px-4 text-[#D4D4D4]">{o.package}</td>
-                  <td className="py-2 px-4 text-[#D4D4D4]">{o.total}</td>
+                  <td className="py-2 px-4 text-[var(--admin-text)]">{o.package}</td>
+                  <td className="py-2 px-4 text-[var(--admin-text)]">{o.total}</td>
                   <td className="py-2 px-4">
                     <StatusBadge status={o.status} />
                   </td>
                   <td className="py-2 px-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/orders/view/${o.id}`}><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/orders/edit/${o.id}`}><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/orders/view/${o.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/orders/edit/${o.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>

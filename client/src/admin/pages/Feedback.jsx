@@ -50,10 +50,16 @@ export default function Feedback() {
   return (
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-white">Danh sách phản hồi</Typography>
+        <Typography variant="h4" className="font-bold text-[var(--admin-text)]">Danh sách phản hồi</Typography>
         <Button
           variant="contained"
-          color="primary"
+          sx={{ 
+            backgroundColor: 'var(--admin-primary)',
+            '&:hover': {
+              backgroundColor: 'var(--admin-primary)',
+              opacity: 0.9
+            }
+          }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/admin/feedback/add')}
         >
@@ -61,10 +67,10 @@ export default function Feedback() {
         </Button>
       </Box>
 
-      <TableContainer component={Paper} className="shadow-lg rounded-lg">
+      <TableContainer component={Paper} className="shadow-lg rounded-lg" sx={{ background: 'var(--admin-sidebar)' }}>
         <Table>
           <TableHead>
-            <TableRow className="bg-[#1f1f1f] text-[#e53935] text-base">
+            <TableRow className="bg-[var(--admin-header)] text-[var(--admin-primary)] text-base">
               <TableCell>Hội viên</TableCell>
               <TableCell>Đánh giá</TableCell>
               <TableCell>Nội dung</TableCell>

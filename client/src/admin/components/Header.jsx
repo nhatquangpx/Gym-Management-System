@@ -28,19 +28,19 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between bg-[#1f1f1f] shadow-2xl px-10 py-6 mb-4 border-b-4 border-[#e53935]">
+    <header className="flex items-center justify-between bg-[var(--admin-header)] shadow-lg px-10 py-3 mb-4 border-b border-[var(--admin-border)]">
       <div className="flex items-center gap-4">
-        <img src={logo} alt="GYMPRO Logo" style={{ height: 40 }} />
-        <span className="text-2xl font-extrabold text-white tracking-wider drop-shadow-lg">GYMPRO ADMIN</span>
+        <img src={logo} alt="GYMPRO Logo" style={{ height: 30 }} />
+        <span className="text-xl font-extrabold text-[var(--admin-text)] tracking-wider">GYMPRO ADMIN</span>
       </div>
-      <div className="flex items-center gap-10">
+      <div className="flex items-center gap-8">
         <button className="relative group">
-          <NotificationsIcon className="text-[#e53935]" fontSize="large" />
-          <span className="absolute -top-2 -right-2 bg-[#e53935] text-white text-xs rounded-full px-1.5 py-0.5 shadow-lg animate-bounce border-2 border-white">3</span>
+          <NotificationsIcon className="text-[var(--admin-primary)]" fontSize="medium" />
+          <span className="absolute -top-1 -right-1 bg-[var(--admin-primary)] text-white text-xs rounded-full px-1 py-0.5 shadow-lg animate-bounce border border-white">3</span>
         </button>
-        <div className="flex items-center gap-3">
-          <Avatar alt="Admin" src="https://i.pravatar.cc/150?img=32" sx={{ border: '2px solid #e53935', width: 48, height: 48, cursor: 'pointer' }} onClick={handleAvatarClick} />
-          <span className="font-semibold text-white text-lg">Admin CJ</span>
+        <div className="flex items-center gap-2">
+          <Avatar alt="Admin" src="https://i.pravatar.cc/150?img=32" sx={{ border: `2px solid var(--admin-primary)`, width: 40, height: 40, cursor: 'pointer' }} onClick={handleAvatarClick} />
+          <span className="font-semibold text-[var(--admin-text)] text-base">Admin CJ</span>
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
             <MenuItem onClick={handleSettings}>Cài đặt</MenuItem>
             <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
