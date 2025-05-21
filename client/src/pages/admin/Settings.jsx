@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
-import StatusBadge from '../components/StatusBadge/StatusBadge';
+import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 
 export default function Settings() {
   const settings = [

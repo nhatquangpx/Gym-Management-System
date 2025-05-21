@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import StaffSidebar from '../components/StaffSidebar';
-import StaffHeader from '../components/StaffHeader';
+import StaffSidebar from "../features/staff/StaffSidebar";
+import StaffHeader from "../features/staff/StaffHeader";
 
 export default function StaffLayout() {
   return (

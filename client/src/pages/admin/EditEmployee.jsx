@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import Button from '../components/Button/Button';
+import Button from "../../components/features/admin/Button/Button";
 
 const employees = [
   { id: 1, name: 'Nguyễn Văn D', role: 'Huấn luyện viên', phone: '0901111222', status: 'Đang làm việc', avatar: 'https://i.pravatar.cc/150?img=4' },

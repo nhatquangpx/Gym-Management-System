@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../../assets/logo.svg';
+import logo from "../../../assets/logo.svg";
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
