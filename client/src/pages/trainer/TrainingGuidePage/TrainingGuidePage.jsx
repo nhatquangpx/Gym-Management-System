@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Select, Form, Input, Button, message } from 'antd';
-import { UserOutlined, SendOutlined } from '@ant-design/icons';
+import { Card, Select, Form, Input, Button, message, DatePicker, TimePicker } from 'antd';
+import { UserOutlined, SendOutlined, CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -8,7 +8,9 @@ const { Option } = Select;
 const TrainingGuidePage = () => {
   const [form] = Form.useForm();
   const [members, setMembers] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   // Mock data - replace with actual API call
   useEffect(() => {
@@ -18,6 +20,37 @@ const TrainingGuidePage = () => {
       { id: 3, name: 'Lê Văn C' },
     ]);
   }, []);
+
+  // Mock data cho buổi tập - replace with actual API call
+  const mockSessions = [
+    { 
+      id: 1, 
+      date: '2024-01-15', 
+      time: '08:00', 
+      type: 'Cardio',
+      status: 'Chưa thực hiện'
+    },
+    { 
+      id: 2, 
+      date: '2024-01-16', 
+      time: '09:00', 
+      type: 'Strength',
+      status: 'Chưa thực hiện'
+    },
+    { 
+      id: 3, 
+      date: '2024-01-17', 
+      time: '10:00', 
+      type: 'HIIT',
+      status: 'Chưa thực hiện'
+    },
+  ];
+
+  const handleMemberChange = (value) => {
+    setSelectedMember(value);
+    // Fetch sessions for selected member
+    setSessions(mockSessions);
+  };
 
   const handleSubmit = async (values) => {
     setLoading(true);
@@ -36,8 +69,7 @@ const TrainingGuidePage = () => {
     <div className="p-6">
       <Card 
         title="Hướng dẫn tập luyện" 
-        className="max-w-2xl mx-auto"
-        style={{ backgroundColor: '#f0f2f5' }}
+        className="max-w-3xl mx-auto"
       >
         <Form
           form={form}
@@ -46,12 +78,13 @@ const TrainingGuidePage = () => {
         >
           <Form.Item
             name="memberId"
-            label="Chọn hội viên"
-            rules={[{ required: true, message: 'Vui lòng chọn hội viên' }]}
+            label="Chọn học viên"
+            rules={[{ required: true, message: 'Vui lòng chọn học viên' }]}
           >
             <Select
-              placeholder="Chọn hội viên"
+              placeholder="Chọn học viên"
               prefix={<UserOutlined />}
+              onChange={handleMemberChange}
             >
               {members.map(member => (
                 <Option key={member.id} value={member.id}>
@@ -61,6 +94,25 @@ const TrainingGuidePage = () => {
             </Select>
           </Form.Item>
 
+          {selectedMember && (
+            <Form.Item
+              name="sessionId"
+              label="Chọn buổi tập"
+              rules={[{ required: true, message: 'Vui lòng chọn buổi tập' }]}
+            >
+              <Select
+                placeholder="Chọn buổi tập"
+                prefix={<CalendarOutlined />}
+              >
+                {sessions.map(session => (
+                  <Option key={session.id} value={session.id}>
+                    {`${session.date} - ${session.time} (${session.type}) - ${session.status}`}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          )}
+
           <Form.Item
             name="feedback"
             label="Hướng dẫn tập luyện"
@@ -68,7 +120,7 @@ const TrainingGuidePage = () => {
           >
             <TextArea
               rows={6}
-              placeholder="Nhập hướng dẫn tập luyện cho hội viên..."
+              placeholder="Nhập hướng dẫn tập luyện cho học viên..."
             />
           </Form.Item>
 
