@@ -62,19 +62,25 @@ exports.createUser = async (req, res) => {
         
         // Add role-specific fields
         if (role === 'member') {
-            newUser.gender = gender;
-            newUser.dateOfBirth = dateOfBirth;
-            newUser.job = job;
-            newUser.address = address;
-            newUser.membershipStart = Date.now();
-            newUser.membershipEnd = membershipEnd;
+            newUser.memberInfo = {
+                gender,
+                dateOfBirth,
+                job,
+                address,
+                membershipStart: Date.now(),
+                membershipEnd
+            };
         } else if (role === 'trainer') {
-            newUser.specialization = specialization;
+            newUser.trainerInfo = {
+                specialization
+            };
         } else if (role === 'employee') {
-            newUser.position = position;
-            newUser.salary = salary;
-            newUser.shiftSchedule = shiftSchedule;
-            newUser.performanceRating = performanceRating;
+            newUser.employeeInfo = {
+                position,
+                salary,
+                shiftSchedule,
+                performanceRating
+            };
         }
         await newUser.save();
         res.status(201).json({ message: 'Người dùng đã được tạo thành công!', user: newUser });
@@ -116,20 +122,26 @@ exports.updateUser = async (req, res) => {
         
         // Update role-specific fields
         if (user.role === 'member') {
-            if (gender) user.gender = gender;
-            if (dateOfBirth) user.dateOfBirth = dateOfBirth;
-            if (job) user.job = job;
-            if (address) user.address = address;
-            if (membershipEnd) user.membershipEnd = membershipEnd;
+            if (!user.memberInfo) user.memberInfo = {};
+            
+            if (gender) user.memberInfo.gender = gender;
+            if (dateOfBirth) user.memberInfo.dateOfBirth = dateOfBirth;
+            if (job) user.memberInfo.job = job;
+            if (address) user.memberInfo.address = address;
+            if (membershipEnd) user.memberInfo.membershipEnd = membershipEnd;
             // Set membershipStart if it doesn't exist
-            if (!user.membershipStart) user.membershipStart = Date.now();
+            if (!user.memberInfo.membershipStart) user.memberInfo.membershipStart = Date.now();
         } else if (user.role === 'trainer') {
-            if (specialization) user.specialization = specialization;
+            if (!user.trainerInfo) user.trainerInfo = {};
+            
+            if (specialization) user.trainerInfo.specialization = specialization;
         } else if (user.role === 'employee') {
-            if (position) user.position = position;
-            if (salary) user.salary = salary;
-            if (shiftSchedule) user.shiftSchedule = shiftSchedule;
-            if (performanceRating) user.performanceRating = performanceRating;
+            if (!user.employeeInfo) user.employeeInfo = {};
+            
+            if (position) user.employeeInfo.position = position;
+            if (salary) user.employeeInfo.salary = salary;
+            if (shiftSchedule) user.employeeInfo.shiftSchedule = shiftSchedule;
+            if (performanceRating) user.employeeInfo.performanceRating = performanceRating;
         }
         
         await user.save();

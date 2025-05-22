@@ -152,8 +152,14 @@ exports.updateOrderStatus = async (req, res) => {
                 
                 // Update membership info
                 user.role = 'member';
-                user.membershipStart = new Date();
-                user.membershipEnd = membershipEnd;
+                
+                // Đảm bảo memberInfo tồn tại
+                if (!user.memberInfo) {
+                    user.memberInfo = {};
+                }
+                
+                user.memberInfo.membershipStart = new Date();
+                user.memberInfo.membershipEnd = membershipEnd;
                 await user.save();
             }
         }
