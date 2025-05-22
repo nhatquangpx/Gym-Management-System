@@ -19,6 +19,9 @@ import ComplaintsPage from './pages/member/ComplaintsPage/ComplaintsPage';
 import HomePage from './pages/member/HomePage/HomePage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 
+// Auth pages
+import Login from './pages/auth/Login';
+
 // Admin
 import AdminLayout from './components/features/admin/AdminLayout';
 import AdminLogin from './pages/admin/Login';
@@ -101,7 +104,8 @@ function App() {
         <Routes>
         {/* Đặt HomePage làm trang mặc định */}
           <Route path="/" element={<HomePage />} /> 
-        <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth/login" element={<Login />} />
         
         {/* Luồng quên mật khẩu */}
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
