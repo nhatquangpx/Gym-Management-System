@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { verifyToken, verifyRole } = require("../middleware/authMiddleware");
 const memberController = require("../controllers/memberController");
-const { createMemberValidation, updateMemberValidation, createMemberFromUserValidation } = require("../validations/memberValidation");
+const { createMemberValidation, updateMemberValidation, createMemberFromUserValidation, packageValidation } = require("../validations/memberValidation");
 
 // @route   POST /api/members
 // @desc    Create a new member
@@ -33,5 +33,26 @@ router.get("/:id", [verifyToken, verifyRole(["admin"])], memberController.getMem
 // @desc    Delete member
 // @access  Private (Admin)
 router.delete("/:id", [verifyToken, verifyRole(["admin"])], memberController.deleteMember);
+
+// Package management routes
+// @route   GET /api/members/:id/package-status
+// @desc    Get member's current package status
+// @access  Private (Admin)
+router.get("/:id/package-status", [verifyToken, verifyRole(["admin"])], memberController.getPackageStatus);
+
+// @route   POST /api/members/:id/cancel-package
+// @desc    Cancel current package
+// @access  Private (Admin)
+router.post("/:id/cancel-package", [verifyToken, verifyRole(["admin"])], memberController.cancelPackage);
+
+// @route   POST /api/members/:id/register-package
+// @desc    Register new package
+// @access  Private (Admin)
+router.post("/:id/register-package", [verifyToken, verifyRole(["admin"])], memberController.registerPackage);
+
+// @route   POST /api/members/:id/renew-package
+// @desc    Renew package
+// @access  Private (Admin)
+router.post("/:id/renew-package", [verifyToken, verifyRole(["admin"])], memberController.renewPackage);
 
 module.exports = router; 

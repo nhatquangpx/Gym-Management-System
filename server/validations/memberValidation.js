@@ -30,4 +30,11 @@ exports.updateMemberValidation = [
   check("job", "Nghề nghiệp không được để trống").optional().not().isEmpty(),
   check("address", "Địa chỉ không được để trống").optional().not().isEmpty(),
   check("membershipEnd", "Ngày kết thúc thành viên không hợp lệ").optional().isISO8601()
+];
+
+// Validation for package registration and renewal
+exports.packageValidation = [
+  check("packageId", "ID gói tập không hợp lệ").isMongoId(),
+  check("paymentMethod", "Phương thức thanh toán không hợp lệ").isIn(["cash", "banking", "momo"]),
+  check("amount", "Số tiền không hợp lệ").optional().isFloat({ min: 0 })
 ]; 
