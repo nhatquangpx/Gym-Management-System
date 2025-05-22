@@ -1,0 +1,344 @@
+import React, { useState } from 'react';
+import { FaChevronLeft, FaChevronRight, FaPlus, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
+import styles from './SchedulePage.module.css';
+
+// Mock data học viên
+const studentsList = [
+  'John Doe',
+  'Jane Smith',
+  'Nguyễn Văn A',
+  'Lê Thị B',
+  'Trần Văn C',
+];
+
+// Mock data cho lịch tập
+const initialSessions = [
+  {
+    date: '2025-05-20',
+    sessions: [
+      { id: 1, time: '08:00', student: 'John Doe', guide: 'Tập ngực, vai, tay' },
+      { id: 2, time: '09:30', student: 'Jane Smith', guide: 'Yoga cơ bản' },
+      { id: 3, time: '15:00', student: 'Nguyễn Văn A', guide: 'Cardio + HIIT' },
+    ]
+  },
+  {
+    date: '2025-05-21',
+    sessions: [
+      { id: 4, time: '07:00', student: 'Lê Thị B', guide: 'Tập chân, mông' },
+      { id: 5, time: '10:00', student: 'Trần Văn C', guide: 'Crossfit nâng cao' },
+    ]
+  },
+  {
+    date: '2025-05-22',
+    sessions: [
+      { id: 6, time: '08:00', student: 'John Doe', guide: 'Tập lưng, xô' },
+      { id: 7, time: '16:00', student: 'Jane Smith', guide: 'Yoga nâng cao' },
+    ]
+  },
+  // ... thêm dữ liệu mẫu cho các ngày khác
+];
+
+function getWeekDays(baseDate) {
+  const week = [];
+  const today = new Date(baseDate);
+  const dayOfWeek = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    week.push(d);
+  }
+  return week;
+}
+
+const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students, selectedDate }) => {
+  const [form, setForm] = React.useState(session || { time: '', student: '', guide: '', date: selectedDate });
+  const [error, setError] = React.useState('');
+  React.useEffect(() => {
+    setForm(session ? { ...session, date: session.date || selectedDate } : { time: '', student: '', guide: '', date: selectedDate });
+  }, [session, open, selectedDate]);
+  if (!open) return null;
+  const isEdit = mode === 'edit';
+  const isDetail = mode === 'detail';
+  const isAdd = mode === 'add';
+  const dateStr = new Date(form.date || selectedDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+  const handleDateChange = e => {
+    setForm({ ...form, date: e.target.value });
+  };
+  const handleSave = () => {
+    if (!form.time || !form.student || !form.guide || !form.date) {
+      setError('Vui lòng nhập đầy đủ thông tin!');
+      return;
+    }
+    setError('');
+    onSave({ ...form, id: session?.id });
+  };
+  return (
+    <div className={styles.sessionModalOverlay}>
+      <div className={styles.sessionModal}>
+        <div className={styles.sessionModalHeader}>
+          {isAdd && 'Thêm buổi tập'}
+          {isEdit && 'Sửa buổi tập'}
+          {isDetail && 'Chi tiết buổi tập'}
+          <button className={styles.sessionModalClose} onClick={onClose}><FaTimes /></button>
+        </div>
+        <div className={styles.sessionModalDate}>
+          Ngày:
+          {isDetail ? (
+            <span style={{ marginLeft: 8 }}>{dateStr}</span>
+          ) : (
+            <input
+              type="date"
+              className={styles.sessionModalDateInput}
+              value={form.date}
+              onChange={handleDateChange}
+              disabled={isDetail}
+              min={new Date().getFullYear() + '-01-01'}
+              max={new Date().getFullYear() + 2 + '-12-31'}
+            />
+          )}
+        </div>
+        <form className={styles.sessionModalForm} onSubmit={e => { e.preventDefault(); handleSave(); }}>
+          <label className={styles.sessionModalLabel}>Giờ tập</label>
+          <input
+            className={styles.sessionModalInput}
+            name="time"
+            type="time"
+            value={form.time}
+            onChange={handleChange}
+            disabled={isDetail}
+            step="300"
+            style={{ fontSize: '1.2em', fontWeight: 600, letterSpacing: 1 }}
+          />
+          <label className={styles.sessionModalLabel}>Học viên</label>
+          <select
+            className={styles.sessionModalSelect}
+            name="student"
+            value={form.student}
+            onChange={handleChange}
+            disabled={isDetail}
+          >
+            <option value="">Chọn học viên</option>
+            {students.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <label className={styles.sessionModalLabel}>Bài hướng dẫn</label>
+          <input
+            className={styles.sessionModalInput}
+            name="guide"
+            value={form.guide}
+            onChange={handleChange}
+            disabled={isDetail}
+            style={{ fontWeight: isEdit ? 600 : 400 }}
+          />
+          {isEdit && (
+            <div style={{ color: '#1976d2', fontWeight: 500, fontSize: '1em', marginTop: 2 }}>
+              Gói tập hiện tại: <span style={{ fontWeight: 700 }}>{form.guide}</span>
+            </div>
+          )}
+          {error && <div style={{ color: '#d32f2f', fontWeight: 500 }}>{error}</div>}
+          <div className={styles.sessionModalFooter}>
+            <button type="button" className={`${styles.sessionModalBtn} ${styles.secondary}`} onClick={onClose}>Đóng</button>
+            {!isDetail && <button type="submit" className={`${styles.sessionModalBtn} ${styles.primary}`}>{isAdd ? 'Thêm' : 'Lưu'}</button>}
+            {isEdit && onDelete && <button type="button" className={`${styles.sessionModalBtn} ${styles.danger}`} onClick={() => onDelete(session)}>Xóa</button>}
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const SchedulePage = () => {
+  const [sessions, setSessions] = useState(initialSessions);
+  const [baseDate, setBaseDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().slice(0, 10);
+  });
+  const [filterStudent, setFilterStudent] = useState('all');
+  const [modal, setModal] = useState({ open: false, mode: 'add', session: null });
+
+  const weekDays = getWeekDays(baseDate);
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  // Lấy lịch tập của ngày đang chọn
+  const daySessions =
+    sessions.find(s => s.date === selectedDate)?.sessions || [];
+  const filteredDaySessions = filterStudent === 'all'
+    ? daySessions
+    : daySessions.filter(s => s.student === filterStudent);
+
+  // Lấy tất cả học viên có trong tuần này
+  const weekStudentSet = new Set();
+  weekDays.forEach(d => {
+    const dateStr = d.toISOString().slice(0, 10);
+    const dayS = sessions.find(s => s.date === dateStr)?.sessions || [];
+    dayS.forEach(s => weekStudentSet.add(s.student));
+  });
+  const weekStudents = Array.from(weekStudentSet);
+
+  // Chuyển tuần
+  const handlePrevWeek = () => {
+    const prev = new Date(baseDate);
+    prev.setDate(prev.getDate() - 7);
+    setBaseDate(prev);
+    // Chọn ngày đầu tuần mới
+    setSelectedDate(getWeekDays(prev)[0].toISOString().slice(0, 10));
+  };
+  const handleNextWeek = () => {
+    const next = new Date(baseDate);
+    next.setDate(next.getDate() + 7);
+    setBaseDate(next);
+    setSelectedDate(getWeekDays(next)[0].toISOString().slice(0, 10));
+  };
+  const handleToday = () => {
+    const today = new Date();
+    setBaseDate(today);
+    setSelectedDate(today.toISOString().slice(0, 10));
+  };
+
+  // Thêm/sửa/xóa buổi tập
+  const handleAddSession = (session) => {
+    setSessions(prev => {
+      const idx = prev.findIndex(s => s.date === session.date);
+      const newSession = { ...session, id: Date.now() };
+      if (idx === -1) {
+        return [...prev, { date: session.date, sessions: [newSession] }];
+      } else {
+        // Thêm và sort lại theo time
+        const updatedSessions = [...prev[idx].sessions, newSession].sort((a, b) => a.time.localeCompare(b.time));
+        return prev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
+      }
+    });
+    setModal({ open: false, mode: 'add', session: null });
+  };
+  const handleEditSession = (session) => {
+    setSessions(prev => {
+      // Nếu đổi ngày, xóa khỏi ngày cũ, thêm vào ngày mới
+      let found = false;
+      let newPrev = prev.map(day => {
+        if (day.sessions.some(s => s.id === session.id)) {
+          found = true;
+          return { ...day, sessions: day.sessions.filter(s => s.id !== session.id) };
+        }
+        return day;
+      });
+      // Nếu ngày mới đã có, thêm vào đó và sort
+      const idx = newPrev.findIndex(s => s.date === session.date);
+      if (idx === -1) {
+        newPrev.push({ date: session.date, sessions: [{ ...session }] });
+      } else {
+        const updatedSessions = [...newPrev[idx].sessions, { ...session }].sort((a, b) => a.time.localeCompare(b.time));
+        newPrev = newPrev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
+      }
+      // Xóa ngày không còn session nào
+      newPrev = newPrev.filter(day => day.sessions.length > 0);
+      return newPrev;
+    });
+    setModal({ open: false, mode: 'edit', session: null });
+  };
+  const handleDeleteSession = (session) => {
+    setSessions(prev => {
+      let newPrev = prev.map(day =>
+        day.date === selectedDate
+          ? { ...day, sessions: day.sessions.filter(s => s.id !== session.id) }
+          : day
+      );
+      // Sort lại các session trong ngày (nếu còn)
+      newPrev = newPrev.map(day => ({ ...day, sessions: [...day.sessions].sort((a, b) => a.time.localeCompare(b.time)) }));
+      // Xóa ngày không còn session nào
+      newPrev = newPrev.filter(day => day.sessions.length > 0);
+      return newPrev;
+    });
+    setModal({ open: false, mode: 'edit', session: null });
+  };
+
+  // Xem chi tiết buổi tập
+  const handleDetailSession = (session) => {
+    setModal({ open: true, mode: 'detail', session });
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Lịch tập</h1>
+      </div>
+      <div className={styles.topBar}>
+        <div className={styles.weekCalendarRow}>
+          <button className={styles.weekBtn} onClick={handlePrevWeek}><FaChevronLeft /></button>
+          <div className={styles.weekCalendar}>
+            {weekDays.map((d, idx) => {
+              const dateStr = d.toISOString().slice(0, 10);
+              const isToday = dateStr === todayStr;
+              const isSelected = dateStr === selectedDate;
+              return (
+                <div
+                  key={dateStr}
+                  className={
+                    styles.dayItem +
+                    (isSelected ? ' ' + styles.selected : '') +
+                    (isToday ? ' ' + styles.today : '') +
+                    (isSelected && isToday ? ' ' + styles.selected + ' ' + styles.today : '')
+                  }
+                  onClick={() => setSelectedDate(dateStr)}
+                >
+                  <div>{['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][d.getDay()]}</div>
+                  <div style={{ fontWeight: 700, fontSize: '1.2em' }}>{d.getDate()}</div>
+                </div>
+              );
+            })}
+          </div>
+          <button className={styles.weekBtn} onClick={handleNextWeek}><FaChevronRight /></button>
+        </div>
+        <div className={styles.rightBar}>
+          <button className={styles.todayBtn} onClick={handleToday}>Hôm nay</button>
+          <select
+            className={styles.filterStudent}
+            value={filterStudent}
+            onChange={e => setFilterStudent(e.target.value)}
+          >
+            <option value="all">Tất cả học viên</option>
+            {weekStudents.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <button className={styles.addSessionBtn} onClick={() => setModal({ open: true, mode: 'add', session: null })}><FaPlus />Thêm buổi tập</button>
+        </div>
+      </div>
+      <div className={styles.scheduleList}>
+        <div className={styles.scheduleTitle}>
+          Lịch tập ngày {new Date(selectedDate).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+        </div>
+        {filteredDaySessions.length === 0 ? (
+          <div className={styles.noSession}>Không có lịch tập nào cho ngày này.</div>
+        ) : (
+          filteredDaySessions.map((session, idx) => (
+            <div key={session.id} className={styles.sessionItem} onClick={e => { if (e.target === e.currentTarget) handleDetailSession(session); }}>
+              <div className={styles.sessionTime}>{session.time}</div>
+              <div className={styles.sessionStudent}>{session.student}</div>
+              <div className={styles.sessionGuide}>{session.guide}</div>
+              <div className={styles.sessionActions}>
+                <button className={styles.editBtn} title="Sửa" onClick={e => { e.stopPropagation(); setModal({ open: true, mode: 'edit', session }); }}><FaEdit /></button>
+                <button className={styles.deleteBtn} title="Xóa" onClick={e => { e.stopPropagation(); setModal({ open: true, mode: 'edit', session }); }}><FaTrash /></button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      <SessionModal
+        open={modal.open}
+        onClose={() => setModal({ open: false, mode: 'add', session: null })}
+        onSave={modal.mode === 'add' ? handleAddSession : handleEditSession}
+        onDelete={modal.mode === 'edit' ? handleDeleteSession : undefined}
+        mode={modal.mode}
+        session={modal.session}
+        students={studentsList}
+        selectedDate={selectedDate}
+      />
+    </div>
+  );
+};
+
+export default SchedulePage; 

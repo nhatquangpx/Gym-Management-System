@@ -1,0 +1,444 @@
+.container {
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 2.2em;
+  font-weight: 700;
+  color: var(--trainer-primary);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.searchFilter {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(76, 110, 245, 0.07);
+  padding: 18px 20px;
+  border: 1.5px solid var(--trainer-border);
+}
+
+.searchBox {
+  flex: 1;
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px;
+  padding-left: 40px;
+  border: 1.5px solid var(--trainer-primary);
+  border-radius: 8px;
+  font-size: 15px;
+  background: var(--trainer-bg);
+  color: var(--trainer-text);
+  box-shadow: 0 1px 4px rgba(76, 110, 245, 0.04);
+  transition: border 0.2s;
+}
+
+.searchInput:focus {
+  border: 1.5px solid var(--trainer-primary);
+  outline: none;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--trainer-primary);
+  font-size: 1.1em;
+}
+
+.filterSelect {
+  min-width: 200px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--trainer-primary);
+  border-radius: 8px;
+  font-size: 15px;
+  background: var(--trainer-bg);
+  color: var(--trainer-text);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(76, 110, 245, 0.04);
+  transition: border 0.2s;
+}
+
+.filterSelect:focus {
+  border: 1.5px solid var(--trainer-primary);
+  outline: none;
+}
+
+.studentsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 28px;
+}
+
+.studentCard {
+  background: #fff;
+  border: 1.5px solid var(--trainer-border);
+  border-radius: 14px;
+  padding: 28px 24px 20px 24px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-height: 320px;
+}
+
+.studentCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.08);
+}
+
+.studentHeader {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.studentInfo {
+  flex: 1;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--trainer-text);
+  margin-bottom: 4px;
+}
+
+.email {
+  font-size: 15px;
+  color: var(--trainer-text-light);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 6px;
+  margin-bottom: 2px;
+  letter-spacing: 0.2px;
+  border: 1.5px solid #e3f2fd;
+}
+
+.statusPending {
+  background: #fff7e6;
+  color: #ff9800;
+  border: 1.5px solid #ffe0b2;
+}
+.statusActive {
+  background: #e3fcef;
+  color: #219653;
+  border: 1.5px solid #b7eedc;
+}
+.statusCompleted {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1.5px solid #bbdefb;
+}
+.statusInactive {
+  background: #fbe9e7;
+  color: #d84315;
+  border: 1.5px solid #ffccbc;
+}
+
+.statusSelectWrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 180px;
+}
+
+.statusSelect {
+  width: 100%;
+  padding: 7px 32px 7px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1.5px solid #e3f2fd;
+  background: #f8f9fa;
+  color: var(--trainer-text);
+  margin-top: 6px;
+  margin-bottom: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: border 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.statusSelectArrow {
+  position: absolute;
+  right: 16px;
+  top: 55%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+  font-size: 1em;
+}
+
+.successMsgCenter {
+  color: #219653;
+  background: #e3fcef;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.3s;
+}
+
+.studentDetails {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1.5px solid var(--trainer-border);
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 15px;
+  align-items: center;
+}
+
+.detailLabel {
+  color: var(--trainer-text-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.detailValue {
+  color: var(--trainer-text);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.actionButton {
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid var(--trainer-primary);
+  border-radius: 8px;
+  background: var(--trainer-primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover {
+  background: #1565c0;
+  color: #fff;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--trainer-bg);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modalHeader {
+  padding: 20px;
+  border-bottom: 1px solid var(--trainer-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--trainer-text);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--trainer-text-light);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modalContent {
+  padding: 20px;
+}
+
+.modalSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--trainer-text);
+  margin-bottom: 16px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: var(--trainer-text-light);
+}
+
+.infoValue {
+  font-size: 14px;
+  color: var(--trainer-text);
+  font-weight: 500;
+}
+
+.progressSection {
+  margin-top: 24px;
+}
+
+.progressBar {
+  height: 8px;
+  background: var(--trainer-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--trainer-primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.modalFooter {
+  padding: 20px;
+  border-top: 1px solid var(--trainer-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.successMsgCenter {
+  color: #219653;
+  background: #e3fcef;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.3s;
+}
+
+.modalFooterButtons {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+  justify-content: center;
+}
+
+.modalButton {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  max-width: 220px;
+}
+
+.modalButton.secondary {
+  background: var(--trainer-bg);
+  border: 1px solid var(--trainer-border);
+  color: var(--trainer-text);
+}
+
+.modalButton.primary {
+  background: var(--trainer-primary);
+  border: none;
+  color: white;
+}
+
+.modalButton:hover {
+  opacity: 0.9;
+}
+
+.successMsg {
+  color: #219653;
+  background: #e3fcef;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-right: 10px;
+  margin-bottom: 0;
+  align-self: center;
+  display: inline-block;
+  animation: fadeIn 0.3s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+} 
