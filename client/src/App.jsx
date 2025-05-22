@@ -94,6 +94,9 @@ import StaffOrders from './pages/staff/Orders';
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
 import TrainerDashboard from './pages/trainer/DashboardPage/DashboardPage';
+import TrainerStudents from './pages/trainer/StudentsPage/StudentsPage';
+import TrainerSchedulePage from './pages/trainer/SchedulePage/SchedulePage';
+import TrainerWorkoutLogPage from './pages/trainer/WorkoutLogPage/WorkoutLogPage';
 
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -197,10 +200,11 @@ function App() {
 
           {/* Trainer routes */}
           <Route path="/trainer" element={<TrainerLayout />}>
+            <Route index element={<Navigate to="/trainer/dashboard" replace />} />
             <Route path="dashboard" element={<TrainerDashboard />} />
-            <Route path="students" element={<div>Quản lý học viên</div>} />
-            <Route path="schedule" element={<div>Lịch tập</div>} />
-            <Route path="workouts" element={<div>Ghi nhận buổi tập</div>} />
+            <Route path="students" element={<TrainerStudents />} />
+            <Route path="schedule" element={<TrainerSchedulePage />} />
+            <Route path="workouts" element={<TrainerWorkoutLogPage />} />
             <Route path="guidance" element={<div>Hướng dẫn tập luyện</div>} />
             <Route path="progress" element={<div>Đánh giá tiến độ</div>} />
             <Route path="settings" element={<div>Cài đặt</div>} />
