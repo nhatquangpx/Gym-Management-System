@@ -53,7 +53,7 @@ exports.registerMember = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(account.password, salt);
 
-    // 5. Tạo user mới (member)
+    // 5. Tạo user mới (member) - ở trạng thái chờ kích hoạt
     const newUser = new User({
       name: personal.fullName || account.email.split('@')[0],
       email: account.email,
