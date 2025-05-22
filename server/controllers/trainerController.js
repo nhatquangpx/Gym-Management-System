@@ -31,7 +31,9 @@ exports.createTrainer = async (req, res) => {
       password: hashPassword,
       phone,
       role: "trainer",
-      specialization
+      trainerInfo: {
+        specialization
+      }
     });
 
     // Save user
@@ -47,7 +49,7 @@ exports.createTrainer = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          specialization: user.specialization
+          trainerInfo: user.trainerInfo
         }
       }
     });
@@ -82,7 +84,9 @@ exports.createTrainerFromExistingUser = async (req, res) => {
 
     // Update user with trainer role
     user.role = "trainer";
-    user.specialization = specialization;
+    user.trainerInfo = {
+      specialization
+    };
     
     await user.save();
 
@@ -96,7 +100,7 @@ exports.createTrainerFromExistingUser = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          specialization: user.specialization
+          trainerInfo: user.trainerInfo
         }
       }
     });
@@ -129,7 +133,14 @@ exports.updateTrainer = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (phone) user.phone = phone;
-    if (specialization) user.specialization = specialization;
+    
+    // Đảm bảo trainerInfo tồn tại
+    if (!user.trainerInfo) {
+      user.trainerInfo = {};
+    }
+    
+    // Cập nhật thông tin trainerInfo
+    if (specialization) user.trainerInfo.specialization = specialization;
 
     // Save updated user
     await user.save();
@@ -144,7 +155,7 @@ exports.updateTrainer = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          specialization: user.specialization
+          trainerInfo: user.trainerInfo
         }
       }
     });

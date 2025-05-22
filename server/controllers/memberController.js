@@ -33,12 +33,17 @@ exports.createMember = async (req, res) => {
       password: hashPassword,
       phone,
       role: "member",
-      gender,
-      dateOfBirth,
-      job,      address,
-      membershipStart: Date.now(),
-      membershipEnd
-    });    // Save user
+      memberInfo: {
+        gender,
+        dateOfBirth,
+        job,
+        address,
+        membershipStart: Date.now(),
+        membershipEnd
+      }
+    });
+    
+    // Save user
     await user.save();
 
     res.status(201).json({
@@ -51,12 +56,14 @@ exports.createMember = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          gender: user.gender,
-          dateOfBirth: user.dateOfBirth,
-          job: user.job,
-          address: user.address,
-          membershipStart: user.membershipStart,
-          membershipEnd: user.membershipEnd
+          memberInfo: {
+            gender: user.memberInfo.gender,
+            dateOfBirth: user.memberInfo.dateOfBirth,
+            job: user.memberInfo.job,
+            address: user.memberInfo.address,
+            membershipStart: user.memberInfo.membershipStart,
+            membershipEnd: user.memberInfo.membershipEnd
+          }
         }
       }
     });
@@ -82,21 +89,31 @@ exports.createMemberFromExistingUser = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Không tìm thấy người dùng" });
-    }    // Check if user is already a member
+    }
+    
+    // Check if user is already a member
     if (user.role === "member") {
       return res.status(400).json({ message: "Người dùng này đã là hội viên" });
     }
 
     // Update user with member role and member fields
     user.role = "member";
-    user.gender = gender;
-    user.dateOfBirth = dateOfBirth;
-    user.job = job;
-    user.address = address;
-    user.membershipStart = Date.now();
-    user.membershipEnd = membershipEnd;
     
-    await user.save();    res.status(201).json({
+    // Tạo hoặc cập nhật memberInfo
+    if (!user.memberInfo) {
+      user.memberInfo = {};
+    }
+    
+    user.memberInfo.gender = gender;
+    user.memberInfo.dateOfBirth = dateOfBirth;
+    user.memberInfo.job = job;
+    user.memberInfo.address = address;
+    user.memberInfo.membershipStart = Date.now();
+    user.memberInfo.membershipEnd = membershipEnd;
+    
+    await user.save();
+    
+    res.status(201).json({
       success: true,
       message: "Thêm hội viên thành công",
       data: {
@@ -106,12 +123,14 @@ exports.createMemberFromExistingUser = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          gender: user.gender,
-          dateOfBirth: user.dateOfBirth,
-          job: user.job,
-          address: user.address,
-          membershipStart: user.membershipStart,
-          membershipEnd: user.membershipEnd
+          memberInfo: {
+            gender: user.memberInfo.gender,
+            dateOfBirth: user.memberInfo.dateOfBirth,
+            job: user.memberInfo.job,
+            address: user.memberInfo.address,
+            membershipStart: user.memberInfo.membershipStart,
+            membershipEnd: user.memberInfo.membershipEnd
+          }
         }
       }
     });
@@ -129,7 +148,9 @@ exports.updateMember = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }    const { gender, dateOfBirth, job, address, membershipEnd, name, email, phone } = req.body;
+    }
+    
+    const { gender, dateOfBirth, job, address, membershipEnd, name, email, phone } = req.body;
     const userId = req.params.id;
 
     // Find user with member role
@@ -142,14 +163,23 @@ exports.updateMember = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (phone) user.phone = phone;
-    if (gender) user.gender = gender;
-    if (dateOfBirth) user.dateOfBirth = dateOfBirth;
-    if (job) user.job = job;
-    if (address) user.address = address;
-    if (membershipEnd) user.membershipEnd = membershipEnd;
+    
+    // Đảm bảo memberInfo tồn tại
+    if (!user.memberInfo) {
+      user.memberInfo = {};
+    }
+    
+    // Cập nhật thông tin memberInfo
+    if (gender) user.memberInfo.gender = gender;
+    if (dateOfBirth) user.memberInfo.dateOfBirth = dateOfBirth;
+    if (job) user.memberInfo.job = job;
+    if (address) user.memberInfo.address = address;
+    if (membershipEnd) user.memberInfo.membershipEnd = membershipEnd;
 
     // Save updated user
-    await user.save();    res.status(200).json({
+    await user.save();
+    
+    res.status(200).json({
       success: true,
       message: "Cập nhật thông tin hội viên thành công",
       data: {
@@ -159,12 +189,14 @@ exports.updateMember = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          gender: user.gender,
-          dateOfBirth: user.dateOfBirth,
-          job: user.job,
-          address: user.address,
-          membershipStart: user.membershipStart,
-          membershipEnd: user.membershipEnd
+          memberInfo: {
+            gender: user.memberInfo.gender,
+            dateOfBirth: user.memberInfo.dateOfBirth,
+            job: user.memberInfo.job,
+            address: user.memberInfo.address,
+            membershipStart: user.memberInfo.membershipStart,
+            membershipEnd: user.memberInfo.membershipEnd
+          }
         }
       }
     });

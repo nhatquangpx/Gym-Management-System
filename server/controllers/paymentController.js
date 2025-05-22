@@ -244,11 +244,15 @@ exports.vnpayReturn = async (req, res) => {
                 // Tính thời gian kết thúc gói tập
                 const membershipExpiry = new Date(membershipStart);
                 membershipExpiry.setDate(membershipExpiry.getDate() + (gymPackage.duration || 30));
-                  // Kích hoạt tài khoản và thiết lập thông tin gói tập
-                user.status = "active";
-                user.membershipStart = membershipStart;
-                user.membershipExpiry = membershipExpiry;
-                user.activePackage = gymPackage._id;
+                
+                // Kích hoạt tài khoản và thiết lập thông tin gói tập
+                // Đảm bảo memberInfo tồn tại
+                if (!user.memberInfo) {
+                  user.memberInfo = {};
+                }
+                
+                user.memberInfo.membershipStart = membershipStart;
+                user.memberInfo.membershipEnd = membershipExpiry;
                 
                 await user.save();
                 console.log(`User ${user._id} activated successfully!`);
@@ -264,7 +268,8 @@ exports.vnpayReturn = async (req, res) => {
                         role: user.role
                     }
                 };
-                  const token = jwt.sign(payload, jwtSecret, { expiresIn: '1d' });
+                
+                const token = jwt.sign(payload, jwtSecret, { expiresIn: '1d' });
                 
                 console.log('Generated token for user:', {
                     userId: user._id,
