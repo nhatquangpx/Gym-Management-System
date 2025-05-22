@@ -180,7 +180,7 @@ const PaymentReturn = () => {
             {status === 'success' ? (
               <button 
                 className={styles.navButton} 
-                onClick={() => navigate('/member/profile')}
+                onClick={() => navigate('/login')}
               >
                 Đi đến trang hồ sơ
               </button>
