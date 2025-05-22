@@ -6,7 +6,7 @@ const { sendEmail, sendNewPasswordEmail, sendReceiptEmail, sendMaintenanceNotifi
 
 exports.register = async (req, res) => {
   try {
-    const {  name, email, password, phone, role } = req.body;
+    const { name, email, password, phone, role, memberInfo, trainerInfo, employeeInfo } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Người dùng đã tồn tại!" });
@@ -20,11 +20,26 @@ exports.register = async (req, res) => {
       email,
       password: hashPassword,
       phone,
-      role: role || "member"
+      role: role || "member",
+      ...(role === "member" && memberInfo && { memberInfo }),
+      ...(role === "trainer" && trainerInfo && { trainerInfo }),
+      ...(role === "employee" && employeeInfo && { employeeInfo })
     });
 
     await newUser.save();
-    res.status(201).json({ message: "Đăng ký thành công!", user: newUser });
+    res.status(201).json({ 
+      message: "Đăng ký thành công!", 
+      user: {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+        role: newUser.role,
+        memberInfo: newUser.memberInfo,
+        trainerInfo: newUser.trainerInfo,
+        employeeInfo: newUser.employeeInfo
+      }
+    });
   } catch (err) {
     res.status(500).json({ message: "Đăng ký thất bại!", error: err.message });
   }

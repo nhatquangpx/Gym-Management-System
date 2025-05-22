@@ -7,6 +7,8 @@ const Order = require("../models/Order");
 // @route   POST /api/registration/register-member
 // @desc    Đăng ký thành viên mới và tạo đơn hàng gói tập
 // @access  Public
+// @note    This function handles new user registration with a package.
+//          For existing member package registration, see memberController.js
 exports.registerMember = async (req, res) => {
   try {
     const { account, personal, packageInfo } = req.body;
@@ -51,23 +53,23 @@ exports.registerMember = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(account.password, salt);
 
-    // 5. Tạo user mới (member) - ở trạng thái chờ kích hoạt
+    // 5. Tạo user mới (member)
     const newUser = new User({
       name: personal.fullName || account.email.split('@')[0],
       email: account.email,
       password: hashPassword,
       phone: account.phone || '',
       role: "member",
-      // Thêm thông tin cá nhân
-      gender: personal.gender || '',
-      dateOfBirth: personal.birthDate || null,
-      address: personal.address || '',
-      occupation: personal.occupation || '',
-      // Thông tin bổ sung - sẽ được kích hoạt sau khi thanh toán
-      membershipStart: null,
-      membershipExpiry: null,
-      activePackage: null,
-      status: "pending" // Tài khoản chưa được kích hoạt cho đến khi thanh toán thành công
+      // Thêm thông tin cá nhân vào memberInfo theo đúng schema
+      memberInfo: {
+        gender: personal.gender || '',
+        dateOfBirth: personal.birthDate || null,
+        address: personal.address || '',
+        job: personal.occupation || '',
+        // Thông tin bổ sung - sẽ được kích hoạt sau khi thanh toán
+        membershipStart: null,
+        membershipEnd: null
+      }
     });
 
     // 6. Lưu user mới vào database
@@ -166,15 +168,14 @@ exports.activateAfterPayment = async (req, res) => {
       });
     }
     
-    // Nếu tài khoản đã kích hoạt rồi thì không cần làm gì thêm
-    if (user.status === 'active') {
+    // Nếu đơn hàng đã thanh toán rồi thì không cần làm gì thêm
+    if (order.status === 'paid') {
       return res.json({
         success: true,
-        message: 'Tài khoản đã được kích hoạt trước đó',
+        message: 'Đơn hàng này đã được thanh toán trước đó',
         user: {
           id: user._id,
-          email: user.email,
-          status: user.status
+          email: user.email
         }
       });
     }
@@ -188,10 +189,12 @@ exports.activateAfterPayment = async (req, res) => {
     const membershipExpiry = new Date(membershipStart);
     membershipExpiry.setDate(membershipExpiry.getDate() + (gymPackage.duration || 30));
     
-    user.status = "active";
-    user.membershipStart = membershipStart;
-    user.membershipExpiry = membershipExpiry;
-    user.activePackage = gymPackage._id;
+    // Cập nhật thông tin gói tập vào memberInfo
+    if (!user.memberInfo) {
+      user.memberInfo = {};
+    }
+    user.memberInfo.membershipStart = membershipStart;
+    user.memberInfo.membershipEnd = membershipExpiry;
     
     await user.save();
     
@@ -204,9 +207,8 @@ exports.activateAfterPayment = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        status: user.status,
-        membershipStart,
-        membershipExpiry,
+        membershipStart: user.memberInfo.membershipStart,
+        membershipEnd: user.memberInfo.membershipEnd,
         packageInfo: {
           id: gymPackage._id,
           name: gymPackage.name

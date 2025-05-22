@@ -31,10 +31,12 @@ exports.createEmployee = async (req, res) => {
       password: hashPassword,
       phone,
       role: "employee",
-      position,
-      salary,
-      shiftSchedule,
-      performanceRating
+      employeeInfo: {
+        position,
+        salary,
+        shiftSchedule,
+        performanceRating
+      }
     });
 
     // Save user
@@ -50,10 +52,7 @@ exports.createEmployee = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          position: user.position,
-          salary: user.salary,
-          shiftSchedule: user.shiftSchedule,
-          performanceRating: user.performanceRating
+          employeeInfo: user.employeeInfo
         }
       }
     });
@@ -88,10 +87,12 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
 
     // Update user with employee role
     user.role = "employee";
-    user.position = position;
-    user.salary = salary;
-    user.shiftSchedule = shiftSchedule;
-    user.performanceRating = performanceRating;
+    user.employeeInfo = {
+      position,
+      salary,
+      shiftSchedule,
+      performanceRating
+    };
     
     await user.save();
 
@@ -105,10 +106,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          position: user.position,
-          salary: user.salary,
-          shiftSchedule: user.shiftSchedule,
-          performanceRating: user.performanceRating
+          employeeInfo: user.employeeInfo
         }
       }
     });
@@ -141,10 +139,17 @@ exports.updateEmployee = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (phone) user.phone = phone;
-    if (position) user.position = position;
-    if (salary) user.salary = salary;
-    if (shiftSchedule) user.shiftSchedule = shiftSchedule;
-    if (performanceRating) user.performanceRating = performanceRating;
+    
+    // Update employeeInfo fields
+    if (position || salary || shiftSchedule || performanceRating) {
+      user.employeeInfo = {
+        ...user.employeeInfo,
+        ...(position && { position }),
+        ...(salary && { salary }),
+        ...(shiftSchedule && { shiftSchedule }),
+        ...(performanceRating && { performanceRating })
+      };
+    }
 
     // Save updated user
     await user.save();
@@ -159,10 +164,7 @@ exports.updateEmployee = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
-          position: user.position,
-          salary: user.salary,
-          shiftSchedule: user.shiftSchedule,
-          performanceRating: user.performanceRating
+          employeeInfo: user.employeeInfo
         }
       }
     });

@@ -28,24 +28,27 @@ const UserSchema = new mongoose.Schema(
       enum: ["member", "admin", "employee", "trainer"],
       default: "member"
     },
-    // Member fields
-    gender: String,
-    dateOfBirth: Date,
-    job: String,
-    address: String,
-    membershipStart: {
-      type: Date
+    memberInfo: {
+      gender: String,
+      dateOfBirth: Date,
+      job: String,
+      address: String,
+      membershipStart: {
+        type: Date
+      },
+      membershipEnd: {
+        type: Date
+      }
     },
-    membershipEnd: {
-      type: Date
+    trainerInfo: {
+      specialization: String
     },
-    // Trainer fields
-    specialization: String,
-    // Employee fields
-    position: String,
-    salary: Number,
-    shiftSchedule: String,
-    performanceRating: Number
+    employeeInfo: {
+      position: String,
+      salary: Number,
+      shiftSchedule: String,
+      performanceRating: Number
+    }
   },
   { timestamps: true }
 );
