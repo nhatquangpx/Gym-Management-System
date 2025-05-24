@@ -9,6 +9,7 @@ import BuildIcon from '@mui/icons-material/Build';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import HistoryIcon from '@mui/icons-material/History';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import logo from "../../../assets/logo.svg";
 import styles from './Sidebar.module.css';
 
@@ -18,6 +19,7 @@ const menu = [
   { name: "Nhân viên/Huấn luyện viên", path: "/admin/employees", icon: <PeopleIcon /> },
   { name: "Gói tập", path: "/admin/packages", icon: <FitnessCenterIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/admin/orders", icon: <ReceiptLongIcon /> },
+  { name: "Ưu đãi", path: "/admin/promotions", icon: <LocalOfferIcon /> },
   { name: "Thiết bị", path: "/admin/equipment", icon: <BuildIcon /> },
   { name: "Lịch sử tập luyện", path: "/admin/workouts", icon: <HistoryIcon /> },
   { name: "Phản hồi", path: "/admin/feedback", icon: <FeedbackIcon /> },
