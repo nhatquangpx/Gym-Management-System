@@ -9,6 +9,7 @@
   text-align: center;
   box-shadow: 0 2px 8px 0 #e5393522;
   transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
 }
 .active {
   background: #ffebee;

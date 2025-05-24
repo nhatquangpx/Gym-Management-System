@@ -8,6 +8,10 @@ import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
+import { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
 
 export default function Packages() {
   const packages = [
@@ -15,14 +19,36 @@ export default function Packages() {
     { id: 2, name: "Gói 3 tháng", price: "1.200.000đ", status: "Đang mở bán" },
     { id: 3, name: "Gói 6 tháng", price: "2.000.000đ", status: "Tạm dừng" },
   ];
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+  const handleDeleteConfirm = () => {
+    // TODO: Gọi API xóa gói tập với itemToDelete
+    setOpenConfirm(false);
+    setItemToDelete(null);
+  };
+  const navigate = useNavigate();
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
-          Quản lý gói tập
+          Quản lý đăng ký gói tập
         </h1>
         <Link to="/admin/packages/add">
-          <AddButton label="Thêm gói tập" />
+          <Button
+            variant="contained"
+            sx={{ 
+              backgroundColor: 'var(--admin-primary)',
+              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+            }}
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/admin/packages/add')}
+          >
+            Thêm gói tập
+          </Button>
         </Link>
       </div>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
@@ -51,7 +77,7 @@ export default function Packages() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/packages/view/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/admin/packages/edit/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(p.id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -60,6 +86,14 @@ export default function Packages() {
           </table>
         </div>
       </Paper>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa gói tập này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

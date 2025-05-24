@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, MenuItem, Select, InputLabel, FormControl
+  IconButton, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,6 +14,8 @@ export default function EquipmentList() {
   const [equipment, setEquipment] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({ name: '', type: '', status: '' });
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     fetchEquipment();
@@ -32,14 +34,21 @@ export default function EquipmentList() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa thiết bị này?')) {
-      try {
-        await fetch(`/api/equipment/${id}`, { method: 'DELETE' });
-        fetchEquipment();
-      } catch (error) {
-        console.error('Error deleting equipment:', error);
-      }
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await fetch(`/api/equipment/${itemToDelete}`, {
+        method: 'DELETE',
+      });
+      fetchEquipment();
+    } catch (error) {
+      console.error('Error deleting equipment:', error);
     }
+    setOpenConfirm(false);
+    setItemToDelete(null);
   };
 
   const filteredEquipment = equipment.filter(eq =>
@@ -65,7 +74,10 @@ export default function EquipmentList() {
         </Typography>
         <Button
           variant="contained"
-          color="primary"
+          sx={{ 
+            backgroundColor: 'var(--admin-primary)',
+            '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+          }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/admin/equipment/add')}
         >
@@ -136,6 +148,14 @@ export default function EquipmentList() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa thiết bị này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

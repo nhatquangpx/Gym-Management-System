@@ -9,6 +9,10 @@ import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
+import { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
 
 export default function Employees() {
   const employees = [
@@ -16,6 +20,18 @@ export default function Employees() {
     { id: 2, name: "Phạm Thị E", role: "Nhân viên lễ tân", phone: "0911222333", status: "Nghỉ việc", avatar: "https://i.pravatar.cc/150?img=5" },
     { id: 3, name: "Trần Văn F", role: "Huấn luyện viên", phone: "0922333444", status: "Đang làm việc", avatar: "https://i.pravatar.cc/150?img=6" },
   ];
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+  const handleDeleteConfirm = () => {
+    // TODO: Gọi API xóa nhân viên với itemToDelete
+    setOpenConfirm(false);
+    setItemToDelete(null);
+  };
+  const navigate = useNavigate();
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
@@ -23,7 +39,17 @@ export default function Employees() {
           Danh sách nhân viên/Huấn luyện viên
         </h1>
         <Link to="/admin/employees/add">
-          <AddButton label="Thêm nhân viên/Huấn luyện viên" />
+          <Button
+            variant="contained"
+            sx={{ 
+              backgroundColor: 'var(--admin-primary)',
+              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+            }}
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/admin/employees/add')}
+          >
+            Thêm nhân viên/Huấn luyện viên
+          </Button>
         </Link>
       </div>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
@@ -54,7 +80,7 @@ export default function Employees() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/employees/view/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/admin/employees/edit/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(e.id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -63,6 +89,14 @@ export default function Employees() {
           </table>
         </div>
       </Paper>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa nhân viên này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

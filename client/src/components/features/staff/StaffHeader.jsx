@@ -38,10 +38,6 @@ export default function StaffHeader() {
     <header className={`${styles.header} ${styles.headerFixed}`}>
       <div className={styles.leftSection}></div>
       <div className={styles.rightSection}>
-        <button className={styles.notificationButton}>
-          <span className={styles.icon}>🔔</span>
-          <span className={styles.badge}>{manager.notifications}</span>
-        </button>
         <div className={styles.userMenu}>
           <button className={styles.userButton} onClick={handleAvatarClick}>
             <Avatar src={manager.avatar} alt={manager.name} className={styles.avatar} />

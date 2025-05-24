@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Button, IconButton, Typography, Box, Chip, ThemeProvider, createTheme
+  Button, IconButton, Typography, Box, Chip, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -20,6 +20,8 @@ const theme = createTheme({
 export default function Equipment() {
   const [equipment, setEquipment] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     fetchEquipment();
@@ -38,16 +40,21 @@ export default function Equipment() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa thiết bị này?')) {
-      try {
-        await fetch(`/api/equipment/${id}`, {
-          method: 'DELETE',
-        });
-        fetchEquipment();
-      } catch (error) {
-        console.error('Error deleting equipment:', error);
-      }
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await fetch(`/api/equipment/${itemToDelete}`, {
+        method: 'DELETE',
+      });
+      fetchEquipment();
+    } catch (error) {
+      console.error('Error deleting equipment:', error);
     }
+    setOpenConfirm(false);
+    setItemToDelete(null);
   };
 
   if (loading) {
@@ -132,6 +139,15 @@ export default function Equipment() {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+          <DialogTitle>Xác nhận xóa</DialogTitle>
+          <DialogContent>Bạn có chắc chắn muốn xóa thiết bị này?</DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+            <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </ThemeProvider>
   );
