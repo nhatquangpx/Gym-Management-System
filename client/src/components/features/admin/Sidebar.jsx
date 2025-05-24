@@ -17,10 +17,9 @@ const menu = [
   { name: "Thành viên", path: "/admin/members", icon: <GroupIcon /> },
   { name: "Nhân viên/Huấn luyện viên", path: "/admin/employees", icon: <PeopleIcon /> },
   { name: "Gói tập", path: "/admin/packages", icon: <FitnessCenterIcon /> },
-  { name: "Đơn hàng/Thanh toán", path: "/admin/orders", icon: <ReceiptLongIcon /> },
+  { name: "Quản lý đăng ký gói tập", path: "/admin/orders", icon: <ReceiptLongIcon /> },
   { name: "Thiết bị", path: "/admin/equipment", icon: <BuildIcon /> },
   { name: "Lịch sử tập luyện", path: "/admin/workouts", icon: <HistoryIcon /> },
-  { name: "Lịch tập", path: "/admin/schedules", icon: <CalendarMonthIcon /> },
   { name: "Phản hồi", path: "/admin/feedback", icon: <FeedbackIcon /> },
   { name: "Tài khoản admin", path: "/admin/account", icon: <AccountCircleIcon /> },
 ];
@@ -30,7 +29,6 @@ export default function Sidebar() {
   const whiteIconPaths = [
     '/admin/equipment',
     '/admin/workouts',
-    '/admin/schedules',
     '/admin/feedback',
   ];
   return (

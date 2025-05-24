@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, MenuItem, Select, InputLabel, FormControl
+  IconButton, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,6 +14,8 @@ export default function WorkoutList() {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({ member: '', trainer: '', status: '', date: '' });
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     fetchWorkouts();
@@ -66,7 +68,10 @@ export default function WorkoutList() {
         </Typography>
         <Button
           variant="contained"
-          color="primary"
+          sx={{ 
+            backgroundColor: 'var(--admin-primary)',
+            '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+          }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/admin/workouts/add')}
         >
@@ -142,13 +147,21 @@ export default function WorkoutList() {
                 <TableCell align="right">
                   <IconButton onClick={() => navigate(`/admin/workouts/${wk._id}`)}><VisibilityIcon /></IconButton>
                   <IconButton onClick={() => navigate(`/admin/workouts/edit/${wk._id}`)}><EditIcon /></IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(wk._id)}><DeleteIcon /></IconButton>
+                  <IconButton color="error" onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa buổi tập này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={async () => { await handleDelete(itemToDelete); setOpenConfirm(false); setItemToDelete(null); }}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

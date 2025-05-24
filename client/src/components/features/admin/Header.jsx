@@ -32,10 +32,6 @@ export default function Header() {
     <header className={`${styles.header} ${styles.headerFixed}`}>
       <div className={styles.leftSection}></div>
       <div className={styles.rightSection}>
-        <button className={styles.notificationButton}>
-          <span className={styles.icon}>🔔</span>
-          <span className={styles.badge}>3</span>
-        </button>
         <div className={styles.userMenu}>
           <button className={styles.userButton} onClick={handleAvatarClick}>
             <Avatar alt="Admin" src="https://i.pravatar.cc/150?img=32" className={styles.avatar} />

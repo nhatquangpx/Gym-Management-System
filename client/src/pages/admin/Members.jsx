@@ -2,10 +2,13 @@ import GroupIcon from '@mui/icons-material/Group';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { IconButton, Paper, Tooltip } from '@mui/material';
+import { IconButton, Paper, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function Members() {
   const members = [
@@ -13,6 +16,18 @@ export default function Members() {
     { id: 2, name: 'Trần Thị B', email: 'tranthib@gmail.com', phone: '0912345678', status: 'Đang hoạt động', joinDate: '15/02/2023' },
     { id: 3, name: 'Lê Văn C', email: 'levanc@gmail.com', phone: '0923456789', status: 'Tạm dừng', joinDate: '01/03/2023' },
   ];
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+  const handleDeleteConfirm = () => {
+    // TODO: Gọi API xóa thành viên với itemToDelete
+    setOpenConfirm(false);
+    setItemToDelete(null);
+  };
+  const navigate = useNavigate();
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
@@ -20,7 +35,17 @@ export default function Members() {
           Danh sách thành viên
         </h1>
         <Link to="/admin/members/add">
-          <AddButton label="Thêm thành viên" />
+          <Button
+            variant="contained"
+            sx={{ 
+              backgroundColor: 'var(--admin-primary)',
+              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+            }}
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/admin/members/add')}
+          >
+            Thêm thành viên
+          </Button>
         </Link>
       </div>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
@@ -53,7 +78,7 @@ export default function Members() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/members/view/${member.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/admin/members/edit/${member.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(member.id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -62,6 +87,14 @@ export default function Members() {
           </table>
         </div>
       </Paper>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa thành viên này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

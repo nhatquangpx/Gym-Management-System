@@ -46,7 +46,6 @@ import EditProfile from './pages/admin/EditProfile';
 import AdminEquipment from './pages/admin/Equipment';
 import AdminFeedback from './pages/admin/Feedback';
 import AdminWorkouts from './pages/admin/Workouts';
-import AdminSchedules from './pages/admin/Schedules';
 import ViewEquipment from './pages/admin/ViewEquipment';
 import EditEquipment from './pages/admin/EditEquipment';
 import ViewFeedback from './pages/admin/ViewFeedback';
@@ -54,9 +53,6 @@ import ViewWorkout from './pages/admin/ViewWorkout';
 import EditWorkout from './pages/admin/EditWorkout';
 import EquipmentList from './pages/admin/EquipmentList';
 import WorkoutList from './pages/admin/WorkoutList';
-import ScheduleList from './pages/admin/ScheduleList';
-import ViewSchedule from './pages/admin/ViewSchedule';
-import EditSchedule from './pages/admin/EditSchedule';
 import AddMember from './pages/admin/AddMember';
 import AddEmployee from './pages/admin/AddEmployee';
 import AddPackage from './pages/admin/AddPackage';
@@ -184,10 +180,6 @@ function App() {
             <Route path="workouts/view/:id" element={<ViewWorkout />} />
             <Route path="workouts/edit/:id" element={<EditWorkout />} />
             <Route path="workouts/add" element={<EditWorkout />} />
-            <Route path="schedules" element={<ScheduleList />} />
-            <Route path="schedules/view/:id" element={<ViewSchedule />} />
-            <Route path="schedules/edit/:id" element={<EditSchedule />} />
-            <Route path="schedules/add" element={<EditSchedule />} />
             <Route path="feedback" element={<AdminFeedback />} />
             <Route path="feedback/view/:id" element={<ViewFeedback />} />
             <Route path="statistics" element={<AdminStatistics />} />
