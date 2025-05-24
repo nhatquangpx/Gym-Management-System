@@ -24,7 +24,6 @@ import Login from './pages/auth/Login';
 
 // Admin
 import AdminLayout from './components/features/admin/AdminLayout';
-import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminMembers from './pages/admin/Members';
 import AdminEmployees from './pages/admin/Employees';
@@ -160,7 +159,6 @@ function App() {
 
           {/* Admin routes */}
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="members" element={<AdminMembers />} />
