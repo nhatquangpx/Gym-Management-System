@@ -45,7 +45,18 @@ export default function StaffDashboard() {
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
-      <Typography variant="h4" className="font-bold text-[var(--admin-text)] mb-8">Dashboard tổng quan</Typography>
+      <Typography
+        variant="h4"
+        className="font-bold"
+        sx={{
+          color: '#4f8cff',
+          fontWeight: 700,
+          fontSize: '2.2em',
+          mb: 4
+        }}
+      >
+        Dashboard tổng quan
+      </Typography>
       <Grid container spacing={4}>
         {statsConfig.map((item) => (
           <Grid item xs={12} sm={6} md={4} lg={2} key={item.key}>

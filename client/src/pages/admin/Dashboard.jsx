@@ -52,7 +52,7 @@ export default function Dashboard() {
 
   return (
     <Box sx={{ p: 3, background: 'var(--admin-bg)', minHeight: '100vh' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', mb: 4 }}>
         Tổng quan
       </Typography>
 

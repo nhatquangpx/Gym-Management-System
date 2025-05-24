@@ -1,0 +1,80 @@
+.sidebar {
+  width: 290px;
+  background-color: var(--admin-sidebar);
+  border-right: 1.5px solid var(--admin-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 100;
+  box-shadow: 1px 0 0 var(--admin-border);
+}
+
+.logoBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 80px;
+  border-bottom: 1.5px solid var(--admin-border);
+  background: var(--admin-header);
+}
+
+.logo {
+  height: 44px;
+  width: 44px;
+  object-fit: contain;
+}
+
+.brand {
+  font-size: 1.7em;
+  font-weight: 700;
+  color: var(--admin-primary);
+  letter-spacing: 2px;
+}
+
+.nav {
+  padding: 32px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 14px 32px;
+  color: var(--admin-text);
+  text-decoration: none;
+  font-size: 1.08em;
+  border-radius: 8px 0 0 8px;
+  transition: background 0.2s, color 0.2s;
+  gap: 16px;
+}
+
+.navItem:hover {
+  background-color: var(--admin-accent);
+  color: var(--admin-primary);
+}
+
+.active {
+  background-color: var(--admin-accent);
+  color: var(--admin-primary);
+  border-right: 4px solid var(--admin-primary);
+}
+
+.icon {
+  font-size: 1.35em;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  font-size: 1em;
+  font-weight: 500;
+} 

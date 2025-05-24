@@ -52,7 +52,18 @@ export default function ScheduleList() {
   return (
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-[var(--admin-text)]">Danh sách lịch tập</Typography>
+        <Typography
+          variant="h4"
+          className="font-bold"
+          sx={{
+            color: '#4f8cff',
+            fontWeight: 700,
+            fontSize: '2.2em',
+            mb: 4
+          }}
+        >
+          Danh sách lịch tập
+        </Typography>
         <Button
           variant="contained"
           color="primary"

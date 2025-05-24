@@ -1,0 +1,92 @@
+.header {
+  height: 80px;
+  background-color: var(--admin-header);
+  border-bottom: 1px solid var(--admin-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  position: fixed;
+  top: 0;
+  left: 290px;
+  width: calc(100vw - 290px);
+  z-index: 101;
+  box-shadow: 0 1px 0 var(--admin-border);
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.rightSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.notificationButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+}
+
+.icon {
+  font-size: 1.5em;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #f44336;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 0.8em;
+}
+
+.userMenu {
+  position: relative;
+}
+
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 24px;
+  transition: background 0.2s;
+}
+
+.userButton:hover {
+  background: var(--admin-accent);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--admin-primary);
+}
+
+.userName {
+  font-size: 1.1em;
+  color: var(--admin-text);
+  font-weight: 500;
+}
+
+.logo {
+  height: 44px;
+  width: 44px;
+  object-fit: contain;
+  margin-right: 16px;
+  display: inline-block;
+  vertical-align: middle;
+} 

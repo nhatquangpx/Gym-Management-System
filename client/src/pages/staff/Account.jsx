@@ -34,7 +34,18 @@ export default function StaffAccount() {
 
   return (
     <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
-      <Typography variant="h4" className="font-bold mb-8" sx={{ color: 'var(--admin-text)' }}>Tài khoản cá nhân</Typography>
+      <Typography
+        variant="h4"
+        className="font-bold"
+        sx={{
+          color: '#4f8cff',
+          fontWeight: 700,
+          fontSize: '2.2em',
+          mb: 4
+        }}
+      >
+        Tài khoản cá nhân
+      </Typography>
       <Paper className="p-6 shadow-lg rounded-lg mb-8" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex items-center gap-6 mb-6">
           <Avatar src={info.avatar} alt={info.name} sx={{ width: 64, height: 64 }} />

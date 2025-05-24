@@ -2,11 +2,19 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Typography, Box, Chip, Button
+  IconButton, Typography, Box, Chip, Button, ThemeProvider, createTheme
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4f8cff',
+    },
+  },
+});
 
 export default function Schedules() {
   const [schedules, setSchedules] = useState([]);
@@ -46,73 +54,84 @@ export default function Schedules() {
   }
 
   return (
-    <div className="p-6">
-      <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-gray-800">
-          Quản lý lịch tập
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          component={Link}
-          to="/admin/schedules/add"
-        >
-          Thêm lịch tập
-        </Button>
-      </Box>
+    <ThemeProvider theme={theme}>
+      <div className="p-6">
+        <Box className="flex justify-between items-center mb-6">
+          <Typography 
+            variant="h4" 
+            className="font-bold" 
+            sx={{ 
+              color: '#4f8cff', 
+              fontWeight: 700, 
+              fontSize: '2.2em', 
+              mb: 4 
+            }}
+          >
+            Quản lý lịch tập
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            component={Link}
+            to="/admin/schedules/add"
+          >
+            Thêm lịch tập
+          </Button>
+        </Box>
 
-      <TableContainer component={Paper} className="shadow-lg rounded-lg">
-        <Table>
-          <TableHead>
-            <TableRow className="bg-gray-100">
-              <TableCell>Huấn luyện viên</TableCell>
-              <TableCell>Ngày</TableCell>
-              <TableCell>Giờ bắt đầu</TableCell>
-              <TableCell>Giờ kết thúc</TableCell>
-              <TableCell>Loại lớp</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Thao tác</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {schedules.map((schedule) => (
-              <TableRow key={schedule._id}>
-                <TableCell>{schedule.trainerName}</TableCell>
-                <TableCell>{new Date(schedule.date).toLocaleDateString()}</TableCell>
-                <TableCell>{schedule.startTime}</TableCell>
-                <TableCell>{schedule.endTime}</TableCell>
-                <TableCell>{schedule.classType}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={schedule.status}
-                    color={
-                      schedule.status === 'available' ? 'success' :
-                      schedule.status === 'full' ? 'error' : 'warning'
-                    }
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    component={Link}
-                    to={`/admin/schedules/edit/${schedule._id}`}
-                    color="primary"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(schedule._id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+        <TableContainer component={Paper} className="shadow-lg rounded-lg">
+          <Table>
+            <TableHead>
+              <TableRow className="bg-gray-100">
+                <TableCell>Huấn luyện viên</TableCell>
+                <TableCell>Ngày</TableCell>
+                <TableCell>Giờ bắt đầu</TableCell>
+                <TableCell>Giờ kết thúc</TableCell>
+                <TableCell>Loại lớp</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Thao tác</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+            </TableHead>
+            <TableBody>
+              {schedules.map((schedule) => (
+                <TableRow key={schedule._id}>
+                  <TableCell>{schedule.trainerName}</TableCell>
+                  <TableCell>{new Date(schedule.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{schedule.startTime}</TableCell>
+                  <TableCell>{schedule.endTime}</TableCell>
+                  <TableCell>{schedule.classType}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={schedule.status}
+                      color={
+                        schedule.status === 'available' ? 'success' :
+                        schedule.status === 'full' ? 'error' : 'warning'
+                      }
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      component={Link}
+                      to={`/admin/schedules/edit/${schedule._id}`}
+                      color="primary"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(schedule._id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    </ThemeProvider>
   );
 } 
