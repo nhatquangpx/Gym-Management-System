@@ -97,7 +97,6 @@ import TrainerDashboard from './pages/trainer/DashboardPage/DashboardPage';
 import TrainerStudents from './pages/trainer/StudentsPage/StudentsPage';
 import TrainerSchedulePage from './pages/trainer/SchedulePage/SchedulePage';
 import TrainerWorkoutLogPage from './pages/trainer/WorkoutLogPage/WorkoutLogPage';
-import TrainingGuidePage from './pages/trainer/TrainingGuidePage/TrainingGuidePage';
 import ProgressPage from './pages/trainer/ProgressPage/ProgressPage';
 
 import { AuthProvider } from './contexts/AuthContext';
@@ -207,7 +206,6 @@ function App() {
             <Route path="students" element={<TrainerStudents />} />
             <Route path="schedule" element={<TrainerSchedulePage />} />
             <Route path="workouts" element={<TrainerWorkoutLogPage />} />
-            <Route path="guidance" element={<TrainingGuidePage />} />
             <Route path="progress" element={<ProgressPage />} />
             <Route path="settings" element={<div>Cài đặt</div>} />
           </Route>
