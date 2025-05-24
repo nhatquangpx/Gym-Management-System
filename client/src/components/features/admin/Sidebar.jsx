@@ -16,7 +16,8 @@ import styles from './Sidebar.module.css';
 const menu = [
   { name: "Dashboard", path: "/admin/dashboard", icon: <DashboardIcon /> },
   { name: "Thành viên", path: "/admin/members", icon: <GroupIcon /> },
-  { name: "Nhân viên/Huấn luyện viên", path: "/admin/employees", icon: <PeopleIcon /> },
+  { name: "Nhân viên", path: "/admin/employees", icon: <PeopleIcon /> },
+  { name: "Huấn luyện viên", path: "/admin/trainers", icon: <PeopleIcon /> },
   { name: "Gói tập", path: "/admin/packages", icon: <FitnessCenterIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/admin/orders", icon: <ReceiptLongIcon /> },
   { name: "Ưu đãi", path: "/admin/promotions", icon: <LocalOfferIcon /> },

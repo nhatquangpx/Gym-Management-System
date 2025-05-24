@@ -31,11 +31,20 @@ export default function Packages() {
     setItemToDelete(null);
   };
   const navigate = useNavigate();
+  const [searchName, setSearchName] = useState("");
+  const [searchPrice, setSearchPrice] = useState("");
+  const [searchStatus, setSearchStatus] = useState("");
+  // Lọc danh sách gói tập theo tên, giá, trạng thái
+  const filteredPackages = packages.filter(p =>
+    p.name.toLowerCase().includes(searchName.toLowerCase()) &&
+    p.price.includes(searchPrice) &&
+    p.status.toLowerCase().includes(searchStatus.toLowerCase())
+  );
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
-          Quản lý đăng ký gói tập
+          Danh sách gói tập
         </h1>
         <Link to="/admin/packages/add">
           <Button
@@ -51,29 +60,55 @@ export default function Packages() {
           </Button>
         </Link>
       </div>
+      {/* Thanh tìm kiếm */}
+      <div className="flex gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Tìm theo tên gói"
+          className="p-2 rounded border border-gray-300 min-w-[200px]"
+          value={searchName}
+          onChange={e => setSearchName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Giá"
+          className="p-2 rounded border border-gray-300 min-w-[120px]"
+          value={searchPrice}
+          onChange={e => setSearchPrice(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Trạng thái"
+          className="p-2 rounded border border-gray-300 min-w-[120px]"
+          value={searchStatus}
+          onChange={e => setSearchStatus(e.target.value)}
+        />
+      </div>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
-          <table className="min-w-full">
+          <table className="min-w-full rounded-2xl">
             <thead>
-              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)] text-base">
-                <th className="py-3 px-4 text-left">Gói tập</th>
-                <th className="py-3 px-4 text-left">Giá</th>
-                <th className="py-3 px-4 text-left">Trạng thái</th>
-                <th className="py-3 px-4 text-center">Thao tác</th>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-center">Tên gói tập</th>
+                <th className="py-3 px-4 text-center">Giá</th>
+                <th className="py-3 px-4 text-center">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {packages.map((p) => (
+              {filteredPackages.length === 0 ? (
+                <tr><td colSpan={4} className="text-center py-4">Không có gói tập nào</td></tr>
+              ) : filteredPackages.map((p) => (
                 <tr key={p.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
-                  <td className="py-2 px-4 flex items-center gap-3 text-[var(--admin-text)]">
-                    <FitnessCenterIcon className="text-[var(--admin-primary)] mx-auto" />
-                    <span>{p.name}</span>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">
+                    <span className="flex items-center gap-2 justify-center">
+                      <FitnessCenterIcon className="text-[var(--admin-primary)]" style={{ fontSize: 22 }} />
+                      {p.name}
+                    </span>
                   </td>
-                  <td className="py-2 px-4 text-[var(--admin-text)]">{p.price}</td>
-                  <td className="py-2 px-4">
-                    <StatusBadge status={p.status} />
-                  </td>
-                  <td className="py-2 px-4 text-center">
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.price}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.status}</td>
+                  <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/packages/view/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/admin/packages/edit/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
