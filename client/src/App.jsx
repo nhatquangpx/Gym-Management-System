@@ -56,6 +56,10 @@ import WorkoutList from './pages/admin/WorkoutList';
 import AddMember from './pages/admin/AddMember';
 import AddEmployee from './pages/admin/AddEmployee';
 import AddPackage from './pages/admin/AddPackage';
+import Promotions from './pages/admin/Promotions';
+import AddPromotion from './pages/admin/AddPromotion';
+import ViewPromotion from './pages/admin/ViewPromotion';
+import EditPromotion from './pages/admin/EditPromotion';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
@@ -85,6 +89,7 @@ import StaffAddPackage from './pages/staff/AddPackage';
 import AddEquipment from './pages/staff/AddEquipment';
 import AddSchedule from './pages/staff/AddSchedule';
 import StaffOrders from './pages/staff/Orders';
+import ServiceHistory from './pages/staff/ServiceHistory';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -147,6 +152,7 @@ function App() {
             <Route path="equipment" element={<StaffEquipment />} />
             <Route path="orders" element={<StaffOrders />} />
             <Route path="workouts" element={<StaffWorkouts />} />
+            <Route path="service-history" element={<ServiceHistory />} />
             <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="account" element={<StaffAccount />} />
@@ -187,6 +193,10 @@ function App() {
             <Route path="profile" element={<AdminProfile />} />
             <Route path="profile/edit" element={<EditProfile />} />
             <Route path="account" element={<AdminAccount />} />
+            <Route path="promotions" element={<Promotions />} />
+            <Route path="promotions/add" element={<AddPromotion />} />
+            <Route path="promotions/view/:id" element={<ViewPromotion />} />
+            <Route path="promotions/edit/:id" element={<EditPromotion />} />
           </Route>
 
           {/* Trainer routes */}

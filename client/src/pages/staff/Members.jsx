@@ -7,6 +7,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AddIcon from '@mui/icons-material/Add';
 import AddButton from '../../components/AddButton';
 
 export default function StaffMembers() {
@@ -62,10 +63,17 @@ export default function StaffMembers() {
         >
           Danh sách hội viên
         </Typography>
-        <AddButton 
+        <Button
+          variant="contained"
+          sx={{ 
+            backgroundColor: 'var(--admin-primary)',
+            '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
+          }}
+          startIcon={<AddIcon />}
           onClick={() => navigate('/staff/members/add')}
-          label="Thêm hội viên"
-        />
+        >
+          Thêm hội viên
+        </Button>
       </Box>
       <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
         <Box className="flex flex-wrap gap-4">
