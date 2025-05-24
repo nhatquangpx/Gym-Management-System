@@ -254,7 +254,7 @@
   background: #fff;
   border-radius: 12px;
   width: 95%;
-  max-width: 420px;
+  max-width: 520px;
   padding: 28px 24px 20px 24px;
   position: relative;
   box-shadow: 0 4px 24px rgba(25, 118, 210, 0.12);
@@ -355,4 +355,61 @@
 }
 .sessionModalBtn.danger:hover {
   background: #ffcdd2;
+}
+
+.timeInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.timeInputs .sessionModalInput {
+  font-size: 1.2em;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 12px;
+  text-align: center;
+}
+
+.confirmModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.confirmModal {
+  background: #fff;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 400px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.12);
+}
+
+.confirmModal h3 {
+  font-size: 1.3em;
+  font-weight: 600;
+  color: var(--trainer-text);
+  margin: 0 0 12px 0;
+}
+
+.confirmModal p {
+  color: #666;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.confirmModalFooter {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
 } 
