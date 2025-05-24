@@ -36,7 +36,18 @@ export default function AddMember() {
   return (
     <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
       <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
-        <Typography variant="h4" className="font-bold mb-6" sx={{ color: 'var(--admin-text)' }}>Thêm hội viên mới</Typography>
+        <Typography
+          variant="h4"
+          className="font-bold"
+          sx={{
+            color: '#4f8cff',
+            fontWeight: 700,
+            fontSize: '2.2em',
+            mb: 4
+          }}
+        >
+          Thêm hội viên mới
+        </Typography>
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextField label="Tên hội viên" name="name" value={form.name} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: 'var(--admin-text)' } }} InputProps={{ style: { color: 'var(--admin-text)' } }} sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }} />
           <TextField label="Email" name="email" value={form.email} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ style: { color: 'var(--admin-text)' } }} InputProps={{ style: { color: 'var(--admin-text)' } }} sx={{ '.MuiOutlinedInput-notchedInput': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }} />

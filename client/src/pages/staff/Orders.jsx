@@ -96,7 +96,18 @@ export default function StaffOrders() {
   return (
     <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-text)' }}>Quản lý đơn hàng</Typography>
+        <Typography
+          variant="h4"
+          className="font-bold"
+          sx={{
+            color: '#4f8cff',
+            fontWeight: 700,
+            fontSize: '2.2em',
+            mb: 4
+          }}
+        >
+          Quản lý đơn hàng
+        </Typography>
         <AddButton label="Tạo đơn hàng thủ công" onClick={() => alert('Chức năng này chỉ demo UI!')} />
       </Box>
       <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>

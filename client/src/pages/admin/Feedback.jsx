@@ -50,7 +50,9 @@ export default function Feedback() {
   return (
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold text-[var(--admin-text)]">Danh sách phản hồi</Typography>
+        <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', mb: 4 }}>
+          Danh sách phản hồi
+        </Typography>
         <Button
           variant="contained"
           sx={{ 

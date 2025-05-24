@@ -40,7 +40,7 @@ export default function EditProfile() {
 
   return (
     <Box sx={{ p: 3, backgroundColor: 'var(--admin-bg)', minHeight: '100vh', color: 'var(--admin-text)' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', mb: 4 }}>
         Chỉnh sửa thông tin cá nhân
       </Typography>
       <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto', borderRadius: 4, boxShadow: 6, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>

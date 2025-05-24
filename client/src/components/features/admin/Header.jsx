@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "../../../assets/logo.svg";
+import styles from './Header.module.css';
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -28,19 +29,18 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between bg-[var(--admin-header)] shadow-lg px-10 py-3 mb-4 border-b border-[var(--admin-border)]">
-      <div className="flex items-center gap-4">
-        <img src={logo} alt="GYMPRO Logo" style={{ height: 30 }} />
-        <span className="text-xl font-extrabold text-[var(--admin-text)] tracking-wider">GYMPRO ADMIN</span>
-      </div>
-      <div className="flex items-center gap-8">
-        <button className="relative group">
-          <NotificationsIcon className="text-[var(--admin-primary)]" fontSize="medium" />
-          <span className="absolute -top-1 -right-1 bg-[var(--admin-primary)] text-white text-xs rounded-full px-1 py-0.5 shadow-lg animate-bounce border border-white">3</span>
+    <header className={`${styles.header} ${styles.headerFixed}`}>
+      <div className={styles.leftSection}></div>
+      <div className={styles.rightSection}>
+        <button className={styles.notificationButton}>
+          <span className={styles.icon}>🔔</span>
+          <span className={styles.badge}>3</span>
         </button>
-        <div className="flex items-center gap-2">
-          <Avatar alt="Admin" src="https://i.pravatar.cc/150?img=32" sx={{ border: `2px solid var(--admin-primary)`, width: 40, height: 40, cursor: 'pointer' }} onClick={handleAvatarClick} />
-          <span className="font-semibold text-[var(--admin-text)] text-base">Admin CJ</span>
+        <div className={styles.userMenu}>
+          <button className={styles.userButton} onClick={handleAvatarClick}>
+            <Avatar alt="Admin" src="https://i.pravatar.cc/150?img=32" className={styles.avatar} />
+            <span className={styles.userName}>Admin CJ</span>
+          </button>
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
             <MenuItem onClick={handleSettings}>Cài đặt</MenuItem>
             <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>

@@ -15,7 +15,9 @@ export default function Statistics() {
   ];
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-6 text-[var(--admin-text)]">Thống kê</h1>
+      <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
+        Thống kê
+      </h1>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
