@@ -83,7 +83,6 @@ import StaffEquipment from './pages/staff/Equipment';
 import StaffWorkouts from './pages/staff/Workouts';
 import StaffSchedules from './pages/staff/Schedules';
 import StaffFeedback from './pages/staff/Feedback';
-import StaffStatistics from './pages/staff/Statistics';
 import StaffAccount from './pages/staff/Account';
 import StaffAddMember from './pages/staff/AddMember';
 import StaffAddPackage from './pages/staff/AddPackage';
@@ -154,7 +153,6 @@ function App() {
             <Route path="workouts" element={<StaffWorkouts />} />
             <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
-            <Route path="statistics" element={<StaffStatistics />} />
             <Route path="account" element={<StaffAccount />} />
           </Route>
 

@@ -37,7 +37,18 @@ export default function AddSchedule() {
   return (
     <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
       <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
-        <Typography variant="h4" className="font-bold mb-6" sx={{ color: 'var(--admin-text)' }}>Thêm lịch tập mới</Typography>
+        <Typography
+          variant="h4"
+          className="font-bold"
+          sx={{
+            color: '#4f8cff',
+            fontWeight: 700,
+            fontSize: '2.2em',
+            mb: 4
+          }}
+        >
+          Thêm lịch tập mới
+        </Typography>
         <form onSubmit={handleSubmit} className="space-y-4">
           <TextField 
             label="Tên lịch tập" 

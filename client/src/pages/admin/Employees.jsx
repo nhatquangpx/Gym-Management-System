@@ -19,7 +19,9 @@ export default function Employees() {
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[var(--admin-text)]">Danh sách nhân viên/Huấn luyện viên</h1>
+        <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
+          Danh sách nhân viên/Huấn luyện viên
+        </h1>
         <Link to="/admin/employees/add">
           <AddButton label="Thêm nhân viên/Huấn luyện viên" />
         </Link>

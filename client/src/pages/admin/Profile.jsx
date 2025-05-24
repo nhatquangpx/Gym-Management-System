@@ -35,7 +35,7 @@ export default function Profile() {
 
   return (
     <Box sx={{ p: 3, background: '#181818', minHeight: '100vh' }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#fff', fontWeight: 700 }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', mb: 4 }}>
         Thông tin cá nhân
       </Typography>
 

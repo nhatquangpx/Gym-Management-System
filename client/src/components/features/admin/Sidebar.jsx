@@ -10,6 +10,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import HistoryIcon from '@mui/icons-material/History';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import logo from "../../../assets/logo.svg";
+import styles from './Sidebar.module.css';
 
 const menu = [
   { name: "Dashboard", path: "/admin/dashboard", icon: <DashboardIcon /> },
@@ -33,35 +34,26 @@ export default function Sidebar() {
     '/admin/feedback',
   ];
   return (
-    <aside className="w-64 bg-[var(--admin-sidebar)] shadow-lg h-screen sticky top-0 flex flex-col border-r border-[var(--admin-border)]">
-      <div className="py-8 px-4 text-2xl font-extrabold text-[var(--admin-text)] border-b border-[var(--admin-border)] flex flex-col items-center justify-center bg-[var(--admin-header)]">
-        <img src={logo} alt="GYMPRO Logo" style={{ height: 48, marginBottom: 8 }} />
-        <span className="tracking-wider text-xl mt-1">GYMPRO ADMIN</span>
+    <aside className={styles.sidebar}>
+      <div className={styles.logoBox}>
+        <img src={logo} alt="GYMPRO Logo" className={styles.logo} />
+        <span className={styles.brand}>GYMPRO</span>
       </div>
-      <nav className="mt-6 flex-1 overflow-y-auto">
+      <nav className={styles.nav}>
         {menu.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center px-6 py-3 text-lg transition-all duration-300 mb-2 font-medium gap-3 ` +
-              (isActive
-                ? "bg-[var(--admin-accent)] text-[var(--admin-primary)] shadow-lg font-bold border-l-4 border-[var(--admin-primary)]"
-                : "text-[var(--admin-text)] hover:bg-[var(--admin-accent)] hover:text-[var(--admin-primary)] hover:pl-8")
+              isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
             }
             end
           >
-            <span className={
-              `text-2xl` +
-              ((whiteIconPaths.includes(item.path) && window.location.pathname.startsWith(item.path)) ? ' text-[var(--admin-primary)]' : '')
-            }>
-              {item.icon}
-            </span>
-            {item.name}
+            <span className={styles.icon}>{item.icon}</span>
+            <span className={styles.label}>{item.name}</span>
           </NavLink>
         ))}
       </nav>
-      <div className="p-4 text-[var(--admin-text)] text-sm text-center border-t border-[var(--admin-border)] opacity-70 mt-auto bg-[var(--admin-sidebar)]">GymPro © 2024</div>
     </aside>
   );
 } 

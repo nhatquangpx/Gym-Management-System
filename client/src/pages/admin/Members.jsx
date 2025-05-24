@@ -16,7 +16,9 @@ export default function Members() {
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[var(--admin-text)]">Danh sách thành viên</h1>
+        <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
+          Danh sách thành viên
+        </h1>
         <Link to="/admin/members/add">
           <AddButton label="Thêm thành viên" />
         </Link>
