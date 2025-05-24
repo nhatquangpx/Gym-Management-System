@@ -1,137 +1,87 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Button, Select, DatePicker, Table, Tag } from 'antd';
-import { DownloadOutlined, SearchOutlined } from '@ant-design/icons';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-} from 'recharts';
+import React, { useState, useEffect } from 'react';
+import { Card, Select, Form, Button, message, DatePicker, Input } from 'antd';
+import { UserOutlined, CalendarOutlined, SendOutlined } from '@ant-design/icons';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import styles from './ProgressPage.module.css';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 const ProgressPage = () => {
+  const [form] = Form.useForm();
+  const [members, setMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
-  const [dateRange, setDateRange] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Mock data - replace with actual API data
-  const members = [
-    { id: 1, name: 'Nguyễn Văn A' },
-    { id: 2, name: 'Trần Thị B' },
-    { id: 3, name: 'Lê Văn C' },
+  // Mock data - replace with actual API call
+  useEffect(() => {
+    setMembers([
+      { id: 1, name: 'Nguyễn Văn A' },
+      { id: 2, name: 'Trần Thị B' },
+      { id: 3, name: 'Lê Văn C' },
+    ]);
+  }, []);
+
+  // Mock attendance data - replace with actual API call
+  const mockAttendanceData = [
+    { date: '2024-01-15', time: '08:00', status: 'attended', type: 'Cardio' },
+    { date: '2024-01-17', time: '09:00', status: 'missed', type: 'Strength' },
+    { date: '2024-01-19', time: '10:00', status: 'attended', type: 'HIIT' },
+    { date: '2024-01-20', time: '08:00', status: 'attended', type: 'Cardio' },
   ];
 
-  const weightProgressData = [
-    { date: '01/01', weight: 75 },
-    { date: '01/02', weight: 74.5 },
-    { date: '01/03', weight: 74 },
-    { date: '01/04', weight: 73.8 },
-    { date: '01/05', weight: 73.5 },
-    { date: '01/06', weight: 73 },
-  ];
-
-  const performanceData = [
-    { subject: 'Sức mạnh', value: 80 },
-    { subject: 'Sức bền', value: 65 },
-    { subject: 'Tốc độ', value: 70 },
-    { subject: 'Linh hoạt', value: 85 },
-    { subject: 'Cân bằng', value: 75 },
-  ];
-
-  const workoutHistory = [
-    {
-      key: '1',
-      date: '01/01/2024',
-      type: 'Cardio',
-      duration: '45 phút',
-      calories: 350,
-      status: 'Hoàn thành',
-    },
-    {
-      key: '2',
-      date: '02/01/2024',
-      type: 'Strength',
-      duration: '60 phút',
-      calories: 450,
-      status: 'Hoàn thành',
-    },
-    {
-      key: '3',
-      date: '03/01/2024',
-      type: 'HIIT',
-      duration: '30 phút',
-      calories: 400,
-      status: 'Vắng mặt',
-    },
-  ];
-
-  const columns = [
-    {
-      title: 'Ngày',
-      dataIndex: 'date',
-      key: 'date',
-    },
-    {
-      title: 'Loại bài tập',
-      dataIndex: 'type',
-      key: 'type',
-    },
-    {
-      title: 'Thời gian',
-      dataIndex: 'duration',
-      key: 'duration',
-    },
-    {
-      title: 'Calories',
-      dataIndex: 'calories',
-      key: 'calories',
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <Tag color={status === 'Hoàn thành' ? 'green' : 'red'}>
-          {status}
-        </Tag>
-      ),
-    },
-  ];
-
-  const handleExportReport = () => {
-    // Implement export functionality
-    console.log('Exporting progress report...');
+  const handleMemberChange = (value) => {
+    setSelectedMember(value);
+    // Fetch attendance data for selected member and week
+    setAttendanceData(mockAttendanceData);
   };
 
-  return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Đánh giá tiến độ</h1>
-        <Button
-          type="primary"
-          icon={<DownloadOutlined />}
-          onClick={handleExportReport}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          Xuất báo cáo
-        </Button>
-      </div>
+  const handleWeekChange = (date) => {
+    setSelectedWeek(date);
+    // Fetch attendance data for selected member and week
+    setAttendanceData(mockAttendanceData);
+  };
 
-      <Card className="mb-6">
-        <Row gutter={16} align="middle">
-          <Col>
+  const handleSubmitFeedback = async (values) => {
+    setLoading(true);
+    try {
+      // Replace with actual API call
+      console.log('Submitted feedback:', values);
+      message.success('Gửi nhận xét thành công!');
+      form.resetFields(['feedback']);
+    } catch (error) {
+      message.error('Có lỗi xảy ra khi gửi nhận xét');
+    }
+    setLoading(false);
+  };
+
+  // Prepare data for pie chart
+  const chartData = [
+    { name: 'Đã tập', value: attendanceData.filter(a => a.status === 'attended').length },
+    { name: 'Vắng mặt', value: attendanceData.filter(a => a.status === 'missed').length },
+  ];
+
+  const COLORS = ['#4CAF50', '#F44336'];
+
+  return (
+    <div className={styles.progressPage}>
+      <Card title="Đánh giá tiến độ" className={styles.card}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmitFeedback}
+        >
+          <Form.Item
+            name="memberId"
+            label="Chọn học viên"
+            rules={[{ required: true, message: 'Vui lòng chọn học viên' }]}
+          >
             <Select
-              placeholder="Chọn hội viên"
-              style={{ width: 200 }}
-              onChange={(value) => setSelectedMember(value)}
+              placeholder="Chọn học viên"
+              prefix={<UserOutlined />}
+              onChange={handleMemberChange}
             >
               {members.map(member => (
                 <Option key={member.id} value={member.id}>
@@ -139,81 +89,92 @@ const ProgressPage = () => {
                 </Option>
               ))}
             </Select>
-          </Col>
-          <Col>
-            <DatePicker.RangePicker 
-              onChange={(dates) => setDateRange(dates)}
+          </Form.Item>
+
+          <Form.Item
+            name="week"
+            label="Chọn tuần"
+            rules={[{ required: true, message: 'Vui lòng chọn tuần' }]}
+          >
+            <DatePicker
+              picker="week"
+              onChange={handleWeekChange}
+              style={{ width: '100%' }}
             />
-          </Col>
-          <Col>
-            <Button 
-              type="primary"
-              icon={<SearchOutlined />}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Xem tiến độ
-            </Button>
-          </Col>
-        </Row>
+          </Form.Item>
+
+          {selectedMember && selectedWeek && (
+            <>
+              <div className={styles.chartContainer}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className={styles.attendanceList}>
+                <h3>Chi tiết buổi tập</h3>
+                {attendanceData.map((session, index) => (
+                  <div
+                    key={index}
+                    className={`${styles.sessionItem} ${
+                      session.status === 'attended' ? styles.attended : styles.missed
+                    }`}
+                  >
+                    <div className={styles.sessionInfo}>
+                      <span className={styles.date}>{session.date}</span>
+                      <span className={styles.time}>{session.time}</span>
+                      <span className={styles.type}>{session.type}</span>
+                    </div>
+                    <span className={styles.status}>
+                      {session.status === 'attended' ? 'Đã tập' : 'Vắng mặt'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <Form.Item
+                name="feedback"
+                label="Nhận xét tuần"
+                rules={[{ required: true, message: 'Vui lòng nhập nhận xét' }]}
+              >
+                <TextArea
+                  rows={4}
+                  placeholder="Nhập nhận xét về tiến độ của học viên trong tuần..."
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<SendOutlined />}
+                  loading={loading}
+                  className={styles.submitButton}
+                >
+                  Gửi nhận xét
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form>
       </Card>
-
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={12}>
-          <Card title="Tiến độ cân nặng">
-            <LineChart
-              width={500}
-              height={300}
-              data={weightProgressData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="weight"
-                stroke="#8884d8"
-                activeDot={{ r: 8 }}
-                name="Cân nặng (kg)"
-              />
-            </LineChart>
-          </Card>
-        </Col>
-
-        <Col xs={24} lg={12}>
-          <Card title="Đánh giá hiệu suất">
-            <RadarChart
-              width={500}
-              height={300}
-              data={performanceData}
-            >
-              <PolarGrid />
-              <PolarAngleAxis dataKey="subject" />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} />
-              <Radar
-                name="Hiệu suất"
-                dataKey="value"
-                stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.6}
-              />
-              <Tooltip />
-            </RadarChart>
-          </Card>
-        </Col>
-
-        <Col xs={24}>
-          <Card title="Lịch sử tập luyện">
-            <Table
-              columns={columns}
-              dataSource={workoutHistory}
-              pagination={false}
-            />
-          </Card>
-        </Col>
-      </Row>
     </div>
   );
 };
