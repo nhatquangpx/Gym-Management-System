@@ -16,23 +16,23 @@ const initialSessions = [
   {
     date: '2025-05-20',
     sessions: [
-      { id: 1, time: '08:00', student: 'John Doe', guide: 'Tập ngực, vai, tay' },
-      { id: 2, time: '09:30', student: 'Jane Smith', guide: 'Yoga cơ bản' },
-      { id: 3, time: '15:00', student: 'Nguyễn Văn A', guide: 'Cardio + HIIT' },
+      { id: 1, startTime: '08:00', endTime: '09:00', student: 'John Doe', guide: 'Tập ngực, vai, tay' },
+      { id: 2, startTime: '09:30', endTime: '10:30', student: 'Jane Smith', guide: 'Yoga cơ bản' },
+      { id: 3, startTime: '15:00', endTime: '16:00', student: 'Nguyễn Văn A', guide: 'Cardio + HIIT' },
     ]
   },
   {
     date: '2025-05-21',
     sessions: [
-      { id: 4, time: '07:00', student: 'Lê Thị B', guide: 'Tập chân, mông' },
-      { id: 5, time: '10:00', student: 'Trần Văn C', guide: 'Crossfit nâng cao' },
+      { id: 4, startTime: '07:00', endTime: '08:00', student: 'Lê Thị B', guide: 'Tập chân, mông' },
+      { id: 5, startTime: '10:00', endTime: '11:00', student: 'Trần Văn C', guide: 'Crossfit nâng cao' },
     ]
   },
   {
     date: '2025-05-22',
     sessions: [
-      { id: 6, time: '08:00', student: 'John Doe', guide: 'Tập lưng, xô' },
-      { id: 7, time: '16:00', student: 'Jane Smith', guide: 'Yoga nâng cao' },
+      { id: 6, startTime: '08:00', endTime: '09:00', student: 'John Doe', guide: 'Tập lưng, xô' },
+      { id: 7, startTime: '16:00', endTime: '17:00', student: 'Jane Smith', guide: 'Yoga nâng cao' },
     ]
   },
   // ... thêm dữ liệu mẫu cho các ngày khác
@@ -53,11 +53,16 @@ function getWeekDays(baseDate) {
 }
 
 const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students, selectedDate }) => {
-  const [form, setForm] = React.useState(session || { time: '', student: '', guide: '', date: selectedDate });
+  const [form, setForm] = React.useState(session || { startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
   const [error, setError] = React.useState('');
+  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+  const [confirmAction, setConfirmAction] = React.useState(null);
+
   React.useEffect(() => {
-    setForm(session ? { ...session, date: session.date || selectedDate } : { time: '', student: '', guide: '', date: selectedDate });
+    setForm(session ? { ...session, date: session.date || selectedDate } : { startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
+    setError(''); // reset error mỗi lần mở
   }, [session, open, selectedDate]);
+
   if (!open) return null;
   const isEdit = mode === 'edit';
   const isDetail = mode === 'detail';
@@ -67,20 +72,50 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleDateChange = e => {
     setForm({ ...form, date: e.target.value });
   };
-  const handleSave = () => {
-    if (!form.time || !form.student || !form.guide || !form.date) {
-      setError('Vui lòng nhập đầy đủ thông tin!');
-      return;
+
+  // Đóng modal khi bấm ra ngoài overlay
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
+  // Đóng modal xác nhận khi bấm ra ngoài
+  const handleConfirmOverlayClick = (e) => {
+    if (e.target === e.currentTarget) setShowConfirmModal(false);
+  };
+
+  // Validate trước khi mở modal xác nhận
+  const handleTryConfirm = (action) => {
+    if (action === 'save') {
+      if (!form.startTime || !form.endTime || !form.student || !form.guide || !form.date) {
+        setError('Vui lòng nhập đầy đủ thông tin!');
+        return;
+      }
+      if (form.startTime >= form.endTime) {
+        setError('Giờ kết thúc phải sau giờ bắt đầu!');
+        return;
+      }
     }
     setError('');
-    onSave({ ...form, id: session?.id });
+    setConfirmAction(action);
+    setShowConfirmModal(true);
   };
+
+  const handleConfirmAction = () => {
+    if (confirmAction === 'save') {
+      onSave({ ...form, id: session?.id });
+    } else if (confirmAction === 'delete') {
+      onDelete(session);
+    }
+    setShowConfirmModal(false);
+  };
+
   return (
-    <div className={styles.sessionModalOverlay}>
-      <div className={styles.sessionModal}>
+    <div className={styles.sessionModalOverlay} onClick={handleOverlayClick}>
+      <div className={styles.sessionModal} onClick={e => e.stopPropagation()}>
         <div className={styles.sessionModalHeader}>
           {isAdd && 'Thêm buổi tập'}
           {isEdit && 'Sửa buổi tập'}
@@ -103,18 +138,35 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
             />
           )}
         </div>
-        <form className={styles.sessionModalForm} onSubmit={e => { e.preventDefault(); handleSave(); }}>
-          <label className={styles.sessionModalLabel}>Giờ tập</label>
-          <input
-            className={styles.sessionModalInput}
-            name="time"
-            type="time"
-            value={form.time}
-            onChange={handleChange}
-            disabled={isDetail}
-            step="300"
-            style={{ fontSize: '1.2em', fontWeight: 600, letterSpacing: 1 }}
-          />
+        <form className={styles.sessionModalForm} onSubmit={e => { e.preventDefault(); handleTryConfirm('save'); }}>
+          <div className={styles.timeInputs}>
+            <div>
+              <label className={styles.sessionModalLabel}>Giờ bắt đầu</label>
+              <input
+                className={styles.sessionModalInput}
+                name="startTime"
+                type="time"
+                value={form.startTime}
+                onChange={handleChange}
+                disabled={isDetail}
+                step="300"
+                style={{ fontSize: '1.2em', fontWeight: 600, letterSpacing: 1 }}
+              />
+            </div>
+            <div>
+              <label className={styles.sessionModalLabel}>Giờ kết thúc</label>
+              <input
+                className={styles.sessionModalInput}
+                name="endTime"
+                type="time"
+                value={form.endTime}
+                onChange={handleChange}
+                disabled={isDetail}
+                step="300"
+                style={{ fontSize: '1.2em', fontWeight: 600, letterSpacing: 1 }}
+              />
+            </div>
+          </div>
           <label className={styles.sessionModalLabel}>Học viên</label>
           <select
             className={styles.sessionModalSelect}
@@ -140,14 +192,29 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
               Gói tập hiện tại: <span style={{ fontWeight: 700 }}>{form.guide}</span>
             </div>
           )}
-          {error && <div style={{ color: '#d32f2f', fontWeight: 500 }}>{error}</div>}
+          {/* Không hiển thị error khi chỉ xem chi tiết */}
+          {!isDetail && error && <div style={{ color: '#d32f2f', fontWeight: 500 }}>{error}</div>}
           <div className={styles.sessionModalFooter}>
             <button type="button" className={`${styles.sessionModalBtn} ${styles.secondary}`} onClick={onClose}>Đóng</button>
             {!isDetail && <button type="submit" className={`${styles.sessionModalBtn} ${styles.primary}`}>{isAdd ? 'Thêm' : 'Lưu'}</button>}
-            {isEdit && onDelete && <button type="button" className={`${styles.sessionModalBtn} ${styles.danger}`} onClick={() => onDelete(session)}>Xóa</button>}
+            {isEdit && onDelete && <button type="button" className={`${styles.sessionModalBtn} ${styles.danger}`} onClick={() => handleTryConfirm('delete')}>Xóa</button>}
           </div>
         </form>
       </div>
+      {showConfirmModal && (
+        <div className={styles.confirmModalOverlay} onClick={handleConfirmOverlayClick}>
+          <div className={styles.confirmModal} onClick={e => e.stopPropagation()}>
+            <h3>{confirmAction === 'save' ? 'Xác nhận lưu thay đổi?' : 'Xác nhận xóa buổi tập?'}</h3>
+            <p>{confirmAction === 'save' ? 'Bạn có chắc chắn muốn lưu các thay đổi này?' : 'Bạn có chắc chắn muốn xóa buổi tập này?'}</p>
+            <div className={styles.confirmModalFooter}>
+              <button className={`${styles.sessionModalBtn} ${styles.secondary}`} onClick={() => setShowConfirmModal(false)}>Hủy</button>
+              <button className={`${styles.sessionModalBtn} ${confirmAction === 'save' ? styles.primary : styles.danger}`} onClick={handleConfirmAction}>
+                {confirmAction === 'save' ? 'Xác nhận' : 'Xóa'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -210,7 +277,7 @@ const SchedulePage = () => {
         return [...prev, { date: session.date, sessions: [newSession] }];
       } else {
         // Thêm và sort lại theo time
-        const updatedSessions = [...prev[idx].sessions, newSession].sort((a, b) => a.time.localeCompare(b.time));
+        const updatedSessions = [...prev[idx].sessions, newSession].sort((a, b) => a.startTime.localeCompare(b.startTime));
         return prev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
       }
     });
@@ -232,7 +299,7 @@ const SchedulePage = () => {
       if (idx === -1) {
         newPrev.push({ date: session.date, sessions: [{ ...session }] });
       } else {
-        const updatedSessions = [...newPrev[idx].sessions, { ...session }].sort((a, b) => a.time.localeCompare(b.time));
+        const updatedSessions = [...newPrev[idx].sessions, { ...session }].sort((a, b) => a.startTime.localeCompare(b.startTime));
         newPrev = newPrev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
       }
       // Xóa ngày không còn session nào
@@ -249,7 +316,7 @@ const SchedulePage = () => {
           : day
       );
       // Sort lại các session trong ngày (nếu còn)
-      newPrev = newPrev.map(day => ({ ...day, sessions: [...day.sessions].sort((a, b) => a.time.localeCompare(b.time)) }));
+      newPrev = newPrev.map(day => ({ ...day, sessions: [...day.sessions].sort((a, b) => a.startTime.localeCompare(b.startTime)) }));
       // Xóa ngày không còn session nào
       newPrev = newPrev.filter(day => day.sessions.length > 0);
       return newPrev;
@@ -259,7 +326,10 @@ const SchedulePage = () => {
 
   // Xem chi tiết buổi tập
   const handleDetailSession = (session) => {
-    setModal({ open: true, mode: 'detail', session });
+    setModal(prev => {
+      if (prev.open && prev.session && prev.session.id === session.id && prev.mode === 'detail') return prev;
+      return { open: true, mode: 'detail', session };
+    });
   };
 
   return (
@@ -316,7 +386,9 @@ const SchedulePage = () => {
         ) : (
           filteredDaySessions.map((session, idx) => (
             <div key={session.id} className={styles.sessionItem} onClick={e => { if (e.target === e.currentTarget) handleDetailSession(session); }}>
-              <div className={styles.sessionTime}>{session.time}</div>
+              <div className={styles.sessionTime}>
+                {session.startTime} - {session.endTime}
+              </div>
               <div className={styles.sessionStudent}>{session.student}</div>
               <div className={styles.sessionGuide}>{session.guide}</div>
               <div className={styles.sessionActions}>
