@@ -59,6 +59,10 @@ import Promotions from './pages/admin/Promotions';
 import AddPromotion from './pages/admin/AddPromotion';
 import ViewPromotion from './pages/admin/ViewPromotion';
 import EditPromotion from './pages/admin/EditPromotion';
+import Trainers from './pages/admin/Trainers';
+import AddTrainer from './pages/admin/AddTrainer';
+import ViewTrainer from './pages/admin/ViewTrainer';
+import EditTrainer from './pages/admin/EditTrainer';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
@@ -169,6 +173,10 @@ function App() {
             <Route path="employees/add" element={<AddEmployee />} />
             <Route path="employees/view/:id" element={<ViewEmployee />} />
             <Route path="employees/edit/:id" element={<EditEmployee />} />
+            <Route path="trainers" element={<Trainers />} />
+            <Route path="trainers/add" element={<AddTrainer />} />
+            <Route path="trainers/view/:id" element={<ViewTrainer />} />
+            <Route path="trainers/edit/:id" element={<EditTrainer />} />
             <Route path="packages" element={<AdminPackages />} />
             <Route path="packages/add" element={<AddPackage />} />
             <Route path="packages/view/:id" element={<ViewPackage />} />

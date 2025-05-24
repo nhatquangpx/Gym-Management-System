@@ -1,6 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import Button from "../../components/features/admin/Button/Button";
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function AddEmployee() {
   const navigate = useNavigate();
@@ -26,7 +27,15 @@ export default function AddEmployee() {
   };
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
-      <h1 className="text-2xl font-bold mb-6">Thêm nhân viên/Huấn luyện viên mới</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-600">Thêm nhân viên</h1>
+        <Link
+          to="/admin/employees"
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+        >
+          <FaArrowLeft /> Quay lại
+        </Link>
+      </div>
       <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Tên</label>
