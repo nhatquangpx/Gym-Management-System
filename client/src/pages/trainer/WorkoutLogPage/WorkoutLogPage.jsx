@@ -13,7 +13,6 @@ const WorkoutLogPage = () => {
   const [form, setForm] = useState({
     student: '',
     date: new Date().toISOString().slice(0, 10),
-    time: '',
     note: '',
   });
   const [error, setError] = useState('');
@@ -28,7 +27,6 @@ const WorkoutLogPage = () => {
   const validate = () => {
     if (!form.student) return 'Vui lòng chọn học viên!';
     if (!form.date) return 'Vui lòng chọn ngày!';
-    if (!form.time) return 'Vui lòng nhập giờ!';
     return '';
   };
 
@@ -43,7 +41,7 @@ const WorkoutLogPage = () => {
     // Giả lập ghi nhận thành công
     setSuccess('Đã ghi nhận buổi tập thành công!');
     setError('');
-    setForm({ ...form, time: '', note: '' });
+    setForm({ ...form, note: '' });
   };
 
   return (
@@ -69,16 +67,6 @@ const WorkoutLogPage = () => {
             type="date"
             name="date"
             value={form.date}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label className={styles.label}>Giờ</label>
-          <input
-            className={styles.input}
-            type="time"
-            name="time"
-            value={form.time}
             onChange={handleChange}
           />
         </div>
