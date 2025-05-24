@@ -76,53 +76,53 @@ export default function Feedback() {
         </Button>
       </Box>
 
-      <TableContainer component={Paper} className="shadow-lg rounded-lg" sx={{ background: 'var(--admin-sidebar)' }}>
-        <Table>
-          <TableHead>
-            <TableRow className="bg-[var(--admin-header)] text-[var(--admin-primary)] text-base">
-              <TableCell>Hội viên</TableCell>
-              <TableCell>Đánh giá</TableCell>
-              <TableCell>Nội dung</TableCell>
-              <TableCell>Ngày gửi</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Thao tác</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {feedback.map((item) => (
-              <TableRow key={item._id} className="hover:bg-[#252525] transition">
-                <TableCell>{item.memberName}</TableCell>
-                <TableCell>
-                  <Rating value={item.rating} readOnly />
-                </TableCell>
-                <TableCell>{item.content.substring(0, 50)}...</TableCell>
-                <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={item.status}
-                    color={item.status === 'read' ? 'success' : 'warning'}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    component={Link}
-                    to={`/admin/feedback/view/${item._id}`}
-                    color="primary"
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(item._id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <TableContainer component={Paper} className="shadow-lg rounded-lg" sx={{ background: 'var(--admin-sidebar)', borderRadius: 4, boxShadow: 6 }}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full rounded-2xl">
+            <thead>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)] text-base">
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Hội viên</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Đánh giá</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Nội dung</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Ngày gửi</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Trạng thái</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {feedback.map((item) => (
+                <TableRow key={item._id} className="hover:bg-[#252525] transition">
+                  <TableCell className="text-[var(--admin-primary)]">{item.memberName}</TableCell>
+                  <TableCell className="text-[var(--admin-primary)]"><Rating value={item.rating} readOnly /></TableCell>
+                  <TableCell className="text-[var(--admin-primary)]">{item.content.substring(0, 50)}...</TableCell>
+                  <TableCell className="text-[var(--admin-primary)]">{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-[var(--admin-primary)]">
+                    <Chip
+                      label={item.status}
+                      color={item.status === 'read' ? 'success' : 'warning'}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      component={Link}
+                      to={`/admin/feedback/view/${item._id}`}
+                      color="primary"
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(item._id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </TableContainer>
 
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>

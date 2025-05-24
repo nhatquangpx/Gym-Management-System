@@ -14,6 +14,9 @@ export default function StaffWorkouts() {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({ member: '', trainer: '', status: '', date: '' });
+  const [searchMember, setSearchMember] = useState('');
+  const [serviceHistory, setServiceHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     fetchWorkouts();
@@ -48,6 +51,22 @@ export default function StaffWorkouts() {
     (filter.status === '' || wk.status === filter.status) &&
     (filter.date === '' || (wk.date && wk.date.startsWith(filter.date)))
   );
+
+  const handleSearchHistory = async () => {
+    setLoadingHistory(true);
+    // Giả lập API, thực tế sẽ fetch từ backend
+    setTimeout(() => {
+      if (searchMember.trim() === 'HV1234') {
+        setServiceHistory([
+          { date: '03/04/2025', service: 'Yoga', duration: '01:30', note: 'Tập đúng lộ trình' },
+          { date: '05/04/2025', service: 'Gym', duration: '01:00', note: 'Cần tăng cường cardio' },
+        ]);
+      } else {
+        setServiceHistory([]);
+      }
+      setLoadingHistory(false);
+    }, 800);
+  };
 
   return (
     <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
@@ -164,6 +183,53 @@ export default function StaffWorkouts() {
           </TableBody>
         </Table>
       </TableContainer>
+      <Box sx={{ mt: 6, mb: 4 }}>
+        <Paper sx={{ p: 3, mb: 2, background: 'var(--admin-sidebar)' }}>
+          <h2 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '1.3em', marginBottom: 16 }}>
+            Theo dõi lịch sử sử dụng dịch vụ hội viên
+          </h2>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+            <TextField
+              label="Nhập mã hội viên"
+              value={searchMember}
+              onChange={e => setSearchMember(e.target.value)}
+              size="small"
+              sx={{ minWidth: 220 }}
+            />
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 } }}
+              onClick={handleSearchHistory}
+            >
+              Tìm kiếm
+            </Button>
+          </Box>
+          <Table sx={{ background: 'var(--admin-bg)', borderRadius: 2 }}>
+            <TableHead>
+              <TableRow sx={{ background: 'var(--admin-header)' }}>
+                <TableCell className="text-[var(--admin-primary)] font-bold">Ngày tập</TableCell>
+                <TableCell className="text-[var(--admin-primary)] font-bold">Dịch vụ sử dụng</TableCell>
+                <TableCell className="text-[var(--admin-primary)] font-bold">Thời lượng</TableCell>
+                <TableCell className="text-[var(--admin-primary)] font-bold">Ghi chú</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loadingHistory ? (
+                <TableRow><TableCell colSpan={4}>Đang tải...</TableCell></TableRow>
+              ) : serviceHistory.length === 0 ? (
+                <TableRow><TableCell colSpan={4}>Không có dữ liệu lịch sử</TableCell></TableRow>
+              ) : serviceHistory.map((row, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="text-[var(--admin-primary)]">{row.date}</TableCell>
+                  <TableCell className="text-[var(--admin-primary)]">{row.service}</TableCell>
+                  <TableCell className="text-[var(--admin-primary)]">{row.duration}</TableCell>
+                  <TableCell className="text-[var(--admin-primary)]">{row.note}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Paper>
+      </Box>
     </div>
   );
 } 

@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField
+  IconButton, TextField, Button
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import AddButton from '../../components/AddButton';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function StaffPackages() {
   const navigate = useNavigate();
@@ -59,12 +59,19 @@ export default function StaffPackages() {
             mb: 4
           }}
         >
-          Danh sách gói tập
+          Quản lý gói tập
         </Typography>
-        <AddButton 
-          onClick={() => navigate('/staff/packages/add')}
-          label="Thêm gói tập"
-        />
+        <Button
+          variant="contained"
+          sx={{ 
+            backgroundColor: 'var(--admin-primary)',
+            '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
+          }}
+          startIcon={<AddIcon />}
+          onClick={() => alert('Chức năng này chỉ demo UI!')}
+        >
+          Thêm gói tập
+        </Button>
       </Box>
       <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">

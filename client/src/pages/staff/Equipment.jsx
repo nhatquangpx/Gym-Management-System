@@ -8,6 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddButton from '../../components/AddButton';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function StaffEquipment() {
   const navigate = useNavigate();
@@ -61,12 +62,19 @@ export default function StaffEquipment() {
             mb: 4
           }}
         >
-          Danh sách thiết bị
+          Quản lý thiết bị
         </Typography>
-        <AddButton 
-          onClick={() => navigate('/staff/equipment/add')}
-          label="Thêm thiết bị"
-        />
+        <Button
+          variant="contained"
+          sx={{ 
+            backgroundColor: 'var(--admin-primary)',
+            '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
+          }}
+          startIcon={<AddIcon />}
+          onClick={() => alert('Chức năng này chỉ demo UI!')}
+        >
+          Thêm thiết bị
+        </Button>
       </Box>
       <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
