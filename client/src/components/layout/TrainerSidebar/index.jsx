@@ -10,7 +10,6 @@ const TrainerSidebar = () => {
     { path: '/trainer/students', label: 'Quản lý học viên', icon: <FaUsers /> },
     { path: '/trainer/schedule', label: 'Lịch tập', icon: <FaCalendarAlt /> },
     { path: '/trainer/workouts', label: 'Ghi nhận buổi tập', icon: <FaDumbbell /> },
-    { path: '/trainer/guidance', label: 'Hướng dẫn tập luyện', icon: <FaBookOpen /> },
     { path: '/trainer/progress', label: 'Đánh giá tiến độ', icon: <FaChartLine /> },
     { path: '/trainer/settings', label: 'Cài đặt', icon: <FaCog /> },
   ];
