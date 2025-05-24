@@ -1,42 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaPlus, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
 import styles from './SchedulePage.module.css';
-
-// Mock data học viên
-const studentsList = [
-  'John Doe',
-  'Jane Smith',
-  'Nguyễn Văn A',
-  'Lê Thị B',
-  'Trần Văn C',
-];
-
-// Mock data cho lịch tập
-const initialSessions = [
-  {
-    date: '2025-05-20',
-    sessions: [
-      { id: 1, startTime: '08:00', endTime: '09:00', student: 'John Doe', guide: 'Tập ngực, vai, tay' },
-      { id: 2, startTime: '09:30', endTime: '10:30', student: 'Jane Smith', guide: 'Yoga cơ bản' },
-      { id: 3, startTime: '15:00', endTime: '16:00', student: 'Nguyễn Văn A', guide: 'Cardio + HIIT' },
-    ]
-  },
-  {
-    date: '2025-05-21',
-    sessions: [
-      { id: 4, startTime: '07:00', endTime: '08:00', student: 'Lê Thị B', guide: 'Tập chân, mông' },
-      { id: 5, startTime: '10:00', endTime: '11:00', student: 'Trần Văn C', guide: 'Crossfit nâng cao' },
-    ]
-  },
-  {
-    date: '2025-05-22',
-    sessions: [
-      { id: 6, startTime: '08:00', endTime: '09:00', student: 'John Doe', guide: 'Tập lưng, xô' },
-      { id: 7, startTime: '16:00', endTime: '17:00', student: 'Jane Smith', guide: 'Yoga nâng cao' },
-    ]
-  },
-  // ... thêm dữ liệu mẫu cho các ngày khác
-];
 
 function getWeekDays(baseDate) {
   const week = [];
@@ -63,7 +27,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
 
   React.useEffect(() => {
     setForm(session ? { ...session, date: session.date || selectedDate } : { startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
-    setError(''); // reset error mỗi lần mở
+    setError('');
   }, [session, open, selectedDate]);
 
   if (!open) return null;
@@ -207,7 +171,9 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
               disabled={isDetail}
             >
               <option value="">Chọn học viên</option>
-              {students.map(s => <option key={s} value={s}>{s}</option>)}
+              {students.map(s => (
+              <option key={s._id} value={s._id}>{s.name}</option>
+            ))}
             </select>
           </div>
           <div className={styles.sessionModalRow}>
@@ -265,7 +231,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
 };
 
 const SchedulePage = () => {
-  const [sessions, setSessions] = useState(initialSessions);
+  const [sessions, setSessions] = useState([]);
   const [baseDate, setBaseDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
@@ -274,6 +240,69 @@ const SchedulePage = () => {
   const [filterStudent, setFilterStudent] = useState('all');
   const [modal, setModal] = useState({ open: false, mode: 'add', session: null });
   const [deleteModal, setDeleteModal] = useState({ open: false, session: null });
+  const [studentsList, setStudentsList] = useState([]);
+
+  // Fetch students list từ API
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8001/api/trainers/trainees', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setStudentsList(data.data);
+        }
+      } catch (err) {
+        console.error('Lỗi khi lấy danh sách học viên:', err);
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  // Fetch schedules từ API và chuyển về dạng [{date, sessions: [...]}, ...]
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8001/api/trainers/get-all-schedule', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          // Group by date
+          const grouped = {};
+          data.data.forEach(item => {
+            const dateStr = item.date.slice(0, 10);
+            if (!grouped[dateStr]) grouped[dateStr] = [];
+            grouped[dateStr].push({
+              id: item._id,
+              startTime: item.timeStart,
+              endTime: item.timeEnd,
+              student: item.memberId?._id || item.memberId,
+              guide: item.exercises,
+              date: dateStr,
+            });
+          });
+          const sessionsArr = Object.entries(grouped).map(([date, sessions]) => ({
+            date,
+            sessions,
+          }));
+          setSessions(sessionsArr);
+        }
+      } catch (err) {
+        console.error('Lỗi khi lấy lịch tập:', err);
+      }
+    };
+    fetchSchedules();
+  }, []);
 
   const weekDays = getWeekDays(baseDate);
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -292,7 +321,8 @@ const SchedulePage = () => {
     const dayS = sessions.find(s => s.date === dateStr)?.sessions || [];
     dayS.forEach(s => weekStudentSet.add(s.student));
   });
-  const weekStudents = Array.from(weekStudentSet);
+  // Lấy danh sách học viên tuần này (object)
+  const weekStudents = studentsList.filter(s => weekStudentSet.has(s._id));
 
   // Chuyển tuần
   const handlePrevWeek = () => {
@@ -329,6 +359,7 @@ const SchedulePage = () => {
     });
     setModal({ open: false, mode: 'add', session: null });
   };
+
   const handleEditSession = (session) => {
     setSessions(prev => {
       // Nếu đổi ngày, xóa khỏi ngày cũ, thêm vào ngày mới
@@ -354,6 +385,7 @@ const SchedulePage = () => {
     });
     setModal({ open: false, mode: 'edit', session: null });
   };
+  
   const handleDeleteSession = (session) => {
     setSessions(prev => {
       let newPrev = prev.map(day =>
@@ -376,6 +408,12 @@ const SchedulePage = () => {
       if (prev.open && prev.session && prev.session.id === session.id && prev.mode === 'detail') return prev;
       return { open: true, mode: 'detail', session };
     });
+  };
+
+  // Helper: lấy tên học viên từ id
+  const getStudentName = (id) => {
+    const found = studentsList.find(s => s._id === id);
+    return found ? found.name : id;
   };
 
   return (
@@ -418,7 +456,9 @@ const SchedulePage = () => {
             onChange={e => setFilterStudent(e.target.value)}
           >
             <option value="all">Tất cả học viên</option>
-            {weekStudents.map(s => <option key={s} value={s}>{s}</option>)}
+            {weekStudents.map(s => (
+              <option key={s._id} value={s._id}>{s.name}</option>
+            ))}
           </select>
           <button className={styles.addSessionBtn} onClick={() => setModal({ open: true, mode: 'add', session: null })}><FaPlus />Thêm buổi tập</button>
         </div>
@@ -435,7 +475,7 @@ const SchedulePage = () => {
               <div className={styles.sessionTime}>
                 {session.startTime} - {session.endTime}
               </div>
-              <div className={styles.sessionStudent}>{session.student}</div>
+              <div className={styles.sessionStudent}>{getStudentName(session.student)}</div>
               <div className={styles.sessionGuide}>{session.guide}</div>
               <div className={styles.sessionActions}>
                 <button className={styles.editBtn} title="Sửa" onClick={e => { e.stopPropagation(); setModal({ open: true, mode: 'edit', session }); }}><FaEdit /></button>
@@ -471,4 +511,4 @@ const SchedulePage = () => {
   );
 };
 
-export default SchedulePage; 
+export default SchedulePage;
