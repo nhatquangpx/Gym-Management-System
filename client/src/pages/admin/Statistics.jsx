@@ -6,6 +6,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
+import { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
 export default function Statistics() {
   const statistics = [
@@ -13,6 +15,17 @@ export default function Statistics() {
     { id: 2, name: "Thống kê thành viên", value: "100", status: "Đã hoàn thành" },
     { id: 3, name: "Thống kê gói tập", value: "3", status: "Đang cập nhật" },
   ];
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+  const handleDeleteConfirm = () => {
+    // TODO: Gọi API xóa thống kê với itemToDelete
+    setOpenConfirm(false);
+    setItemToDelete(null);
+  };
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
@@ -44,7 +57,7 @@ export default function Statistics() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Tooltip>
                       <Tooltip title="Chỉnh sửa"><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(s.id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -53,6 +66,14 @@ export default function Statistics() {
           </table>
         </div>
       </Paper>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa thống kê này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

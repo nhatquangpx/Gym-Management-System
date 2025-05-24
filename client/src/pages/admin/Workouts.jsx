@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Typography, Box, Chip, ThemeProvider, createTheme
+  IconButton, Typography, Box, Chip, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const theme = createTheme({
   palette: {
@@ -18,6 +19,8 @@ const theme = createTheme({
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     fetchWorkouts();
@@ -33,6 +36,24 @@ export default function Workouts() {
       console.error('Error fetching workouts:', error);
       setLoading(false);
     }
+  };
+
+  const handleDelete = async (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await fetch(`/api/workouts/${itemToDelete}`, {
+        method: 'DELETE',
+      });
+      fetchWorkouts();
+    } catch (error) {
+      console.error('Error deleting workouts:', error);
+    }
+    setOpenConfirm(false);
+    setItemToDelete(null);
   };
 
   if (loading) {
@@ -101,12 +122,22 @@ export default function Workouts() {
                     >
                       <EditIcon />
                     </IconButton>
+                    <IconButton color="error" onClick={() => handleDelete(workout._id)}><DeleteIcon /></IconButton>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+
+        <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+          <DialogTitle>Xác nhận xóa</DialogTitle>
+          <DialogContent>Bạn có chắc chắn muốn xóa buổi tập này?</DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+            <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </ThemeProvider>
   );

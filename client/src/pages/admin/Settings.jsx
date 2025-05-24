@@ -6,6 +6,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
+import { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
 export default function Settings() {
   const settings = [
@@ -13,6 +15,17 @@ export default function Settings() {
     { id: 2, name: "Cài đặt người dùng", value: "Đang hoạt động", status: "Đang hoạt động" },
     { id: 3, name: "Cài đặt bảo mật", value: "Đang hoạt động", status: "Đang hoạt động" },
   ];
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+  const handleDeleteConfirm = () => {
+    // TODO: Gọi API xóa cài đặt với itemToDelete
+    setOpenConfirm(false);
+    setItemToDelete(null);
+  };
   return (
     <div className="bg-[#181818] min-h-screen p-6">
       <h1 className="text-2xl font-bold mb-6 text-white">Cài đặt</h1>
@@ -42,7 +55,7 @@ export default function Settings() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><IconButton size="small" sx={{ color: '#e53935' }}><VisibilityIcon /></IconButton></Tooltip>
                       <Tooltip title="Chỉnh sửa"><IconButton size="small" sx={{ color: '#D4D4D4' }}><EditIcon /></IconButton></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#e53935' }} onClick={() => handleDelete(s.id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -51,6 +64,14 @@ export default function Settings() {
           </table>
         </div>
       </Paper>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa cài đặt này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

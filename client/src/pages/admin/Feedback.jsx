@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Typography, Box, Chip, Rating, Button
+  IconButton, Typography, Box, Chip, Rating, Button, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,6 +13,8 @@ export default function Feedback() {
   const [feedback, setFeedback] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     fetchFeedback();
@@ -31,16 +33,21 @@ export default function Feedback() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa phản hồi này?')) {
-      try {
-        await fetch(`/api/feedback/${id}`, {
-          method: 'DELETE',
-        });
-        fetchFeedback();
-      } catch (error) {
-        console.error('Error deleting feedback:', error);
-      }
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await fetch(`/api/feedback/${itemToDelete}`, {
+        method: 'DELETE',
+      });
+      fetchFeedback();
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
     }
+    setOpenConfirm(false);
+    setItemToDelete(null);
   };
 
   if (loading) {
@@ -117,6 +124,15 @@ export default function Feedback() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa phản hồi này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 
