@@ -3,6 +3,26 @@ const router = express.Router();
 const { verifyToken, verifyRole } = require("../middleware/authMiddleware");
 const trainerController = require("../controllers/trainerController");
 
+// @route   GET /api/trainers/trainees
+// @desc    Lấy danh sách học viên của huấn luyện viên
+// @access  Private (Admin, Trainer)
+router.get("/trainees", [verifyToken, verifyRole(["trainer"])], trainerController.getTrainerTrainees);
+
+// @route   POST /api/trainers/add-schedule
+// @desc    Thêm lịch tập mới
+// @access  Private (Trainer)
+router.post("/add-schedule", [verifyToken, verifyRole(["trainer"])], trainerController.addSchedule);
+
+// @route   GET /api/trainers/get-all-schedule
+// @desc    Lấy tất cả lịch tập của huấn luyện viên
+// @access  Private (Trainer)
+router.get('/get-all-schedule', [verifyToken, verifyRole(['admin', 'trainer'])], trainerController.getAllSchedules);
+
+// @route   GET /api/trainers/get-schedule-by-id/:memberId
+// @desc    Lấy lịch tập theo học viên
+// @access  Private (Trainer)
+router.get('/get-schedule-by-id/:memberId', [verifyToken, verifyRole(['admin', 'trainer'])], trainerController.getSchedulesByMember);
+
 // @route   POST /api/trainers
 // @desc    Create a new trainer
 // @access  Private (Admin)
