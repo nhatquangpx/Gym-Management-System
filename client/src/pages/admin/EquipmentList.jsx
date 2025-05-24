@@ -113,41 +113,43 @@ export default function EquipmentList() {
           </FormControl>
         </Box>
       </Paper>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Tên thiết bị</TableCell>
-              <TableCell>Loại</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Ngày bảo trì gần nhất</TableCell>
-              <TableCell align="right">Hành động</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow><TableCell colSpan={5}>Loading...</TableCell></TableRow>
-            ) : filteredEquipment.length === 0 ? (
-              <TableRow><TableCell colSpan={5}>Không có thiết bị nào</TableCell></TableRow>
-            ) : filteredEquipment.map(eq => (
-              <TableRow key={eq._id}>
-                <TableCell>{eq.name}</TableCell>
-                <TableCell>{eq.type}</TableCell>
-                <TableCell>{
-                  eq.status === 'active' ? 'Hoạt động' :
-                  eq.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'
-                }</TableCell>
-                <TableCell>{eq.maintenanceDate ? new Date(eq.maintenanceDate).toLocaleDateString() : ''}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => navigate(`/admin/equipment/${eq._id}`)}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => navigate(`/admin/equipment/edit/${eq._id}`)}><EditIcon /></IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(eq._id)}><DeleteIcon /></IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full rounded-2xl">
+            <thead>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Tên thiết bị</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Loại</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Trạng thái</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Ngày bảo trì gần nhất</th>
+                <th className="py-3 px-4 text-right text-[var(--admin-primary)] font-bold">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={5}>Loading...</td></tr>
+              ) : filteredEquipment.length === 0 ? (
+                <tr><td colSpan={5}>Không có thiết bị nào</td></tr>
+              ) : filteredEquipment.map(eq => (
+                <tr key={eq._id}>
+                  <td className="text-[var(--admin-primary)]">{eq.name}</td>
+                  <td className="text-[var(--admin-primary)]">{eq.type}</td>
+                  <td className="text-[var(--admin-primary)]">{
+                    eq.status === 'active' ? 'Hoạt động' :
+                    eq.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'
+                  }</td>
+                  <td className="text-[var(--admin-primary)]">{eq.maintenanceDate ? new Date(eq.maintenanceDate).toLocaleDateString() : ''}</td>
+                  <td align="right">
+                    <IconButton onClick={() => navigate(`/admin/equipment/${eq._id}`)}><VisibilityIcon /></IconButton>
+                    <IconButton onClick={() => navigate(`/admin/equipment/edit/${eq._id}`)}><EditIcon /></IconButton>
+                    <IconButton color="error" onClick={() => handleDelete(eq._id)}><DeleteIcon /></IconButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Paper>
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
         <DialogTitle>Xác nhận xóa</DialogTitle>
         <DialogContent>Bạn có chắc chắn muốn xóa thiết bị này?</DialogContent>

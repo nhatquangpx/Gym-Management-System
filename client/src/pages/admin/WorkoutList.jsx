@@ -116,44 +116,46 @@ export default function WorkoutList() {
           />
         </Box>
       </Paper>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Ngày tập</TableCell>
-              <TableCell>Hội viên</TableCell>
-              <TableCell>Huấn luyện viên</TableCell>
-              <TableCell>Thời lượng</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell align="right">Hành động</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow><TableCell colSpan={6}>Loading...</TableCell></TableRow>
-            ) : filteredWorkouts.length === 0 ? (
-              <TableRow><TableCell colSpan={6}>Không có buổi tập nào</TableCell></TableRow>
-            ) : filteredWorkouts.map(wk => (
-              <TableRow key={wk._id}>
-                <TableCell>{wk.date ? new Date(wk.date).toLocaleDateString() : ''}</TableCell>
-                <TableCell>{wk.memberName}</TableCell>
-                <TableCell>{wk.trainerName}</TableCell>
-                <TableCell>{wk.duration} phút</TableCell>
-                <TableCell>{
-                  wk.status === 'completed' ? 'Hoàn thành' :
-                  wk.status === 'in-progress' ? 'Đang diễn ra' :
-                  wk.status === 'scheduled' ? 'Đã lên lịch' : 'Đã hủy'
-                }</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => navigate(`/admin/workouts/${wk._id}`)}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => navigate(`/admin/workouts/edit/${wk._id}`)}><EditIcon /></IconButton>
-                  <IconButton color="error" onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full rounded-2xl">
+            <thead>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Ngày tập</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Hội viên</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Huấn luyện viên</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Thời lượng</th>
+                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Trạng thái</th>
+                <th className="py-3 px-4 text-right text-[var(--admin-primary)] font-bold">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6}>Loading...</td></tr>
+              ) : filteredWorkouts.length === 0 ? (
+                <tr><td colSpan={6}>Không có buổi tập nào</td></tr>
+              ) : filteredWorkouts.map(wk => (
+                <tr key={wk._id}>
+                  <td className="text-[var(--admin-primary)]">{wk.date ? new Date(wk.date).toLocaleDateString() : ''}</td>
+                  <td className="text-[var(--admin-primary)]">{wk.memberName}</td>
+                  <td className="text-[var(--admin-primary)]">{wk.trainerName}</td>
+                  <td className="text-[var(--admin-primary)]">{wk.duration} phút</td>
+                  <td className="text-[var(--admin-primary)]">{
+                    wk.status === 'completed' ? 'Hoàn thành' :
+                    wk.status === 'in-progress' ? 'Đang diễn ra' :
+                    wk.status === 'scheduled' ? 'Đã lên lịch' : 'Đã hủy'
+                  }</td>
+                  <td align="right">
+                    <IconButton onClick={() => navigate(`/admin/workouts/${wk._id}`)}><VisibilityIcon /></IconButton>
+                    <IconButton onClick={() => navigate(`/admin/workouts/edit/${wk._id}`)}><EditIcon /></IconButton>
+                    <IconButton color="error" onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Paper>
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
         <DialogTitle>Xác nhận xóa</DialogTitle>
         <DialogContent>Bạn có chắc chắn muốn xóa buổi tập này?</DialogContent>
