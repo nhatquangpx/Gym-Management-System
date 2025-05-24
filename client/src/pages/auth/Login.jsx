@@ -10,7 +10,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
@@ -22,6 +23,7 @@ const Login = () => {
     role: 'admin'
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,11 +36,34 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
-      // TODO: Implement actual login logic here
-      // For now, just redirect based on role
-      switch (formData.role) {
+      const response = await fetch('http://localhost:8001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Đăng nhập thất bại');
+      }
+
+      // Lưu token vào localStorage
+      localStorage.setItem('token', data.token);
+      
+      // Lưu thông tin user
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Chuyển hướng dựa vào role
+      switch (data.user.role) {
         case 'admin':
           navigate('/admin/dashboard');
           break;
@@ -49,10 +74,12 @@ const Login = () => {
           navigate('/trainer/dashboard');
           break;
         default:
-          setError('Invalid role selected');
+          setError('Vai trò không hợp lệ');
       }
     } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      setError(err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,13 +183,14 @@ const Login = () => {
             fullWidth
             variant="contained"
             size="large"
+            disabled={loading}
             sx={{
               backgroundColor: 'var(--admin-primary)',
               '&:hover': { backgroundColor: 'var(--admin-primary-dark)' },
               marginTop: 2
             }}
           >
-            Đăng nhập
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Đăng nhập'}
           </Button>
         </form>
       </Paper>
