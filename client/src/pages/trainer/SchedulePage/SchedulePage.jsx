@@ -223,7 +223,9 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
               disabled={isDetail}
             >
               <option value="">Chọn học viên</option>
-              {students.map(s => <option key={s} value={s}>{s}</option>)}
+              {students.map(s => (
+              <option key={s._id} value={s._id}>{s.name}</option>
+            ))}
             </select>
           </div>
           <div className={styles.sessionModalRow}>
@@ -290,6 +292,69 @@ const SchedulePage = () => {
   const [filterStudent, setFilterStudent] = useState('all');
   const [modal, setModal] = useState({ open: false, mode: 'add', session: null });
   const [deleteModal, setDeleteModal] = useState({ open: false, session: null });
+  const [studentsList, setStudentsList] = useState([]);
+
+  // Fetch students list từ API
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8001/api/trainers/trainees', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setStudentsList(data.data);
+        }
+      } catch (err) {
+        console.error('Lỗi khi lấy danh sách học viên:', err);
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  // Fetch schedules từ API và chuyển về dạng [{date, sessions: [...]}, ...]
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8001/api/trainers/get-all-schedule', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          // Group by date
+          const grouped = {};
+          data.data.forEach(item => {
+            const dateStr = item.date.slice(0, 10);
+            if (!grouped[dateStr]) grouped[dateStr] = [];
+            grouped[dateStr].push({
+              id: item._id,
+              startTime: item.timeStart,
+              endTime: item.timeEnd,
+              student: item.memberId?._id || item.memberId,
+              guide: item.exercises,
+              date: dateStr,
+            });
+          });
+          const sessionsArr = Object.entries(grouped).map(([date, sessions]) => ({
+            date,
+            sessions,
+          }));
+          setSessions(sessionsArr);
+        }
+      } catch (err) {
+        console.error('Lỗi khi lấy lịch tập:', err);
+      }
+    };
+    fetchSchedules();
+  }, []);
 
   const weekDays = getWeekDays(baseDate);
   const todayStr = new Date().toISOString().slice(0, 10);
