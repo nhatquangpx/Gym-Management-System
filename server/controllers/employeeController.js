@@ -10,9 +10,7 @@ exports.createEmployee = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { name, email, password, phone, position, salary, shiftSchedule, performanceRating } = req.body;
+    }    const { name, email, password, phone, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
 
     // Check if user already exists
     let user = await User.findOne({ email });
@@ -31,15 +29,14 @@ exports.createEmployee = async (req, res) => {
       password: hashPassword,
       phone,
       role: "employee",
+      isActive: isActive !== undefined ? isActive : true,
       employeeInfo: {
         position,
         salary,
         shiftSchedule,
         performanceRating
       }
-    });
-
-    // Save user
+    });    // Save user
     await user.save();
 
     res.status(201).json({
@@ -52,6 +49,7 @@ exports.createEmployee = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          isActive: user.isActive,
           employeeInfo: user.employeeInfo
         }
       }
@@ -70,9 +68,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { userId, position, salary, shiftSchedule, performanceRating } = req.body;
+    }    const { userId, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
 
     // Check if user exists
     const user = await User.findById(userId);
@@ -87,6 +83,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
 
     // Update user with employee role
     user.role = "employee";
+    if (isActive !== undefined) user.isActive = isActive;
     user.employeeInfo = {
       position,
       salary,
@@ -94,9 +91,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
       performanceRating
     };
     
-    await user.save();
-
-    res.status(201).json({
+    await user.save();    res.status(201).json({
       success: true,
       message: "Thêm nhân viên thành công",
       data: {
@@ -106,6 +101,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          isActive: user.isActive,
           employeeInfo: user.employeeInfo
         }
       }
@@ -124,9 +120,7 @@ exports.updateEmployee = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { position, salary, shiftSchedule, performanceRating, name, email, phone } = req.body;
+    }    const { position, salary, shiftSchedule, performanceRating, name, email, phone, isActive } = req.body;
     const userId = req.params.id;
 
     // Find user with employee role
@@ -139,6 +133,7 @@ exports.updateEmployee = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (phone) user.phone = phone;
+    if (isActive !== undefined) user.isActive = isActive;
     
     // Update employeeInfo fields
     if (position || salary || shiftSchedule || performanceRating) {
@@ -152,9 +147,7 @@ exports.updateEmployee = async (req, res) => {
     }
 
     // Save updated user
-    await user.save();
-
-    res.status(200).json({
+    await user.save();    res.status(200).json({
       success: true,
       message: "Cập nhật thông tin nhân viên thành công",
       data: {
@@ -164,6 +157,7 @@ exports.updateEmployee = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          isActive: user.isActive,
           employeeInfo: user.employeeInfo
         }
       }
