@@ -11,9 +11,9 @@ const DashboardPage = () => {
   };
 
   const todaySchedule = [
-    { time: '08:00', student: 'Nguyễn Văn A', type: 'PT Session' },
-    { time: '09:30', student: 'Trần Thị B', type: 'Group Class' },
-    { time: '11:00', student: 'Lê Văn C', type: 'PT Session' },
+    { time: '08:00 - 09:00', student: 'Nguyễn Văn A', type: 'PT Session' },
+    { time: '09:30 - 10:30', student: 'Trần Thị B', type: 'Group Class' },
+    { time: '11:00 - 12:00', student: 'Lê Văn C', type: 'PT Session' },
   ];
 
   const studentProgress = [
