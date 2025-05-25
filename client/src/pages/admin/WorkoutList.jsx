@@ -150,9 +150,9 @@ export default function WorkoutList() {
                     wk.status === 'scheduled' ? 'Đã lên lịch' : 'Đã hủy'
                   }</td>
                   <td className="px-6 py-4 text-center">
-                    <IconButton onClick={() => navigate(`/admin/workouts/view/${wk._id}`)}><VisibilityIcon /></IconButton>
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/workouts/view/${wk._id}`)}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/workouts/edit/${wk._id}`)}><EditIcon /></IconButton>
-                    <IconButton color="error" onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
                   </td>
                 </tr>
               ))}

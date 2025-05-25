@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import Button from "../../components/features/admin/Button/Button";
 import { FaArrowLeft, FaEdit } from 'react-icons/fa';
+import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 
 export default function ViewTrainer() {
   const { id } = useParams();
@@ -11,9 +11,23 @@ export default function ViewTrainer() {
   useEffect(() => {
     const fetchTrainer = async () => {
       try {
-        const response = await fetch(`/api/trainers/${id}`);
-        const data = await response.json();
-        setTrainer(data);
+        // Tạm thời sử dụng dữ liệu mẫu để test
+        const mockTrainer = {
+          id: id,
+          name: "Nguyễn Văn A",
+          phone: "0901111222",
+          email: "trainer.a@example.com",
+          specialization: "Fitness & Yoga",
+          experience: "5",
+          status: "Đang làm việc",
+          description: "Huấn luyện viên chuyên nghiệp với 5 năm kinh nghiệm trong lĩnh vực fitness và yoga. Đã đào tạo nhiều học viên đạt được mục tiêu tập luyện của họ."
+        };
+        setTrainer(mockTrainer);
+        
+        // Khi có API thật, uncomment đoạn code sau
+        // const response = await fetch(`/api/trainers/${id}`);
+        // const data = await response.json();
+        // setTrainer(data);
       } catch (error) {
         console.error('Error fetching trainer:', error);
       } finally {
@@ -85,7 +99,9 @@ export default function ViewTrainer() {
               </div>
               <div>
                 <label className="block text-sm text-gray-500">Trạng thái</label>
-                <p className="text-lg">{trainer.status}</p>
+                <div className="mt-1">
+                  <StatusBadge status={trainer.status} />
+                </div>
               </div>
             </div>
           </div>
