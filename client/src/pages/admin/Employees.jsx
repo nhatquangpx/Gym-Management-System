@@ -9,46 +9,91 @@ import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
-import { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import GroupIcon from '@mui/icons-material/Group';
 import { FaPlus } from 'react-icons/fa';
+import axios from '../../utils/axiosConfig';
 
 export default function Employees() {
-  const employees = [
-    { id: 1, name: "Nguyễn Văn D", role: "Huấn luyện viên", phone: "0901111222", status: "Đang làm việc", avatar: "https://i.pravatar.cc/150?img=4" },
-    { id: 2, name: "Phạm Thị E", role: "Nhân viên lễ tân", phone: "0911222333", status: "Nghỉ việc", avatar: "https://i.pravatar.cc/150?img=5" },
-    { id: 3, name: "Trần Văn F", role: "Huấn luyện viên", phone: "0922333444", status: "Đang làm việc", avatar: "https://i.pravatar.cc/150?img=6" },
-  ];
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const handleDelete = (id) => {
-    setItemToDelete(id);
-    setOpenConfirm(true);
-  };
-  const handleDeleteConfirm = () => {
-    // TODO: Gọi API xóa nhân viên với itemToDelete
-    setOpenConfirm(false);
-    setItemToDelete(null);
-  };
   const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
   const [searchRole, setSearchRole] = useState("");
-  // Lọc danh sách nhân viên (role khác 'Huấn luyện viên') theo tên, số điện thoại, chức vụ
-  const filteredEmployees = employees.filter(e =>
-    e.role !== 'Huấn luyện viên' &&
-    e.name.toLowerCase().includes(searchName.toLowerCase()) &&
-    e.phone.includes(searchPhone) &&
-    e.role.toLowerCase().includes(searchRole.toLowerCase())
+  
+  // Fetch employees data from API
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('/api/employees');
+        setEmployees(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách nhân viên:", error);
+        setError("Không thể tải danh sách nhân viên. Vui lòng thử lại sau.");
+        setLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(`/api/employees/${itemToDelete}`);
+      // Cập nhật state để xóa nhân viên đã xóa khỏi danh sách
+      setEmployees(employees.filter(employee => employee._id !== itemToDelete));
+      setOpenConfirm(false);
+      setItemToDelete(null);
+    } catch (error) {
+      console.error("Lỗi khi xóa nhân viên:", error);
+      // Có thể hiển thị thông báo lỗi ở đây
+    }
+  };
+  
+  // Lọc danh sách nhân viên
+  const filteredEmployees = employees.filter(employee =>
+    employee.name?.toLowerCase().includes(searchName.toLowerCase()) &&
+    employee.phone?.includes(searchPhone) &&
+    (employee.employeeInfo?.position || "").toLowerCase().includes(searchRole.toLowerCase())
   );
+
+  // Hiển thị loading khi đang tải dữ liệu
+  if (loading) {
+    return (
+      <div className="bg-[var(--admin-bg)] min-h-screen p-6 flex justify-center items-center">
+        <CircularProgress color="primary" />
+      </div>
+    );
+  }
+
+  // Hiển thị thông báo lỗi nếu có
+  if (error) {
+    return (
+      <div className="bg-[var(--admin-bg)] min-h-screen p-6 flex justify-center items-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
-          Danh sách nhân viên/Huấn luyện viên
+          Danh sách nhân viên
         </h1>
         <div className="flex justify-end">
           <Link
@@ -90,6 +135,7 @@ export default function Employees() {
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-center">Tên nhân viên</th>
                 <th className="py-3 px-4 text-center">Chức vụ</th>
+                <th className="py-3 px-4 text-center">Email</th>
                 <th className="py-3 px-4 text-center">Số điện thoại</th>
                 <th className="py-3 px-4 text-center">Trạng thái</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
@@ -97,21 +143,29 @@ export default function Employees() {
             </thead>
             <tbody>
               {filteredEmployees.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-4">Không có nhân viên nào</td></tr>
-              ) : filteredEmployees.map((e) => (
-                <tr key={e.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                <tr><td colSpan={6} className="text-center py-4">Không có nhân viên nào</td></tr>
+              ) : filteredEmployees.map((employee) => (
+                <tr key={employee._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
                   <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] justify-center text-center">
                     <GroupIcon className="text-[var(--admin-primary)]" />
-                    <span>{e.name}</span>
+                    <span>{employee.name}</span>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{e.role}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{e.phone}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{e.status}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{employee.employeeInfo?.position || "Nhân viên"}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{employee.email}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{employee.phone || "N/A"}</td>
+                  <td className="px-6 py-4 text-center">
+                    <Chip 
+                      label={employee.isActive ? "Đang làm việc" : "Nghỉ việc"} 
+                      color={employee.isActive ? "success" : "error"}
+                      size="small"
+                      sx={{ fontWeight: 500 }}
+                    />
+                  </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/employees/view/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/employees/edit/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(e.id)}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/employees/view/${employee._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/employees/edit/${employee._id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(employee._id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -130,4 +184,4 @@ export default function Employees() {
       </Dialog>
     </div>
   );
-} 
+}
