@@ -302,7 +302,9 @@ const SchedulePage = () => {
               id: item._id,
               startTime: item.timeStart,
               endTime: item.timeEnd,
+              // Lấy đúng _id và name của học viên
               student: item.memberId?._id || item.memberId,
+              studentName: item.memberId?.name || '', // Thêm trường name để hiển thị
               guide: item.exercises,
               date: dateStr,
             });
@@ -361,19 +363,54 @@ const SchedulePage = () => {
   };
 
   // Thêm/sửa/xóa buổi tập
-  const handleAddSession = (session) => {
-    setSessions(prev => {
-      const idx = prev.findIndex(s => s.date === session.date);
-      const newSession = { ...session, id: Date.now() };
-      if (idx === -1) {
-        return [...prev, { date: session.date, sessions: [newSession] }];
+  const handleAddSession = async (session) => {
+    try {
+      const token = localStorage.getItem('token');
+      // Gửi API tạo mới buổi tập
+      const res = await fetch('http://localhost:8001/api/trainers/add-schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify({
+          memberId: session.student,
+          workoutType: session.workoutType || 'gym',
+          date: session.date,
+          timeStart: session.startTime,
+          timeEnd: session.endTime,
+          exercises: session.guide,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Lấy tên học viên để hiển thị ngay
+        const studentObj = studentsList.find(s => s._id === session.student);
+        const newSession = {
+          id: data.data._id, // id trả về từ BE
+          startTime: session.startTime,
+          endTime: session.endTime,
+          student: session.student,
+          studentName: studentObj ? studentObj.name : '',
+          guide: session.guide,
+          date: session.date,
+        };
+        setSessions(prev => {
+          const idx = prev.findIndex(s => s.date === session.date);
+          if (idx === -1) {
+            return [...prev, { date: session.date, sessions: [newSession] }];
+          } else {
+            const updatedSessions = [...prev[idx].sessions, newSession].sort((a, b) => a.startTime.localeCompare(b.startTime));
+            return prev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
+          }
+        });
+        setModal({ open: false, mode: 'add', session: null });
       } else {
-        // Thêm và sort lại theo time
-        const updatedSessions = [...prev[idx].sessions, newSession].sort((a, b) => a.startTime.localeCompare(b.startTime));
-        return prev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
+        alert(data.message || 'Thêm buổi tập thất bại!');
       }
-    });
-    setModal({ open: false, mode: 'add', session: null });
+    } catch (err) {
+      alert('Lỗi khi thêm buổi tập!');
+    }
   };
 
   const handleEditSession = (session) => {

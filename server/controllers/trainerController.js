@@ -233,7 +233,7 @@ exports.deleteTrainer = async (req, res) => {
 };
 
 // @desc    Get all students of a trainer
-// @route   GET /api/trainers/students
+// @route   GET /api/trainers/trainees
 // @access  Private (Admin, Trainer)
 exports.getTrainerTrainees = async (req, res) => {
   try {
@@ -334,7 +334,7 @@ exports.addSchedule = async (req, res) => {
       timeEnd,
       exercises,
       comment,
-      status: status || 'Chưa tham gia' 
+      status: status || 'Chưa tập' 
     });
 
     await newSchedule.save();
@@ -360,22 +360,18 @@ exports.addSchedule = async (req, res) => {
 // @access  Private (Admin, Trainer)
 exports.getAllSchedules = async (req, res) => {
   try {
-    const schedules = await Schedule.find()
-      .select('-createdAt -updatedAt')
-      .populate('memberId', 'name')
-      .populate('trainerId', 'name');
+    const trainerId = req.user.id;
+    const schedules = await Schedule.find({ trainerId })
+      .populate('memberId', 'name _id') // Lấy tên và id học viên
+      .select('timeStart timeEnd memberId exercises date'); // Chỉ lấy các trường cần thiết
+
     res.status(200).json({
       success: true,
-      count: schedules.length,
       data: schedules
     });
   } catch (error) {
-    console.error('Lỗi lấy tất cả lịch tập:', error);
-    res.status(500).json({
-      success: false,
-      message: "Lỗi server",
-      error: error.message
-    });
+    console.error(error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
 
@@ -411,12 +407,13 @@ exports.updateSchedule = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
+    console.log(updateData);
 
     const schedule = await Schedule.findByIdAndUpdate(id, updateData, { new: true })
-      .select('-createdAt -updatedAt')
-      .populate('memberId', 'name')
-      .populate('trainerId', 'name');
-
+      .select('-trainerId -createdAt -updatedAt')
+      .populate('memberId', 'name');
+    
+    console.log(schedule);
     if (!schedule) {
       return res.status(404).json({
         success: false,
@@ -465,5 +462,116 @@ exports.deleteSchedule = async (req, res) => {
       message: "Lỗi server",
       error: error.message
     });
+  }
+};
+
+// @desc    Get dashboard stats for trainer
+// @route   GET /api/trainers/dashboard-stats
+// @access  Private (Trainer)
+exports.getTrainerDashboardStats = async (req, res) => {
+  try {
+    const trainerId = req.user.id;
+    // Tổng số học viên
+    const orders = await Order.find({ trainerId }).select("userId");
+    const userIds = [...new Set(orders.map(order => order.userId.toString()))];
+    const totalStudents = userIds.length;
+
+    // Lấy ngày hôm nay (YYYY-MM-DD)
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+
+    // Lấy tất cả lịch tập của trainer hôm nay
+    const todaySchedules = await Schedule.find({
+      trainerId,
+      date: todayStr
+    });
+
+    // Tổng số buổi tập hôm nay
+    const todaySessions = todaySchedules.length;
+
+    // Đã hoàn thành (status: 'Đã tập')
+    const completedSessions = todaySchedules.filter(s => s.status === 'Đã tập').length;
+
+    // Sắp tới (status: khác 'Đã tập', ví dụ 'Chưa tập')
+    const upcomingSessions = todaySessions - completedSessions;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalStudents,
+        todaySessions,
+        completedSessions,
+        upcomingSessions
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+};
+
+// @desc    Get today's schedule for trainer
+// @route   GET /api/trainers/today-schedule
+// @access  Private (Trainer)
+exports.getTodaySchedule = async (req, res) => {
+  try {
+    const trainerId = req.user.id;
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+
+    // Lấy lịch tập hôm nay của trainer, populate tên học viên
+    const schedules = await Schedule.find({
+      trainerId,
+      date: todayStr
+    })
+      .populate('memberId', 'name')
+      .select('timeStart timeEnd memberId workoutType');
+
+    // Định dạng lại dữ liệu cho FE
+    const data = schedules.map(s => ({
+      time: `${s.timeStart} - ${s.timeEnd}`,
+      student: s.memberId?.name || '',
+      type: s.workoutType || ''
+    }));
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+};
+
+// @desc    Get student progress for trainer
+// @route   GET /api/trainers/student-progress
+// @access  Private (Trainer)
+exports.getStudentProgress = async (req, res) => {
+  try {
+    const trainerId = req.user.id;
+
+    // Lấy danh sách học viên của trainer
+    const orders = await Order.find({ trainerId }).select("userId");
+    const userIds = [...new Set(orders.map(order => order.userId.toString()))];
+
+    // Lấy thông tin học viên và tiến độ (giả lập, bạn cần thay bằng dữ liệu thực tế nếu có)
+    const students = await User.find({ _id: { $in: userIds } }).select("name _id goal progress");
+
+    // Nếu chưa có trường goal/progress, bạn cần bổ sung vào model User hoặc lấy từ bảng khác
+    // Ở đây giả lập dữ liệu nếu chưa có
+    const data = students.map(s => ({
+      name: s.name,
+      progress: s.progress || Math.floor(Math.random() * 50) + 50, // random 50-99%
+      goal: s.goal || "Chưa cập nhật"
+    }));
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 };
