@@ -5,13 +5,22 @@ const PrivateRoute = ({ allowedRoles }) => {
   const auth = useSelector((state) => state.auth);
   const { user, token, isLoggedIn } = auth;
   
-  // Check for user in localStorage as fallback
-  const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+  // Check for user and token in localStorage as fallback
   const localToken = localStorage.getItem("token");
+  let localUser;
+  
+  try {
+    const userStr = localStorage.getItem("user");
+    localUser = userStr ? JSON.parse(userStr) : null;
+  } catch (error) {
+    console.error("Error parsing user from localStorage:", error);
+    localUser = null;
+  }
   
   // Determine effective authentication state and role
   const effectiveIsLoggedIn = isLoggedIn || !!localToken;
-  const effectiveRole = user?.role || localUser?.role;
+  const effectiveUser = user || localUser;
+  const effectiveRole = effectiveUser?.role;
   
   console.log("PrivateRoute - isLoggedIn:", effectiveIsLoggedIn);
   console.log("PrivateRoute - role:", effectiveRole);
@@ -30,4 +39,4 @@ const PrivateRoute = ({ allowedRoles }) => {
   return <Outlet />;
 };
 
-export default PrivateRoute; 
+export default PrivateRoute;
