@@ -4,6 +4,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLogout } from '../../../redux/slices/authSlice';
 import logo from "../../../assets/logo.svg";
 import styles from './Header.module.css';
 
@@ -11,6 +13,8 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -23,8 +27,8 @@ export default function Header() {
     handleClose();
   };
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/');
+    dispatch(setLogout());
+    navigate('/auth/login');
     handleClose();
   };
 
@@ -34,8 +38,8 @@ export default function Header() {
       <div className={styles.rightSection}>
         <div className={styles.userMenu}>
           <button className={styles.userButton} onClick={handleAvatarClick}>
-            <Avatar alt="Admin" src="https://i.pravatar.cc/150?img=32" className={styles.avatar} />
-            <span className={styles.userName}>Admin CJ</span>
+            <Avatar alt={user?.name || 'Admin'} src={user?.avatar || "https://i.pravatar.cc/150?img=32"} className={styles.avatar} />
+            <span className={styles.userName}>{user?.name || 'Admin CJ'}</span>
           </button>
           <Menu anchorEl={anchorEl} open={open} onClose={handleClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
             <MenuItem onClick={handleSettings}>Cài đặt</MenuItem>

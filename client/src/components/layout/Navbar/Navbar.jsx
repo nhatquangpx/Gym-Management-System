@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLogout } from '../../../redux/slices/authSlice';
 import styles from './Navbar.module.css';
-import { useAuth } from '../../../contexts/AuthContext';
 import Button from '../../common/Button/Button';
 import logo from '../../../assets/logo.svg';
 import Modal from '../../common/Modal/Modal';
 
 const Navbar = () => {
-  const { isLoggedIn, user, logout, notifications } = useAuth();
+  const dispatch = useDispatch();
+  const { user, isLoggedIn } = useSelector((state) => state.auth);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -15,6 +17,17 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const notificationRef = useRef(null);
+
+  // For demo purposes - this should ideally be managed in its own Redux slice
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Chào mừng bạn đến với GYMPRO",
+      message: "Khám phá các tính năng mới của chúng tôi",
+      isRead: false,
+      timestamp: new Date()
+    }
+  ]);
 
   const unreadNotifications = notifications.filter(n => !n.isRead).length;
 
@@ -49,7 +62,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    logout();
+    dispatch(setLogout());
     setShowDropdown(false);
     navigate('/');
   };

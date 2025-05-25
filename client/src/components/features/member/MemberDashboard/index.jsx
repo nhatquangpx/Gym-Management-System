@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Grid, Paper, Typography, Box } from '@mui/material';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 const MemberDashboard = () => {
-  const { user } = useAuth();
+  const { user } = useSelector(state => state.auth);
   const [stats, setStats] = useState({
     activePackages: 0,
     upcomingWorkouts: 0,
