@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   Box,
   Paper,
@@ -13,6 +14,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,9 +35,28 @@ const Login = () => {
     setError('');
 
     try {
-      // TODO: Implement actual login logic here
-      // For now, just redirect based on role
-      switch (formData.role) {
+      const response = await fetch('http://localhost:8001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Đăng nhập thất bại');
+      }
+
+      // Use the AuthContext login function
+      login(data.user, data.token);
+
+      // Chuyển hướng dựa vào role
+      switch (data.user.role) {
         case 'admin':
           navigate('/admin/dashboard');
           break;
