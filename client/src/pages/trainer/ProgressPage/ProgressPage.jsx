@@ -1,55 +1,108 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Select, Form, Button, message, DatePicker, Input } from 'antd';
-import { UserOutlined, CalendarOutlined, SendOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Card, Form, Button, message, Input, Modal } from 'antd';
+import { SendOutlined } from '@ant-design/icons';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import styles from './ProgressPage.module.css';
+import styles from '../StudentsPage/StudentsPage.module.css';
+import dayjs from 'dayjs';
+import { FaSearch, FaPhone, FaCalendarAlt, FaDumbbell } from 'react-icons/fa';
 
-const { Option } = Select;
 const { TextArea } = Input;
+
+const mockStudents = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    phone: '+84 123 456 789',
+    joinDate: '2024-01-15',
+    status: 'active',
+    avatar: 'https://i.pravatar.cc/150?img=1',
+    package: 'Premium Fitness',
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    phone: '+84 987 654 321',
+    joinDate: '2024-02-01',
+    status: 'pending',
+    avatar: 'https://i.pravatar.cc/150?img=2',
+    package: 'Basic Training',
+  },
+  {
+    id: 3,
+    name: 'Nguyễn Văn A',
+    email: 'vana@example.com',
+    phone: '+84 111 222 333',
+    joinDate: '2024-03-01',
+    status: 'completed',
+    avatar: 'https://i.pravatar.cc/150?img=3',
+    package: 'Yoga',
+  },
+];
+
+const statusOptions = [
+  { value: 'pending', label: 'Chờ phê duyệt' },
+  { value: 'active', label: 'Đang hướng dẫn' },
+  { value: 'completed', label: 'Đã hoàn thành' },
+  { value: 'inactive', label: 'Ngừng theo dõi' }
+];
+
+const statusColorClass = {
+  pending: styles.statusPending,
+  active: styles.statusActive,
+  completed: styles.statusCompleted,
+  inactive: styles.statusInactive
+};
 
 const ProgressPage = () => {
   const [form] = Form.useForm();
-  const [members, setMembers] = useState([]);
-  const [selectedMember, setSelectedMember] = useState(null);
-  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [feedbackHistory, setFeedbackHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  // Mock data - replace with actual API call
-  useEffect(() => {
-    setMembers([
-      { id: 1, name: 'Nguyễn Văn A' },
-      { id: 2, name: 'Trần Thị B' },
-      { id: 3, name: 'Lê Văn C' },
-    ]);
-  }, []);
-
-  // Mock attendance data - replace with actual API call
-  const mockAttendanceData = [
-    { date: '2024-01-15', time: '08:00', status: 'attended', type: 'Cardio' },
-    { date: '2024-01-17', time: '09:00', status: 'missed', type: 'Strength' },
-    { date: '2024-01-19', time: '10:00', status: 'attended', type: 'HIIT' },
-    { date: '2024-01-20', time: '08:00', status: 'attended', type: 'Cardio' },
-  ];
-
-  const handleMemberChange = (value) => {
-    setSelectedMember(value);
-    // Fetch attendance data for selected member and week
-    setAttendanceData(mockAttendanceData);
+  // Sinh dữ liệu đi/vắng cho tháng hiện tại
+  const generateMonthlyAttendance = () => {
+    const today = dayjs();
+    const startOfMonth = today.startOf('month');
+    const days = [];
+    for (let d = 0; d <= today.date() - 1; d++) {
+      const date = startOfMonth.add(d, 'day');
+      // Random hóa trạng thái đi/vắng
+      const status = Math.random() > 0.25 ? 'attended' : 'missed';
+      days.push({
+        date: date.format('YYYY-MM-DD'),
+        time: '08:00',
+        status,
+        type: ['Cardio', 'Strength', 'HIIT'][Math.floor(Math.random()*3)]
+      });
+    }
+    return days;
   };
 
-  const handleWeekChange = (date) => {
-    setSelectedWeek(date);
-    // Fetch attendance data for selected member and week
-    setAttendanceData(mockAttendanceData);
+  const handleSelectStudent = (student) => {
+    setSelectedStudent(student);
+    setAttendanceData(generateMonthlyAttendance());
   };
 
   const handleSubmitFeedback = async (values) => {
     setLoading(true);
     try {
-      // Replace with actual API call
-      console.log('Submitted feedback:', values);
-      message.success('Gửi nhận xét thành công!');
+      setFeedbackHistory(prev => [
+        {
+          id: Date.now(),
+          content: values.feedback,
+          date: dayjs().format('YYYY-MM-DD HH:mm'),
+        },
+        ...prev
+      ]);
+      message.success('Thêm nhận xét thành công!');
       form.resetFields(['feedback']);
     } catch (error) {
       message.error('Có lỗi xảy ra khi gửi nhận xét');
@@ -65,98 +118,179 @@ const ProgressPage = () => {
 
   const COLORS = ['#4CAF50', '#F44336'];
 
+  const handleShowFeedbackDetail = (fb) => {
+    setSelectedFeedback(fb);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedFeedback(null);
+  };
+
+  // Lọc và tìm kiếm học viên
+  const filteredStudents = mockStudents.filter(student => {
+    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   return (
-    <div className={styles.progressPage}>
-      <Card title="Đánh giá tiến độ" className={styles.card}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmitFeedback}
-        >
-          <Form.Item
-            name="memberId"
-            label="Chọn học viên"
-            rules={[{ required: true, message: 'Vui lòng chọn học viên' }]}
-          >
-            <Select
-              placeholder="Chọn học viên"
-              prefix={<UserOutlined />}
-              onChange={handleMemberChange}
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Đánh giá tiến độ</h1>
+      </div>
+      {!selectedStudent ? (
+        <>
+          <div className={styles.searchFilter}>
+            <div className={styles.searchBox}>
+              <FaSearch className={styles.searchIcon} />
+              <input
+                type="text"
+                className={styles.searchInput}
+                placeholder="Tìm kiếm theo tên hoặc email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <select
+              className={styles.filterSelect}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
             >
-              {members.map(member => (
-                <Option key={member.id} value={member.id}>
-                  {member.name}
-                </Option>
+              <option value="all">Tất cả trạng thái</option>
+              {statusOptions.map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
               ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="week"
-            label="Chọn tuần"
-            rules={[{ required: true, message: 'Vui lòng chọn tuần' }]}
-          >
-            <DatePicker
-              picker="week"
-              onChange={handleWeekChange}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-
-          {selectedMember && selectedWeek && (
-            <>
-              <div className={styles.chartContainer}>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className={styles.attendanceList}>
-                <h3>Chi tiết buổi tập</h3>
-                {attendanceData.map((session, index) => (
-                  <div
-                    key={index}
-                    className={`${styles.sessionItem} ${
-                      session.status === 'attended' ? styles.attended : styles.missed
-                    }`}
-                  >
-                    <div className={styles.sessionInfo}>
-                      <span className={styles.date}>{session.date}</span>
-                      <span className={styles.time}>{session.time}</span>
-                      <span className={styles.type}>{session.type}</span>
-                    </div>
-                    <span className={styles.status}>
-                      {session.status === 'attended' ? 'Đã tập' : 'Vắng mặt'}
+            </select>
+          </div>
+          <div className={styles.studentsGrid}>
+            {filteredStudents.map(student => (
+              <div
+                key={student.id}
+                className={styles.studentCard}
+                onClick={() => handleSelectStudent(student)}
+              >
+                <div className={styles.studentHeader}>
+                  <img
+                    src={student.avatar}
+                    alt={student.name}
+                    className={styles.avatar}
+                  />
+                  <div className={styles.studentInfo}>
+                    <h3 className={styles.name}>{student.name}</h3>
+                    <p className={styles.email}>{student.email}</p>
+                    <span className={`${styles.status} ${statusColorClass[student.status]}`}>{statusOptions.find(opt => opt.value === student.status)?.label}</span>
+                  </div>
+                </div>
+                <div className={styles.studentDetails}>
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>
+                      <FaPhone /> Số điện thoại
+                    </span>
+                    <span className={styles.detailValue}>{student.phone}</span>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>
+                      <FaCalendarAlt /> Ngày tham gia
+                    </span>
+                    <span className={styles.detailValue}>
+                      {new Date(student.joinDate).toLocaleDateString('vi-VN')}
                     </span>
                   </div>
-                ))}
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>
+                      <FaDumbbell /> Gói tập
+                    </span>
+                    <span className={styles.detailValue}>{student.package}</span>
+                  </div>
+                </div>
+                <div className={styles.actions}>
+                  <button
+                    className={`${styles.actionButton} ${styles.primary}`}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleSelectStudent(student);
+                    }}
+                  >
+                    Đánh giá tiến độ
+                  </button>
+                </div>
               </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className={styles.progressPageContent}>
+          <div className={styles.backButtonWrapper}>
+            <Button onClick={() => setSelectedStudent(null)} style={{ marginBottom: 16 }}>
+              Quay lại danh sách học viên
+            </Button>
+          </div>
+          <Card className={styles.card}>
+            <div className={styles.chartContainer}>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
 
+            <div className={styles.attendanceList}>
+              <h3>Chi tiết buổi tập</h3>
+              <div className={styles.attendanceTableWrapper}>
+                <table className={styles.attendanceTable}>
+                  <thead>
+                    <tr>
+                      <th>Ngày</th>
+                      <th>Giờ</th>
+                      <th>Loại buổi tập</th>
+                      <th>Trạng thái</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceData.map((session, index) => (
+                      <tr key={index}>
+                        <td>{session.date}</td>
+                        <td>{session.time}</td>
+                        <td>{session.type}</td>
+                        <td>
+                          <span className={session.status === 'attended' ? styles.badgeAttended : styles.badgeMissed}>
+                            {session.status === 'attended' ? 'Đã tập' : 'Vắng mặt'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <Form form={form} onFinish={handleSubmitFeedback} layout="vertical">
               <Form.Item
                 name="feedback"
-                label="Nhận xét tuần"
+                label="Nhận xét tiến độ (có thể thêm nhiều lần trong tháng)"
                 rules={[{ required: true, message: 'Vui lòng nhập nhận xét' }]}
               >
                 <TextArea
                   rows={4}
-                  placeholder="Nhập nhận xét về tiến độ của học viên trong tuần..."
+                  placeholder="Nhập nhận xét về tiến độ, ví dụ: thái độ, kết quả, lời khuyên..."
                 />
               </Form.Item>
 
@@ -168,13 +302,51 @@ const ProgressPage = () => {
                   loading={loading}
                   className={styles.submitButton}
                 >
-                  Gửi nhận xét
+                  Thêm nhận xét
                 </Button>
               </Form.Item>
-            </>
-          )}
-        </Form>
-      </Card>
+            </Form>
+
+            <div style={{ marginTop: 24 }}>
+              <Button onClick={() => setShowHistory(h => !h)}>
+                {showHistory ? 'Ẩn lịch sử nhận xét' : 'Xem lịch sử nhận xét'}
+              </Button>
+              {showHistory && (
+                <div style={{ marginTop: 16 }}>
+                  <h4>Lịch sử nhận xét</h4>
+                  {feedbackHistory.length === 0 ? (
+                    <div style={{ color: '#888' }}>Chưa có nhận xét nào</div>
+                  ) : (
+                    <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
+                      {feedbackHistory.map(fb => (
+                        <li key={fb.id} style={{ marginBottom: 12, background: '#f6f7fb', borderRadius: 8, padding: 12, cursor: 'pointer' }}
+                            onClick={() => handleShowFeedbackDetail(fb)}>
+                          <div style={{ fontWeight: 500 }}>{fb.content.length > 60 ? fb.content.slice(0, 60) + '...' : fb.content}</div>
+                          <div style={{ color: '#888', fontSize: 13, marginTop: 4 }}>{fb.date}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <Modal
+              open={showModal}
+              onCancel={handleCloseModal}
+              footer={null}
+              title="Chi tiết nhận xét"
+            >
+              {selectedFeedback && (
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>{selectedFeedback.content}</div>
+                  <div style={{ color: '#888', fontSize: 13 }}>Thời gian: {selectedFeedback.date}</div>
+                </div>
+              )}
+            </Modal>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
