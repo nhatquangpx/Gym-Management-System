@@ -2,27 +2,54 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import Button from "../../components/features/admin/Button/Button";
 import { FaArrowLeft } from 'react-icons/fa';
+import axios from '../../utils/axiosConfig';
 
 export default function AddEmployee() {
   const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: '',
-    role: '',
+    email: '',
+    password: '',
     phone: '',
-    status: 'Đang làm việc',
+    position: '',
+    salary: '',
+    shiftSchedule: '',
+    performanceRating: '',
+    isActive: true
   });
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleChange = e => {
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setForm({ ...form, [e.target.name]: value });
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await fetch('/api/employees', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
+      setSaving(true);
+
+      const employeeData = {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+        position: form.position,
+        salary: form.salary ? Number(form.salary) : undefined,
+        shiftSchedule: form.shiftSchedule,
+        performanceRating: form.performanceRating ? Number(form.performanceRating) : undefined,
+        isActive: form.isActive
+      };
+
+      await axios.post('/api/employees', employeeData);
+      
+      setSaving(false);
+      alert('Đã thêm nhân viên mới!');
       navigate('/admin/employees');
     } catch (error) {
-      alert('Có lỗi xảy ra!');
+      console.error("Error creating employee:", error);
+      setSaving(false);
+      alert(`Lỗi: ${error.response?.data?.message || 'Không thể thêm nhân viên'}`);
     }
   };
   return (
@@ -38,29 +65,109 @@ export default function AddEmployee() {
       </div>
       <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block mb-1 text-[var(--admin-text)]">Tên</label>
-          <input name="name" value={form.name} onChange={handleChange} className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" />
+          <label className="block mb-1 text-[var(--admin-text)]">Tên <span className="text-red-500">*</span></label>
+          <input 
+            name="name" 
+            value={form.name} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+            required 
+          />
         </div>
         <div className="mb-4">
-          <label className="block mb-1 text-[var(--admin-text)]">Chức vụ</label>
-          <input name="role" value={form.role} onChange={handleChange} className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" />
+          <label className="block mb-1 text-[var(--admin-text)]">Email <span className="text-red-500">*</span></label>
+          <input 
+            name="email"
+            type="email" 
+            value={form.email} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Mật khẩu <span className="text-red-500">*</span></label>
+          <input 
+            name="password"
+            type="password" 
+            value={form.password} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+            required
+            minLength={6}
+          />
         </div>
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Số điện thoại</label>
-          <input name="phone" value={form.phone} onChange={handleChange} className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" />
+          <input 
+            name="phone" 
+            value={form.phone} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+          />
         </div>
         <div className="mb-4">
-          <label className="block mb-1 text-[var(--admin-text)]">Trạng thái</label>
-          <select name="status" value={form.status} onChange={handleChange} className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]">
-            <option value="Đang làm việc">Đang làm việc</option>
-            <option value="Nghỉ việc">Nghỉ việc</option>
-          </select>
+          <label className="block mb-1 text-[var(--admin-text)]">Chức vụ</label>
+          <input 
+            name="position" 
+            value={form.position} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Lương</label>
+          <input 
+            name="salary"
+            type="number" 
+            value={form.salary} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Lịch làm việc</label>
+          <input 
+            name="shiftSchedule" 
+            value={form.shiftSchedule} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Đánh giá hiệu suất</label>
+          <input 
+            name="performanceRating"
+            type="number" 
+            min="1" 
+            max="5" 
+            step="0.1"
+            value={form.performanceRating} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+          />
+        </div>
+        <div className="mb-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input 
+              name="isActive" 
+              type="checkbox" 
+              checked={form.isActive} 
+              onChange={handleChange} 
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span className="ml-2 text-[var(--admin-text)]">
+              Đang làm việc
+            </span>
+          </label>
         </div>
         <div className="flex gap-3">
-          <Button type="submit" color="primary">Lưu</Button>
+          <Button type="submit" color="primary" disabled={saving}>
+            {saving ? 'Đang lưu...' : 'Lưu'}
+          </Button>
           <Link to="/admin/employees"><Button type="button" color="secondary">Hủy</Button></Link>
         </div>
       </form>
     </div>
   );
-} 
+}
