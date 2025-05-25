@@ -85,8 +85,15 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
   const getMinute = (val) => val ? val.split(':')[1] : '';
   // Helper để set lại giờ/phút
   const setTime = (field, hour, minute) => {
-    if (hour && minute) setForm(f => ({ ...f, [field]: `${hour}:${minute}` }));
-    else setForm(f => ({ ...f, [field]: '' }));
+    if (hour && minute) {
+      setForm(f => ({ ...f, [field]: `${hour}:${minute}` }));
+    } else if (hour) {
+      setForm(f => ({ ...f, [field]: `${hour}:00` }));
+    } else if (minute) {
+      setForm(f => ({ ...f, [field]: `00:${minute}` }));
+    } else {
+      setForm(f => ({ ...f, [field]: '' }));
+    }
   };
 
   return (
