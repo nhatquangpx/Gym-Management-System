@@ -62,9 +62,13 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
   const [confirmAction, setConfirmAction] = React.useState(null);
 
   React.useEffect(() => {
-    setForm(session ? { ...session, date: session.date || selectedDate } : { startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
-    setError(''); // reset error mỗi lần mở
-  }, [session, open, selectedDate]);
+    if (mode === 'edit') {
+      setForm(session ? { ...session } : { startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
+    } else {
+      setForm({ startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
+    }
+    setError('');
+  }, [session, open, selectedDate, mode]);
 
   if (!open) return null;
   const isEdit = mode === 'edit';
@@ -149,10 +153,15 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
               className={styles.sessionModalDateInput}
               value={form.date}
               onChange={handleDateChange}
-              disabled={isDetail}
+              disabled={isDetail || isEdit}
               min={new Date().getFullYear() + '-01-01'}
               max={new Date().getFullYear() + 2 + '-12-31'}
             />
+            {isEdit && (
+              <div className={styles.dateChangeNote}>
+                Không thể thay đổi ngày khi sửa buổi tập. Nếu muốn đổi ngày, vui lòng xóa buổi tập này và tạo buổi tập mới.
+              </div>
+            )}
           </div>
           <div className={styles.timeInputs}>
             <div>
@@ -338,26 +347,16 @@ const SchedulePage = () => {
   };
   const handleEditSession = (session) => {
     setSessions(prev => {
-      // Nếu đổi ngày, xóa khỏi ngày cũ, thêm vào ngày mới
-      let found = false;
-      let newPrev = prev.map(day => {
-        if (day.sessions.some(s => s.id === session.id)) {
-          found = true;
-          return { ...day, sessions: day.sessions.filter(s => s.id !== session.id) };
-        }
-        return day;
-      });
-      // Nếu ngày mới đã có, thêm vào đó và sort
-      const idx = newPrev.findIndex(s => s.date === session.date);
-      if (idx === -1) {
-        newPrev.push({ date: session.date, sessions: [{ ...session }] });
-      } else {
-        const updatedSessions = [...newPrev[idx].sessions, { ...session }].sort((a, b) => a.startTime.localeCompare(b.startTime));
-        newPrev = newPrev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
-      }
-      // Xóa ngày không còn session nào
-      newPrev = newPrev.filter(day => day.sessions.length > 0);
-      return newPrev;
+      const dayIndex = prev.findIndex(day => day.sessions.some(s => s.id === session.id));
+      if (dayIndex === -1) return prev;
+
+      const updatedSessions = prev[dayIndex].sessions.map(s => 
+        s.id === session.id ? { ...session } : s
+      ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+      return prev.map((day, idx) => 
+        idx === dayIndex ? { ...day, sessions: updatedSessions } : day
+      );
     });
     setModal({ open: false, mode: 'edit', session: null });
   };

@@ -476,4 +476,12 @@
 }
 .sessionModalTextareaBold {
   font-weight: 600;
-} 
+}
+
+.dateChangeNote {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 4px;
+  font-style: italic;
+  line-height: 1.4;
+}
