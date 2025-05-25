@@ -15,6 +15,10 @@ export const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isLoggedIn = true;
+      
+      // Lưu token và thông tin người dùng vào localStorage
+      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
     setLogout: (state) => {
       state.user = null;
@@ -30,4 +34,4 @@ export const authSlice = createSlice({
 });
 
 export const { setLogin, setLogout } = authSlice.actions;
-export default authSlice.reducer; 
+export default authSlice.reducer;
