@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLogout } from '../../../redux/slices/authSlice';
 import styles from './TrainerHeader.module.css';
 import defaultAvatar from '../../../assets/cute-character.jpg';
 
 const TrainerHeader = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state.auth);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    dispatch(setLogout());
     navigate('/trainer/login');
   };
 

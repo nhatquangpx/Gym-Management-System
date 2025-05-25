@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setLogin } from '../../../../redux/slices/authSlice';
 import styles from './LoginForm.module.css';
-import { useAuth } from '../../../../contexts/AuthContext';
 import InputField from '../../../common/InputField/InputField';
 import PasswordField from '../../../common/PasswordField/PasswordField';
 import Button from '../../../common/Button/Button';
@@ -11,15 +12,17 @@ import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
     rememberMe: false
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -30,16 +33,23 @@ const LoginForm = () => {
     if (errors[name]) {
       setErrors({ ...errors, [name]: undefined });
     }
+    if (loginError) {
+      setLoginError('');
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
 
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username/Email là bắt buộc';
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email là bắt buộc';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email không hợp lệ';
       isValid = false;
     }
+    
     if (!formData.password.trim()) {
       newErrors.password = 'Mật khẩu là bắt buộc';
       isValid = false;
@@ -49,45 +59,97 @@ const LoginForm = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Giả lập đăng nhập thành công
-      login({
-        name: "User Test",
-        email: formData.username,
-        avatar: "https://i.pravatar.cc/150?img=3"
-      });
-      navigate('/');
+      setLoading(true);
+      setLoginError('');
+      
+      try {
+        // Gọi API đăng nhập
+        const response = await fetch(`http://localhost:8001/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Đăng nhập thất bại');
+        }
+        
+        // Lưu token vào localStorage nếu chọn "Ghi nhớ đăng nhập"
+        if (formData.rememberMe) {
+          localStorage.setItem('token', data.token);
+        }
+        
+        // Dispatch action lưu thông tin người dùng vào Redux store
+        dispatch(setLogin({
+          user: data.user,
+          token: data.token
+        }));
+        
+        // Chuyển hướng dựa vào role
+        if (data.user.role) {
+            navigate('/'); // Member về trang chủ
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        setLoginError(error.message || 'Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleGoogleLogin = () => {
     // Giả lập đăng nhập Google
-    login({
+    const mockGoogleUser = {
       name: "Google User",
       email: "google.user@gmail.com",
-      avatar: "https://i.pravatar.cc/150?img=4"
-    });
+      avatar: "https://i.pravatar.cc/150?img=4",
+      role: "member"  // Add a role for PrivateRoute
+    };
+    
+    // Dispatch action to Redux store
+    dispatch(setLogin({
+      user: mockGoogleUser,
+      token: "mock-google-token-for-testing"
+    }));
+    
     navigate('/');
   };
 
   return (
     <form className={styles.loginForm} onSubmit={handleSubmit} noValidate>
+      {loginError && (
+        <div className={styles.errorMessage}>
+          {loginError}
+        </div>
+      )}
+      
       <InputField
-        id="username"
-        label="Username/Email"
-        type="text"
-        placeholder="Nhập username hoặc email"
-        value={formData.username}
+        id="email"
+        name="email"
+        label="Email"
+        type="email"
+        placeholder="Nhập email của bạn"
+        value={formData.email}
         onChange={handleChange}
-        error={errors.username}
+        error={errors.email}
         required={true}
       />
 
       <PasswordField
         id="password"
+        name="password"
         label="Mật khẩu"
         placeholder="Nhập mật khẩu"
         value={formData.password}
@@ -111,8 +173,12 @@ const LoginForm = () => {
         </Link>
       </div>
 
-      <Button type="submit" className={styles.loginBtn}>
-        Đăng nhập
+      <Button 
+        type="submit" 
+        className={styles.loginBtn}
+        disabled={loading}
+      >
+        {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
       </Button>
 
       <Divider text="hoặc" />

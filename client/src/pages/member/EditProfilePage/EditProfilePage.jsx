@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setLogin } from '../../../redux/slices/authSlice';
 import styles from './EditProfilePage.module.css';
 import Navbar from '../../../components/layout/Navbar/Navbar'; // Sử dụng Navbar chung
 import Footer from '../../../components/layout/Footer/Footer'; // Sử dụng Footer chung
 import InputField from '../../../components/common/InputField/InputField';
 import Button from '../../../components/common/Button/Button';
-import { useAuth } from '../../../contexts/AuthContext'; // Sử dụng AuthContext
 
 const EditProfilePage = () => {
   const navigate = useNavigate();
-  const { user, login, isLoggedIn } = useAuth(); // Lấy thông tin user và hàm login (để cập nhật user)
+  const dispatch = useDispatch();
+  const { user, isLoggedIn } = useSelector(state => state.auth);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -95,7 +97,13 @@ const EditProfilePage = () => {
           occupation: formData.occupation,
           avatar: formData.avatar,
         };
-        login(updatedUser);
+        
+        // Update user info in Redux store
+        dispatch(setLogin({
+          user: updatedUser,
+          token: localStorage.getItem('token') || 'mock-token'
+        }));
+        
         setIsLoading(false);
         setSuccessMessage('Cập nhật thông tin thành công!');
       }, 1500);
