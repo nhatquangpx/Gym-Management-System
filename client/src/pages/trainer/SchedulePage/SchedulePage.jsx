@@ -413,36 +413,83 @@ const SchedulePage = () => {
     }
   };
 
-  const handleEditSession = (session) => {
-    setSessions(prev => {
-      const dayIndex = prev.findIndex(day => day.sessions.some(s => s.id === session.id));
-      if (dayIndex === -1) return prev;
-
-      const updatedSessions = prev[dayIndex].sessions.map(s => 
-        s.id === session.id ? { ...session } : s
-      ).sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-      return prev.map((day, idx) => 
-        idx === dayIndex ? { ...day, sessions: updatedSessions } : day
-      );
-    });
-    setModal({ open: false, mode: 'edit', session: null });
+  const handleEditSession = async (session) => {
+    try {
+      const token = localStorage.getItem('token');
+      // Gửi API cập nhật buổi tập
+      const res = await fetch(`http://localhost:8001/api/trainers/update-schedule/${session.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify({
+          memberId: session.student,
+          exercises: session.guide,
+          timeStart: session.startTime,
+          timeEnd: session.endTime,
+          // Nếu có các trường khác như workoutType, comment, status thì truyền thêm
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Lấy tên học viên để hiển thị ngay
+        const studentObj = studentsList.find(s => s._id === session.student);
+        const updatedSession = {
+          ...session,
+          studentName: studentObj ? studentObj.name : '',
+        };
+        setSessions(prev => {
+          const dayIndex = prev.findIndex(day => day.sessions.some(s => s.id === session.id));
+          if (dayIndex === -1) return prev;
+          const updatedSessions = prev[dayIndex].sessions.map(s =>
+            s.id === session.id ? updatedSession : s
+          ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+          return prev.map((day, idx) =>
+            idx === dayIndex ? { ...day, sessions: updatedSessions } : day
+          );
+        });
+        setModal({ open: false, mode: 'edit', session: null });
+      } else {
+        alert(data.message || 'Cập nhật buổi tập thất bại!');
+      }
+    } catch (err) {
+      alert('Lỗi khi cập nhật buổi tập!');
+    }
   };
   
-  const handleDeleteSession = (session) => {
-    setSessions(prev => {
-      let newPrev = prev.map(day =>
-        day.date === selectedDate
-          ? { ...day, sessions: day.sessions.filter(s => s.id !== session.id) }
-          : day
-      );
-      // Sort lại các session trong ngày (nếu còn)
-      newPrev = newPrev.map(day => ({ ...day, sessions: [...day.sessions].sort((a, b) => a.startTime.localeCompare(b.startTime)) }));
-      // Xóa ngày không còn session nào
-      newPrev = newPrev.filter(day => day.sessions.length > 0);
-      return newPrev;
-    });
-    setModal({ open: false, mode: 'edit', session: null });
+  const handleDeleteSession = async (session) => {
+    try {
+      const token = localStorage.getItem('token');
+      // Gửi API xóa buổi tập
+      const res = await fetch(`http://localhost:8001/api/trainers/delete-schedule/${session.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSessions(prev => {
+          let newPrev = prev.map(day =>
+            day.date === selectedDate
+              ? { ...day, sessions: day.sessions.filter(s => s.id !== session.id) }
+              : day
+          );
+          // Sort lại các session trong ngày (nếu còn)
+          newPrev = newPrev.map(day => ({ ...day, sessions: [...day.sessions].sort((a, b) => a.startTime.localeCompare(b.startTime)) }));
+          // Xóa ngày không còn session nào
+          newPrev = newPrev.filter(day => day.sessions.length > 0);
+          return newPrev;
+        });
+        setModal({ open: false, mode: 'edit', session: null });
+      } else {
+        alert(data.message || 'Xóa buổi tập thất bại!');
+      }
+    } catch (err) {
+      console.error('Lỗi khi xóa buổi tập:', err);
+      alert('Lỗi khi xóa buổi tập!');
+    }
   };
 
   // Xem chi tiết buổi tập

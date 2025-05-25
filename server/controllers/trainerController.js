@@ -442,6 +442,7 @@ exports.updateSchedule = async (req, res) => {
 exports.deleteSchedule = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("Deleting schedule with ID:", id);
     const result = await Schedule.findByIdAndDelete(id);
 
     if (!result) {

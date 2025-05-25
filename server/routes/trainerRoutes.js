@@ -29,6 +29,11 @@ router.post("/add-schedule", [verifyToken, verifyRole(["trainer"])], trainerCont
 // @access  Private (Trainer)
 router.put('/update-schedule/:id', [verifyToken, verifyRole(["trainer"])], trainerController.updateSchedule);
 
+// @route   DELETE /api/trainers/delete-schedule/:id
+// @desc    Xóa lịch tập
+// @access  Private (Trainer)
+router.delete('/delete-schedule/:id', [verifyToken, verifyRole(['trainer'])], trainerController.deleteSchedule);
+
 // @route   GET /api/trainers/get-all-schedule
 // @desc    Lấy tất cả lịch tập của huấn luyện viên
 // @access  Private (Trainer)
