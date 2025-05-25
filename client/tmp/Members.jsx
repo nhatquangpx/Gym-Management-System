@@ -21,12 +21,13 @@ export default function Members() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   // Lấy danh sách thành viên từ API
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         // Không cần thêm token vào headers vì đã xử lý trong axiosConfig
-        const response = await axios.get('/api/members');
+        const response = await axios.get('/members');
         
         // Chuyển đổi định dạng dữ liệu từ API để phù hợp với UI
         const formattedMembers = response.data.data.map(member => ({
@@ -61,10 +62,11 @@ export default function Members() {
     setItemToDelete(id);
     setOpenConfirm(true);
   };
-    const handleDeleteConfirm = async () => {
+  
+  const handleDeleteConfirm = async () => {
     try {
       // Không cần thêm token vào headers vì đã xử lý trong axiosConfig
-      await axios.delete(`/api/members/${itemToDelete}`);
+      await axios.delete(`/members/${itemToDelete}`);
       
       // Cập nhật lại danh sách sau khi xóa
       setMembers(members.filter(member => member.id !== itemToDelete));
