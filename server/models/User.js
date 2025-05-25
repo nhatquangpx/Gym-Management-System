@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["member", "admin", "employee", "trainer"],
       default: "member"
     },
+    isActive: {
+      type: Boolean,
+      default: true
+    },
     memberInfo: {
       gender: String,
       dateOfBirth: Date,

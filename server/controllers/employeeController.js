@@ -12,7 +12,7 @@ exports.createEmployee = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password, phone, position, salary, shiftSchedule, performanceRating } = req.body;
+    const { name, email, password, phone, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
 
     // Check if user already exists
     let user = await User.findOne({ email });
@@ -31,6 +31,7 @@ exports.createEmployee = async (req, res) => {
       password: hashPassword,
       phone,
       role: "employee",
+      isActive: isActive !== undefined ? isActive : true,
       employeeInfo: {
         position,
         salary,
@@ -72,7 +73,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId, position, salary, shiftSchedule, performanceRating } = req.body;
+    const { userId, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
 
     // Check if user exists
     const user = await User.findById(userId);
@@ -87,6 +88,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
 
     // Update user with employee role
     user.role = "employee";
+    if (isActive !== undefined) user.isActive = isActive;
     user.employeeInfo = {
       position,
       salary,
@@ -126,7 +128,7 @@ exports.updateEmployee = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { position, salary, shiftSchedule, performanceRating, name, email, phone } = req.body;
+    const { position, salary, shiftSchedule, performanceRating, name, email, phone, isActive } = req.body;
     const userId = req.params.id;
 
     // Find user with employee role
@@ -139,6 +141,7 @@ exports.updateEmployee = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (phone) user.phone = phone;
+    if (isActive !== undefined) user.isActive = isActive;
     
     // Update employeeInfo fields
     if (position || salary || shiftSchedule || performanceRating) {
