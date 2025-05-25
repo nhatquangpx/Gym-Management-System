@@ -28,6 +28,8 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
   React.useEffect(() => {
     if (mode === 'edit') {
       setForm(session ? { ...session } : { startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
+    } else if (mode === 'detail') {
+      setForm(session ? { ...session } : { startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
     } else {
       setForm({ startTime: '', endTime: '', student: '', guide: '', date: selectedDate });
     }
