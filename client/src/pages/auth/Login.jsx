@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   Box,
   Paper,
@@ -13,6 +14,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -52,11 +54,8 @@ const Login = () => {
         throw new Error(data.message || 'Đăng nhập thất bại');
       }
 
-      // Lưu token vào localStorage
-      localStorage.setItem('token', data.token);
-      
-      // Lưu thông tin user
-      localStorage.setItem('user', JSON.stringify(data.user));
+      // Use the AuthContext login function
+      login(data.user, data.token);
 
       // Chuyển hướng dựa vào role
       switch (data.user.role) {

@@ -1,10 +1,11 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [notifications, setNotifications] = useState([
     // Dữ liệu mẫu cho thông báo
     {
@@ -16,16 +17,36 @@ export const AuthProvider = ({ children }) => {
     }
   ]);
 
-  const login = (userData) => {
+  // Load user from localStorage on initial render
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const login = (userData, authToken) => {
     setIsLoggedIn(true);
     setUser(userData);
+    setToken(authToken);
+    
+    // Store in localStorage for persistence
     localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', authToken);
   };
 
   const logout = () => {
     setIsLoggedIn(false);
     setUser(null);
+    setToken(null);
+    
+    // Clear from localStorage
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   const markNotificationAsRead = (notificationId) => {
@@ -38,6 +59,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{
       isLoggedIn,
       user,
+      token,
       notifications,
       login,
       logout,
