@@ -1,14 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useSelector } from "react-redux";
 
 const PrivateRoute = ({ allowedRoles }) => {
-  const { isLoggedIn, user } = useAuth();
+  const auth = useSelector((state) => state.auth);
+  const { user, token, isLoggedIn } = auth;
   
-  // Check for user in localStorage if not in context
+  // Check for user in localStorage as fallback
   const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const localToken = localStorage.getItem("token");
   
   // Determine effective authentication state and role
-  const effectiveIsLoggedIn = isLoggedIn || !!localUser?.id;
+  const effectiveIsLoggedIn = isLoggedIn || !!localToken;
   const effectiveRole = user?.role || localUser?.role;
   
   console.log("PrivateRoute - isLoggedIn:", effectiveIsLoggedIn);

@@ -1,14 +1,15 @@
 import React from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useDispatch } from 'react-redux';
+import { setLogout } from '../../../redux/slices/authSlice';
 
 const MemberLayout = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    logout();
+    dispatch(setLogout());
     navigate('/login');
   };
 
