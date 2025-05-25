@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import styles from './WorkoutLogPage.module.css';
 
-const mockStudents = [
+const today = new Date().toISOString().slice(0, 10);
+const mockTodayStudents = [
   'John Doe',
   'Jane Smith',
   'Nguyễn Văn A',
-  'Lê Thị B',
-  'Trần Văn C',
 ];
 
 const WorkoutLogPage = () => {
   const [form, setForm] = useState({
     student: '',
-    date: new Date().toISOString().slice(0, 10),
+    date: today,
+    status: 'present',
     note: '',
   });
   const [error, setError] = useState('');
@@ -57,7 +57,7 @@ const WorkoutLogPage = () => {
             onChange={handleChange}
           >
             <option value="">Chọn học viên</option>
-            {mockStudents.map(s => <option key={s} value={s}>{s}</option>)}
+            {mockTodayStudents.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
         <div>
@@ -68,10 +68,23 @@ const WorkoutLogPage = () => {
             name="date"
             value={form.date}
             onChange={handleChange}
+            disabled
           />
         </div>
+        <div>
+          <label className={styles.label}>Trạng thái</label>
+          <select
+            className={styles.statusSelect}
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+          >
+            <option value="present">Đã tập</option>
+            <option value="absent">Vắng mặt</option>
+          </select>
+        </div>
         <div className={styles.textarea}>
-          <label className={styles.label}>Ghi chú (tuỳ chọn)</label>
+          <label className={styles.label}>Nhận xét, đánh giá</label>
           <textarea
             className={styles.input}
             name="note"
