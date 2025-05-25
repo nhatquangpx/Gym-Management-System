@@ -18,26 +18,55 @@ export default function StaffPackages() {
   useEffect(() => {
     fetchPackages();
   }, []);
-
   const fetchPackages = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/packages');
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:8001/api/packages', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`Lỗi khi tải dữ liệu: ${res.status}`);
+      }
+      
       const data = await res.json();
-      setPackages(data);
+      
+      // Format price for display
+      const formattedData = data.map(pkg => ({
+        ...pkg,
+        formattedPrice: new Intl.NumberFormat('vi-VN').format(pkg.price) + 'đ'
+      }));
+      
+      setPackages(formattedData);
     } catch (error) {
       console.error('Error fetching packages:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
-
   const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa gói tập này?')) {
       try {
-        await fetch(`/api/packages/${id}`, { method: 'DELETE' });
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:8001/api/packages/${id}`, { 
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Lỗi khi xóa: ${response.status}`);
+        }
+        
+        // Cập nhật danh sách gói tập sau khi xóa thành công
         fetchPackages();
       } catch (error) {
         console.error('Error deleting package:', error);
+        alert('Không thể xóa gói tập. Vui lòng thử lại sau.');
       }
     }
   };
@@ -102,12 +131,15 @@ export default function StaffPackages() {
               <TableRow><TableCell colSpan={5} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
             ) : filteredPackages.length === 0 ? (
               <TableRow><TableCell colSpan={5} sx={{ color: 'var(--admin-text)' }}>Không có gói tập nào</TableCell></TableRow>
-            ) : filteredPackages.map(p => (
-              <TableRow key={p._id}>
+            ) : filteredPackages.map(p => (              <TableRow key={p._id}>
                 <TableCell sx={{ color: 'var(--admin-text)' }}>{p.name}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{p.price}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{p.duration}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{p.status}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{p.formattedPrice || new Intl.NumberFormat('vi-VN').format(p.price) + 'đ'}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{p.duration ? p.duration + ' ngày' : '30 ngày'}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>
+                  <span className="px-2 py-1 rounded bg-green-100 text-green-800">
+                    Đang mở bán
+                  </span>
+                </TableCell>
                 <TableCell align="right">
                   <IconButton onClick={() => navigate(`/staff/packages/${p._id}`)} sx={{ color: 'var(--admin-text)' }}><VisibilityIcon /></IconButton>
                   <IconButton onClick={() => navigate(`/staff/packages/edit/${p._id}`)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>

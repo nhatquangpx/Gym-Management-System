@@ -156,11 +156,44 @@ exports.updateUser = async (req, res) => {
 exports.getMyPackages = async (req, res) => {
     try {
         const userId = req.user._id || req.user.id;
+        console.log(`Getting packages for user: ${userId}`);
+        
         const Order = require('../models/Order');
+        const User = require('../models/User');
+        
+        // Tìm user để lấy thông tin thành viên
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+        
+        // Tìm các đơn hàng đã thanh toán
         const paidOrders = await Order.find({ userId, status: "paid" }).populate('packageId');
-        const packages = paidOrders.map(order => order.packageId);
+        console.log(`Found ${paidOrders.length} paid orders for user ${userId}`);
+        
+        // Lọc các đơn hàng có packageId
+        const validOrders = paidOrders.filter(order => order.packageId);
+        console.log(`Found ${validOrders.length} valid orders with package information`);
+        
+        if (validOrders.length === 0) {
+            return res.status(200).json({ packages: [] });
+        }
+        
+        // Lấy dữ liệu packages từ các đơn đã thanh toán
+        const packages = validOrders.map(order => {
+            // Thêm thông tin thời hạn từ memberInfo nếu có
+            const pkg = order.packageId;
+            if (user.memberInfo && user.memberInfo.membershipStart && user.memberInfo.membershipEnd) {
+                pkg.startDate = user.memberInfo.membershipStart;
+                pkg.endDate = user.memberInfo.membershipEnd;
+            }
+            return pkg;
+        });
+        
+        console.log(`Returning ${packages.length} packages`);
         res.status(200).json({ packages });
     } catch (err) {
+        console.error('Error in getMyPackages:', err);
         res.status(500).json({ message: 'Lỗi khi truy vấn gói tập của bạn!', error: err.message });
     }
 }

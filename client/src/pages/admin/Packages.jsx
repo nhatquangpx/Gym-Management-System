@@ -8,37 +8,86 @@ import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
-import { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 
 export default function Packages() {
-  const packages = [
-    { id: 1, name: "Gói 1 tháng", price: "500.000đ", status: "Đang mở bán" },
-    { id: 2, name: "Gói 3 tháng", price: "1.200.000đ", status: "Đang mở bán" },
-    { id: 3, name: "Gói 6 tháng", price: "2.000.000đ", status: "Tạm dừng" },
-  ];
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  
+  useEffect(() => {
+    fetchPackages();
+  }, []);
+  
+  const fetchPackages = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8001/api/packages');
+      
+      if (!response.ok) {
+        throw new Error(`Lỗi kết nối: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Định dạng lại giá để hiển thị
+      const formattedPackages = data.map(pkg => ({
+        ...pkg,
+        price: new Intl.NumberFormat('vi-VN').format(pkg.price) + 'đ',
+        status: "Đang mở bán" // Giả định tất cả các gói đều đang mở bán
+      }));
+      
+      setPackages(formattedPackages);
+      setError(null);
+    } catch (err) {
+      console.error('Lỗi khi tải gói tập:', err);
+      setError('Không thể tải danh sách gói tập. Vui lòng thử lại sau.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const handleDelete = (id) => {
     setItemToDelete(id);
     setOpenConfirm(true);
   };
-  const handleDeleteConfirm = () => {
-    // TODO: Gọi API xóa gói tập với itemToDelete
-    setOpenConfirm(false);
-    setItemToDelete(null);
+  
+  const handleDeleteConfirm = async () => {
+    try {
+      const response = await fetch(`http://localhost:8001/api/packages/${itemToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+      
+      if (response.ok) {
+        // Tải lại danh sách gói tập sau khi xóa
+        fetchPackages();
+      } else {
+        console.error('Không thể xóa gói tập');
+      }
+    } catch (err) {
+      console.error('Lỗi khi xóa gói tập:', err);
+    } finally {
+      setOpenConfirm(false);
+      setItemToDelete(null);
+    }
   };
+  
   const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
   const [searchPrice, setSearchPrice] = useState("");
-  const [searchStatus, setSearchStatus] = useState("");
-  // Lọc danh sách gói tập theo tên, giá, trạng thái
+  const [searchStatus, setSearchStatus] = useState("");  // Lọc danh sách gói tập theo tên, giá, trạng thái
   const filteredPackages = packages.filter(p =>
-    p.name.toLowerCase().includes(searchName.toLowerCase()) &&
-    p.price.includes(searchPrice) &&
-    p.status.toLowerCase().includes(searchStatus.toLowerCase())
+    (p.name && p.name.toLowerCase().includes(searchName.toLowerCase())) &&
+    (p.price && p.price.includes(searchPrice)) &&
+    (p.status && p.status.toLowerCase().includes(searchStatus.toLowerCase()))
   );
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
@@ -60,6 +109,12 @@ export default function Packages() {
           </Button>
         </Link>
       </div>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
       {/* Thanh tìm kiếm */}
       <div className="flex gap-4 mb-6">
         <input
@@ -94,9 +149,15 @@ export default function Packages() {
                 <th className="py-3 px-4 text-center">Trạng thái</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
-            </thead>
-            <tbody>
-              {filteredPackages.length === 0 ? (
+            </thead>            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="text-center py-4">
+                    <CircularProgress size={24} sx={{ color: 'var(--admin-primary)' }} />
+                    <span className="ml-2">Đang tải dữ liệu...</span>
+                  </td>
+                </tr>
+              ) : filteredPackages.length === 0 ? (
                 <tr><td colSpan={4} className="text-center py-4">Không có gói tập nào</td></tr>
               ) : filteredPackages.map((p) => (
                 <tr key={p.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">

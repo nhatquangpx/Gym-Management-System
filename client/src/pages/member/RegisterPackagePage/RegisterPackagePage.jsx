@@ -14,8 +14,7 @@ const RegisterPackage = () => {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
   };
-  
-  // Tải danh sách gói tập từ API
+    // Tải danh sách gói tập từ API
   useEffect(() => {
     const fetchPackages = async () => {
       try {
@@ -35,66 +34,12 @@ const RegisterPackage = () => {
         }));
         
         setPackages(formattedData);
-        setLoading(false);
+        setError(null);
       } catch (err) {
         console.error('Lỗi khi tải gói tập:', err);
         setError('Không thể tải danh sách gói tập. Vui lòng thử lại sau.');
+      } finally {
         setLoading(false);
-        
-        // Nếu không thể tải từ API, sử dụng dữ liệu dự phòng
-        setPackages([
-          {
-            id: "1",
-            _id: "1",
-            name: "Gói Basic",
-            price: 500000,
-            formattedPrice: "500.000đ",
-            period: "/tháng",
-            type: "Tự tập",
-            features: [
-              "Sử dụng tất cả các thiết bị",
-              "Tập không giới hạn thời gian",
-              "Tủ khóa cá nhân",
-              "Phòng tắm",
-              "Nước uống miễn phí",
-              "Khăn tập"
-            ]
-          },
-          {
-            id: "2",
-            _id: "2",
-            name: "Gói Premium",
-            price: 1200000,
-            formattedPrice: "1.200.000đ",
-            period: "/tháng",
-            type: "Tập với PT",
-            features: [
-              "Tất cả quyền lợi của gói Basic",
-              "12 buổi tập với PT/tháng",
-              "Lịch tập cá nhân hóa",
-              "Tư vấn dinh dưỡng",
-              "Đánh giá thể chất định kỳ",
-              "Ưu tiên đặt lịch"
-            ]
-          },
-          {
-            id: "3",
-            _id: "3",
-            name: "Gói VIP",
-            price: 2000000,
-            formattedPrice: "2.000.000đ",
-            period: "/tháng",
-            type: "Tập với PT",
-            features: [
-              "Tất cả quyền lợi của gói Premium",
-              "24 buổi tập với PT/tháng", 
-              "Chế độ dinh dưỡng theo tuần",
-              "Đo chỉ số cơ thể định kỳ",
-              "Tư vấn 24/7",
-              "Đồ uống protein sau tập"
-            ]
-          }
-        ]);
       }
     };
     

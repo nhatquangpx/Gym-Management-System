@@ -37,7 +37,7 @@ import AdminAccount from './pages/admin/Account';
 import ViewMember from './pages/admin/ViewMember';
 import EditMember from './pages/admin/EditMember';
 import ViewEmployee from './pages/admin/ViewEmployee';
-import EditEmployee from './pages/admin/EditEmployee';
+// import EditEmployee from './pages/admin/EditEmployee';
 import ViewPackage from './pages/admin/ViewPackage';
 import EditPackage from './pages/admin/EditPackage';
 import ViewOrder from './pages/admin/ViewOrder';
@@ -54,7 +54,7 @@ import EditWorkout from './pages/admin/EditWorkout';
 import EquipmentList from './pages/admin/EquipmentList';
 import WorkoutList from './pages/admin/WorkoutList';
 import AddMember from './pages/admin/AddMember';
-import AddEmployee from './pages/admin/AddEmployee';
+// import AddEmployee from './pages/admin/AddEmployee';
 import AddPackage from './pages/admin/AddPackage';
 import Promotions from './pages/admin/Promotions';
 import AddPromotion from './pages/admin/AddPromotion';
@@ -171,9 +171,9 @@ function App() {
             <Route path="members/view/:id" element={<ViewMember />} />
             <Route path="members/edit/:id" element={<EditMember />} />
             <Route path="employees" element={<AdminEmployees />} />
-            <Route path="employees/add" element={<AddEmployee />} />
+            {/* <Route path="employees/add" element={<AddEmployee />} /> */}
             <Route path="employees/view/:id" element={<ViewEmployee />} />
-            <Route path="employees/edit/:id" element={<EditEmployee />} />
+            {/* <Route path="employees/edit/:id" element={<EditEmployee />} /> */}
             <Route path="packages" element={<AdminPackages />} />
             <Route path="packages/add" element={<AddPackage />} />
             <Route path="packages/view/:id" element={<ViewPackage />} />
