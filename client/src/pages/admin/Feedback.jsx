@@ -132,18 +132,12 @@ export default function Feedback() {
               {filteredFeedback.length === 0 ? (
                 <tr><td colSpan={6} className="text-center py-4">Không có phản hồi nào</td></tr>
               ) : filteredFeedback.map((item) => (
-                <tr key={item._id} className="hover:bg-[#252525] transition">
+                <tr key={item._id} className="transition">
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{item.memberName}</td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center"><Rating value={item.rating} readOnly /></td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{item.content.substring(0, 50)}...</td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{new Date(item.createdAt).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">
-                    <Chip
-                      label={item.status}
-                      color={item.status === 'read' ? 'success' : 'warning'}
-                      size="small"
-                    />
-                  </td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center text-base">{item.status === 'read' ? 'Đã đọc' : 'Chưa đọc'}</td>
                   <td className="px-6 py-4 text-center">
                     <IconButton
                       component={Link}
@@ -153,7 +147,7 @@ export default function Feedback() {
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
-                      color="error"
+                      sx={{ color: 'var(--admin-primary)' }}
                       onClick={() => handleDelete(item._id)}
                     >
                       <DeleteIcon />

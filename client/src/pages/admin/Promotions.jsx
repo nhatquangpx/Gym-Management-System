@@ -116,7 +116,7 @@ export default function Promotions() {
                   <td className="px-6 py-4 text-center">
                     <IconButton onClick={() => navigate(`/admin/promotions/view/${p.id}`)} sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/promotions/edit/${p.id}`)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(p.id)}><DeleteIcon /></IconButton>
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(p.id)}><DeleteIcon /></IconButton>
                   </td>
                 </tr>
               ))}
