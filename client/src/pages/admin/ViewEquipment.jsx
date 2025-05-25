@@ -1,130 +1,92 @@
+import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Paper, Typography, Box, Grid, Chip, Button,
-  Card, CardContent, Divider
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import EditIcon from '@mui/icons-material/Edit';
+import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 
 export default function ViewEquipment() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [equipment, setEquipment] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchEquipment = async () => {
+      try {
+        // Dữ liệu mẫu để test giao diện
+        const mockEquipment = {
+          id: id,
+          name: 'Máy chạy bộ TechnoGym',
+          type: 'Cardio',
+          status: 'active',
+          maintenanceDate: '2024-06-01',
+          description: 'Máy chạy bộ cao cấp nhập khẩu từ Ý, hỗ trợ nhiều chế độ tập luyện và cảm biến nhịp tim.'
+        };
+        setEquipment(mockEquipment);
+        // Khi có API thật, dùng đoạn sau:
+        // const response = await fetch(`/api/equipment/${id}`);
+        // const data = await response.json();
+        // setEquipment(data);
+      } catch (error) {
+        console.error('Error fetching equipment:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchEquipment();
   }, [id]);
 
-  const fetchEquipment = async () => {
-    try {
-      const response = await fetch(`/api/equipment/${id}`);
-      const data = await response.json();
-      setEquipment(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching equipment:', error);
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!equipment) {
-    return <div>Equipment not found</div>;
-  }
+  if (loading) return <div className="p-6">Đang tải...</div>;
+  if (!equipment) return <div className="p-6">Không tìm thấy thiết bị</div>;
 
   return (
-    <div className="p-6">
-      <Box className="flex justify-between items-center mb-6">
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/admin/equipment')}
-        >
-          Quay lại
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<EditIcon />}
-          onClick={() => navigate(`/admin/equipment/edit/${id}`)}
-        >
-          Chỉnh sửa
-        </Button>
-      </Box>
-
-      <Paper className="p-6 shadow-lg rounded-lg">
-        <Typography variant="h4" className="font-bold text-gray-800 mb-6">
-          Chi tiết thiết bị
-        </Typography>
-
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" className="font-semibold mb-4">
-                  Thông tin cơ bản
-                </Typography>
-                <Box className="space-y-4">
-                  <div>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      Tên thiết bị
-                    </Typography>
-                    <Typography variant="body1">{equipment.name}</Typography>
-                  </div>
-                  <div>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      Loại thiết bị
-                    </Typography>
-                    <Typography variant="body1">{equipment.type}</Typography>
-                  </div>
-                  <div>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      Trạng thái
-                    </Typography>
-                    <Chip
-                      label={equipment.status}
-                      color={equipment.status === 'active' ? 'success' : 'error'}
-                      size="small"
-                    />
-                  </div>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" className="font-semibold mb-4">
-                  Thông tin bảo trì
-                </Typography>
-                <Box className="space-y-4">
-                  <div>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      Ngày bảo trì gần nhất
-                    </Typography>
-                    <Typography variant="body1">
-                      {new Date(equipment.maintenanceDate).toLocaleDateString()}
-                    </Typography>
-                  </div>
-                  <div>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      Ghi chú bảo trì
-                    </Typography>
-                    <Typography variant="body1">
-                      {equipment.maintenanceNotes || 'Không có ghi chú'}
-                    </Typography>
-                  </div>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Paper>
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-600">Chi tiết thiết bị</h1>
+        <div className="flex gap-3">
+          <Link
+            to={`/admin/equipment/edit/${id}`}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+          >
+            <FaEdit /> Chỉnh sửa
+          </Link>
+          <Link
+            to="/admin/equipment"
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+          >
+            <FaArrowLeft /> Quay lại
+          </Link>
+        </div>
+      </div>
+      <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-2xl mx-auto">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Thông tin thiết bị</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-500">Tên thiết bị</label>
+                <p className="text-lg">{equipment.name}</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500">Loại</label>
+                <p className="text-lg">{equipment.type}</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500">Trạng thái</label>
+                <p className="text-lg">{
+                  equipment.status === 'active' ? 'Hoạt động' :
+                  equipment.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'
+                }</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500">Ngày bảo trì gần nhất</label>
+                <p className="text-lg">{equipment.maintenanceDate ? new Date(equipment.maintenanceDate).toLocaleDateString() : ''}</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Mô tả</h3>
+            <p className="text-gray-700 whitespace-pre-wrap">{equipment.description}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 } 

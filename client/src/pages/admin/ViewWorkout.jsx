@@ -11,31 +11,52 @@ export default function ViewWorkout() {
   useEffect(() => {
     const fetchWorkout = async () => {
       try {
-        const response = await fetch(`/api/workouts/${id}`);
-        const data = await response.json();
-        setWorkout(data);
+        // Dữ liệu mẫu để test giao diện
+        const mockWorkout = {
+          id: id,
+          date: '2024-06-01',
+          startTime: '08:00',
+          endTime: '09:00',
+          status: 'Hoàn thành',
+          member: {
+            name: 'Nguyễn Văn A',
+            phone: '0901111222',
+            email: 'member.a@example.com',
+          },
+          trainer: {
+            name: 'HLV Trần B',
+            specialization: 'Fitness',
+          },
+          content: {
+            exercises: 'Squat, Deadlift, Bench Press',
+            notes: 'Tập trung vào kỹ thuật, nghỉ giữa các hiệp 2 phút.',
+          },
+          feedback: {
+            trainer: 'Học viên tập tốt, cần cải thiện sức bền.',
+            member: 'Huấn luyện viên hướng dẫn nhiệt tình, bài tập phù hợp.',
+          },
+        };
+        setWorkout(mockWorkout);
+        // Khi có API thật, dùng đoạn sau:
+        // const response = await fetch(`/api/workouts/${id}`);
+        // const data = await response.json();
+        // setWorkout(data);
       } catch (error) {
         console.error('Error fetching workout:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchWorkout();
   }, [id]);
 
-  if (loading) {
-    return <div className="p-6">Đang tải...</div>;
-  }
-
-  if (!workout) {
-    return <div className="p-6">Không tìm thấy lịch sử tập luyện</div>;
-  }
+  if (loading) return <div className="p-6">Đang tải...</div>;
+  if (!workout) return <div className="p-6">Không tìm thấy buổi tập</div>;
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-blue-600">Chi tiết lịch sử tập luyện</h1>
+        <h1 className="text-2xl font-bold text-blue-600">Chi tiết buổi tập</h1>
         <div className="flex gap-3">
           <Link
             to={`/admin/workouts/edit/${id}`}
@@ -51,22 +72,21 @@ export default function ViewWorkout() {
           </Link>
         </div>
       </div>
-
       <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-2xl mx-auto">
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-semibold mb-2">Thông tin buổi tập</h3>
+            <h3 className="text-lg font-semibold mb-2">Thông tin chung</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-500">Ngày tập</label>
-                <p className="text-lg">{new Date(workout.date).toLocaleDateString('vi-VN')}</p>
+                <p className="text-lg">{new Date(workout.date).toLocaleDateString()}</p>
               </div>
               <div>
-                <label className="block text-sm text-gray-500">Thời gian bắt đầu</label>
+                <label className="block text-sm text-gray-500">Giờ bắt đầu</label>
                 <p className="text-lg">{workout.startTime}</p>
               </div>
               <div>
-                <label className="block text-sm text-gray-500">Thời gian kết thúc</label>
+                <label className="block text-sm text-gray-500">Giờ kết thúc</label>
                 <p className="text-lg">{workout.endTime}</p>
               </div>
               <div>
@@ -77,65 +97,35 @@ export default function ViewWorkout() {
               </div>
             </div>
           </div>
-
           <div>
-            <h3 className="text-lg font-semibold mb-2">Thông tin thành viên</h3>
+            <h3 className="text-lg font-semibold mb-2">Hội viên & HLV</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-500">Tên thành viên</label>
-                <p className="text-lg">{workout.memberName}</p>
+                <label className="block text-sm text-gray-500">Hội viên</label>
+                <p className="text-lg">{workout.member.name} ({workout.member.phone})</p>
+                <p className="text-sm text-gray-400">{workout.member.email}</p>
               </div>
               <div>
-                <label className="block text-sm text-gray-500">Số điện thoại</label>
-                <p className="text-lg">{workout.memberPhone}</p>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500">Email</label>
-                <p className="text-lg">{workout.memberEmail}</p>
+                <label className="block text-sm text-gray-500">Huấn luyện viên</label>
+                <p className="text-lg">{workout.trainer.name}</p>
+                <p className="text-sm text-gray-400">{workout.trainer.specialization}</p>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2">Thông tin huấn luyện viên</h3>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm text-gray-500">Tên huấn luyện viên</label>
-              <p className="text-lg">{workout.trainerName}</p>
-            </div>
-            <div>
-              <label className="block text-sm text-gray-500">Chuyên môn</label>
-              <p className="text-lg">{workout.trainerSpecialization}</p>
-            </div>
-          </div>
-        </div>
-
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-2">Nội dung buổi tập</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-500">Bài tập</label>
-              <p className="text-lg">{workout.exercises}</p>
-            </div>
-            <div>
-              <label className="block text-sm text-gray-500">Ghi chú</label>
-              <p className="text-gray-700 whitespace-pre-wrap">{workout.notes}</p>
-            </div>
-          </div>
+          <p className="text-gray-700 whitespace-pre-wrap mb-2"><b>Bài tập:</b> {workout.content.exercises}</p>
+          <p className="text-gray-700 whitespace-pre-wrap"><b>Ghi chú:</b> {workout.content.notes}</p>
         </div>
-
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2">Đánh giá</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-500">Đánh giá từ huấn luyện viên</label>
-              <p className="text-gray-700 whitespace-pre-wrap">{workout.trainerFeedback}</p>
-            </div>
-            <div>
-              <label className="block text-sm text-gray-500">Đánh giá từ thành viên</label>
-              <p className="text-gray-700 whitespace-pre-wrap">{workout.memberFeedback}</p>
-            </div>
+        <div className="mt-6 grid grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-semibold mb-1">Nhận xét của HLV</h4>
+            <p className="text-gray-700 whitespace-pre-wrap">{workout.feedback.trainer}</p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Nhận xét của hội viên</h4>
+            <p className="text-gray-700 whitespace-pre-wrap">{workout.feedback.member}</p>
           </div>
         </div>
       </div>
