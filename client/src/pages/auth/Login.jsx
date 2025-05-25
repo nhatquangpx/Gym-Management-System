@@ -55,6 +55,10 @@ const Login = () => {
         throw new Error(data.message || 'Đăng nhập thất bại');
       }
 
+      // Lưu token và thông tin người dùng vào localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
       // Dispatch login action to Redux
       dispatch(setLogin({
         user: data.user,
