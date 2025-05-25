@@ -99,17 +99,14 @@ import TrainerSchedulePage from './pages/trainer/SchedulePage/SchedulePage';
 import TrainerWorkoutLogPage from './pages/trainer/WorkoutLogPage/WorkoutLogPage';
 import ProgressPage from './pages/trainer/ProgressPage/ProgressPage';
 
-import { AuthProvider } from './contexts/AuthContext';
-
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
+    <Router>
+      <Routes>
         {/* Đặt HomePage làm trang mặc định */}
-          <Route path="/" element={<HomePage />} /> 
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/login" element={<Login />} />
+        <Route path="/" element={<HomePage />} /> 
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/login" element={<Login />} />
         
         {/* Luồng quên mật khẩu */}
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -127,98 +124,97 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/payment/return" element={<PaymentReturnPage />} />
 
-          {/* Member feature routes */}
-          <Route path="/schedule" element={<SchedulePage />} />
-          <Route path="/my-packages" element={<MyPackagesPage />} />
-          <Route path="/notifications" element={<NotificationPage />} />
-          <Route path="/complaints" element={<ComplaintsPage />} />
-          <Route path="/profile/edit" element={<EditProfilePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          
-          {/* Other routes */}
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/members" element={<MemberManagement />} />
-          <Route path="/equipment" element={<EquipmentManagement />} />
-          <Route path="/packages" element={<PackageManagement />} />
+        {/* Member feature routes */}
+        <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/my-packages" element={<MyPackagesPage />} />
+        <Route path="/notifications" element={<NotificationPage />} />
+        <Route path="/complaints" element={<ComplaintsPage />} />
+        <Route path="/profile/edit" element={<EditProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        
+        {/* Other routes */}
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/members" element={<MemberManagement />} />
+        <Route path="/equipment" element={<EquipmentManagement />} />
+        <Route path="/packages" element={<PackageManagement />} />
 
-          {/* Staff routes */}
-          <Route element={<PrivateRoute allowedRoles={["staff"]} />}>
-            <Route path="/staff" element={<StaffLayout />}>
-              <Route path="dashboard" element={<StaffDashboard />} />
-              <Route path="members" element={<StaffMembers />} />
-              <Route path="members/add" element={<StaffAddMember />} />
-              <Route path="packages" element={<StaffPackages />} />
-              <Route path="packages/add" element={<StaffAddPackage />} />
-              <Route path="equipment" element={<StaffEquipment />} />
-              <Route path="orders" element={<StaffOrders />} />
-              <Route path="workouts" element={<StaffWorkouts />} />
-              <Route path="service-history" element={<ServiceHistory />} />
-              <Route path="schedules" element={<StaffSchedules />} />
-              <Route path="feedback" element={<StaffFeedback />} />
-              <Route path="account" element={<StaffAccount />} />
-            </Route>
+        {/* Staff routes */}
+        <Route element={<PrivateRoute allowedRoles={["staff"]} />}>
+          <Route path="/staff" element={<StaffLayout />}>
+            <Route path="dashboard" element={<StaffDashboard />} />
+            <Route path="members" element={<StaffMembers />} />
+            <Route path="members/add" element={<StaffAddMember />} />
+            <Route path="packages" element={<StaffPackages />} />
+            <Route path="packages/add" element={<StaffAddPackage />} />
+            <Route path="equipment" element={<StaffEquipment />} />
+            <Route path="orders" element={<StaffOrders />} />
+            <Route path="workouts" element={<StaffWorkouts />} />
+            <Route path="service-history" element={<ServiceHistory />} />
+            <Route path="schedules" element={<StaffSchedules />} />
+            <Route path="feedback" element={<StaffFeedback />} />
+            <Route path="account" element={<StaffAccount />} />
           </Route>
+        </Route>
 
-          {/* Admin routes */}
-          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-          <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="members" element={<AdminMembers />} />
-              <Route path="members/add" element={<AddMember />} />
-              <Route path="members/view/:id" element={<ViewMember />} />
-              <Route path="members/edit/:id" element={<EditMember />} />
-              <Route path="employees" element={<AdminEmployees />} />
-              <Route path="employees/add" element={<AddEmployee />} />
-              <Route path="employees/view/:id" element={<ViewEmployee />} />
-              <Route path="employees/edit/:id" element={<EditEmployee />} />
-              <Route path="packages" element={<AdminPackages />} />
-              <Route path="packages/add" element={<AddPackage />} />
-              <Route path="packages/view/:id" element={<ViewPackage />} />
-              <Route path="packages/edit/:id" element={<EditPackage />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="orders/view/:id" element={<ViewOrder />} />
-              <Route path="orders/edit/:id" element={<EditOrder />} />
-              <Route path="equipment" element={<EquipmentList />} />
-              <Route path="equipment/view/:id" element={<ViewEquipment />} />
-              <Route path="equipment/edit/:id" element={<EditEquipment />} />
-              <Route path="equipment/add" element={<EditEquipment />} />
-              <Route path="workouts" element={<WorkoutList />} />
-              <Route path="workouts/view/:id" element={<ViewWorkout />} />
-              <Route path="workouts/edit/:id" element={<EditWorkout />} />
-              <Route path="workouts/add" element={<EditWorkout />} />
-              <Route path="feedback" element={<AdminFeedback />} />
-              <Route path="feedback/view/:id" element={<ViewFeedback />} />
-              <Route path="statistics" element={<AdminStatistics />} />
-              <Route path="settings" element={<AdminSettings />} />
-              <Route path="profile" element={<AdminProfile />} />
-              <Route path="profile/edit" element={<EditProfile />} />
-              <Route path="account" element={<AdminAccount />} />
-              <Route path="promotions" element={<Promotions />} />
-              <Route path="promotions/add" element={<AddPromotion />} />
-              <Route path="promotions/view/:id" element={<ViewPromotion />} />
-              <Route path="promotions/edit/:id" element={<EditPromotion />} />
-            </Route>
+        {/* Admin routes */}
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="members" element={<AdminMembers />} />
+            <Route path="members/add" element={<AddMember />} />
+            <Route path="members/view/:id" element={<ViewMember />} />
+            <Route path="members/edit/:id" element={<EditMember />} />
+            <Route path="employees" element={<AdminEmployees />} />
+            <Route path="employees/add" element={<AddEmployee />} />
+            <Route path="employees/view/:id" element={<ViewEmployee />} />
+            <Route path="employees/edit/:id" element={<EditEmployee />} />
+            <Route path="packages" element={<AdminPackages />} />
+            <Route path="packages/add" element={<AddPackage />} />
+            <Route path="packages/view/:id" element={<ViewPackage />} />
+            <Route path="packages/edit/:id" element={<EditPackage />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="orders/view/:id" element={<ViewOrder />} />
+            <Route path="orders/edit/:id" element={<EditOrder />} />
+            <Route path="equipment" element={<EquipmentList />} />
+            <Route path="equipment/view/:id" element={<ViewEquipment />} />
+            <Route path="equipment/edit/:id" element={<EditEquipment />} />
+            <Route path="equipment/add" element={<EditEquipment />} />
+            <Route path="workouts" element={<WorkoutList />} />
+            <Route path="workouts/view/:id" element={<ViewWorkout />} />
+            <Route path="workouts/edit/:id" element={<EditWorkout />} />
+            <Route path="workouts/add" element={<EditWorkout />} />
+            <Route path="feedback" element={<AdminFeedback />} />
+            <Route path="feedback/view/:id" element={<ViewFeedback />} />
+            <Route path="statistics" element={<AdminStatistics />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="profile" element={<AdminProfile />} />
+            <Route path="profile/edit" element={<EditProfile />} />
+            <Route path="account" element={<AdminAccount />} />
+            <Route path="promotions" element={<Promotions />} />
+            <Route path="promotions/add" element={<AddPromotion />} />
+            <Route path="promotions/view/:id" element={<ViewPromotion />} />
+            <Route path="promotions/edit/:id" element={<EditPromotion />} />
           </Route>
+        </Route>
 
-          {/* Trainer routes */}
-          <Route element={<PrivateRoute allowedRoles={["trainer"]} />}>
-            <Route path="/trainer" element={<TrainerLayout />}>
-              <Route index element={<Navigate to="/trainer/dashboard" replace />} />
-              <Route path="dashboard" element={<TrainerDashboard />} />
-              <Route path="students" element={<TrainerStudents />} />
-              <Route path="schedule" element={<TrainerSchedulePage />} />
-              <Route path="workouts" element={<TrainerWorkoutLogPage />} />
-              <Route path="progress" element={<ProgressPage />} />
-              <Route path="settings" element={<div>Cài đặt</div>} />
-            </Route>
+        {/* Trainer routes */}
+        <Route element={<PrivateRoute allowedRoles={["trainer"]} />}>
+          <Route path="/trainer" element={<TrainerLayout />}>
+            <Route index element={<Navigate to="/trainer/dashboard" replace />} />
+            <Route path="dashboard" element={<TrainerDashboard />} />
+            <Route path="students" element={<TrainerStudents />} />
+            <Route path="schedule" element={<TrainerSchedulePage />} />
+            <Route path="workouts" element={<TrainerWorkoutLogPage />} />
+            <Route path="progress" element={<ProgressPage />} />
+            <Route path="settings" element={<div>Cài đặt</div>} />
           </Route>
+        </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Router>
   );
 }
 

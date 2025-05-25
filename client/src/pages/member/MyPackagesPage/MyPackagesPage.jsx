@@ -4,7 +4,7 @@ import Button from '../../../components/common/Button/Button';
 import styles from './MyPackagesPage.module.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useSelector } from 'react-redux';
 
 // Dữ liệu mẫu lấy từ PackagesSection.jsx
 const allPackages = [
@@ -74,7 +74,7 @@ const sampleHistory = [
 
 const MyPackagesPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useSelector(state => state.auth);
   // Sắp xếp lịch sử theo thời gian mới nhất lên đầu
   const sortedHistory = [...sampleHistory].sort((a, b) => new Date(b.end) - new Date(a.end));
   const currentHistory = sortedHistory.find(h => h.status === 'Đang sử dụng');

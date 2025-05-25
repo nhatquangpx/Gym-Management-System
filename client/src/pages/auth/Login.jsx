@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useDispatch } from 'react-redux';
+import { setLogin } from '../../redux/slices/authSlice';
 import {
   Box,
   Paper,
@@ -14,7 +15,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -54,8 +55,11 @@ const Login = () => {
         throw new Error(data.message || 'Đăng nhập thất bại');
       }
 
-      // Use the AuthContext login function
-      login(data.user, data.token);
+      // Dispatch login action to Redux
+      dispatch(setLogin({
+        user: data.user,
+        token: data.token
+      }));
 
       // Chuyển hướng dựa vào role
       switch (data.user.role) {

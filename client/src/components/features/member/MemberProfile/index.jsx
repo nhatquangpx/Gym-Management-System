@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Paper, Typography, Grid, Button } from '@mui/material';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 
 const MemberProfile = () => {
-  const { user } = useAuth();
+  const { user } = useSelector(state => state.auth);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
