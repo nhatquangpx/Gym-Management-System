@@ -216,21 +216,6 @@ const StudentModal = ({ student, onClose, onStatusChange }) => {
               ))}
             </ul>
           </div>
-
-          <div className={styles.modalSection}>
-            <h3 className={styles.sectionTitle}>Ghi chú</h3>
-            <p className={styles.notes}>{student.notes}</p>
-          </div>
-
-          <div className={styles.modalSection}>
-            <h3 className={styles.sectionTitle}>Buổi tập tiếp theo</h3>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>Thời gian</span>
-              <span className={styles.infoValue}>
-                {new Date(student.nextSession).toLocaleString('vi-VN')}
-              </span>
-            </div>
-          </div>
         </div>
 
         <div className={styles.modalFooter} ref={modalFooterRef}>

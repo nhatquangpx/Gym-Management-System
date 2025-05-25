@@ -80,4 +80,20 @@
 }
 .submitBtn:hover {
   background: #1565c0;
+}
+.statusSelect {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--trainer-border, #e3eafc);
+  font-size: 1.1em;
+  color: var(--trainer-text, #222e3a);
+  background: var(--trainer-bg, #f7faff);
+  transition: border 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+.statusSelect:focus {
+  border: 1.5px solid #43a047;
+  outline: none;
 } 
