@@ -60,6 +60,10 @@ import Promotions from './pages/admin/Promotions';
 import AddPromotion from './pages/admin/AddPromotion';
 import ViewPromotion from './pages/admin/ViewPromotion';
 import EditPromotion from './pages/admin/EditPromotion';
+import Trainers from './pages/admin/Trainers';
+import AddTrainer from './pages/admin/AddTrainer';
+import ViewTrainer from './pages/admin/ViewTrainer';
+import EditTrainer from './pages/admin/EditTrainer';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
