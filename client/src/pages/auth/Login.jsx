@@ -7,10 +7,6 @@ import {
   Typography,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Alert,
   CircularProgress
 } from '@mui/material';
@@ -117,32 +113,6 @@ const Login = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <FormControl fullWidth>
-            <InputLabel 
-              id="role-label"
-              sx={{ color: 'var(--admin-text)' }}
-            >
-              Vai trò
-            </InputLabel>
-            <Select
-              labelId="role-label"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              label="Vai trò"
-              sx={{
-                color: 'var(--admin-text)',
-                '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
-              }}
-            >
-              <MenuItem value="admin">Admin</MenuItem>
-              <MenuItem value="staff">Staff</MenuItem>
-              <MenuItem value="trainer">Trainer</MenuItem>
-            </Select>
-          </FormControl>
-
           <TextField
             label="Email"
             name="email"
@@ -185,7 +155,13 @@ const Login = () => {
             disabled={loading}
             sx={{
               backgroundColor: 'var(--admin-primary)',
-              '&:hover': { backgroundColor: 'var(--admin-primary-dark)' },
+              color: '#fff',
+              fontWeight: 700,
+              '&:hover': {
+                backgroundColor: '#2563eb',
+                color: '#fff',
+                opacity: 0.95
+              },
               marginTop: 2
             }}
           >

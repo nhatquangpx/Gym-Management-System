@@ -441,4 +441,53 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Bảng hiển thị chi tiết buổi tập để đánh giá tiến độ */
+.attendanceTableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(76, 110, 245, 0.04);
+  border: 1.5px solid #e3f2fd;
+  margin-top: 12px;
+}
+
+.attendanceTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 15px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.attendanceTable th,
+.attendanceTable td {
+  text-align: center;
+}
+
+.attendanceTable th {
+  background: #e3f2fd;
+  color: #1976d2;
+  font-weight: 700;
+  padding: 14px 20px;
+  border-bottom: 1.5px solid #bbdefb;
+  font-size: 16px;
+}
+
+.attendanceTable td {
+  padding: 13px 20px;
+  font-size: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.attendanceTable tr:last-child td {
+  border-bottom: none;
+}
+
+.attendanceTable tbody tr:hover {
+  background: #f6fafd;
 } 

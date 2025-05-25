@@ -11,7 +11,29 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function EquipmentList() {
   const navigate = useNavigate();
-  const [equipment, setEquipment] = useState([]);
+  const [equipment, setEquipment] = useState([
+    {
+      _id: 1,
+      name: 'Máy chạy bộ TechnoGym',
+      type: 'Cardio',
+      status: 'active',
+      maintenanceDate: '2024-06-01',
+    },
+    {
+      _id: 2,
+      name: 'Ghế đẩy ngực Impulse',
+      type: 'Strength',
+      status: 'maintenance',
+      maintenanceDate: '2024-05-20',
+    },
+    {
+      _id: 3,
+      name: 'Xe đạp tập Life Fitness',
+      type: 'Cardio',
+      status: 'inactive',
+      maintenanceDate: '2024-04-15',
+    },
+  ]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({ name: '', type: '', status: '' });
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -118,31 +140,31 @@ export default function EquipmentList() {
           <table className="min-w-full rounded-2xl">
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Tên thiết bị</th>
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Loại</th>
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Trạng thái</th>
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Ngày bảo trì gần nhất</th>
-                <th className="py-3 px-4 text-right text-[var(--admin-primary)] font-bold">Hành động</th>
+                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Tên thiết bị</th>
+                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Loại</th>
+                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Trạng thái</th>
+                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Ngày bảo trì gần nhất</th>
+                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={5}>Loading...</td></tr>
+                <tr><td colSpan={5} className="py-4 px-6 text-base">Loading...</td></tr>
               ) : filteredEquipment.length === 0 ? (
-                <tr><td colSpan={5}>Không có thiết bị nào</td></tr>
+                <tr><td colSpan={5} className="py-4 px-6 text-base">Không có thiết bị nào</td></tr>
               ) : filteredEquipment.map(eq => (
                 <tr key={eq._id}>
-                  <td className="text-[var(--admin-primary)]">{eq.name}</td>
-                  <td className="text-[var(--admin-primary)]">{eq.type}</td>
-                  <td className="text-[var(--admin-primary)]">{
+                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{eq.name}</td>
+                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{eq.type}</td>
+                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{
                     eq.status === 'active' ? 'Hoạt động' :
                     eq.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'
                   }</td>
-                  <td className="text-[var(--admin-primary)]">{eq.maintenanceDate ? new Date(eq.maintenanceDate).toLocaleDateString() : ''}</td>
-                  <td align="right">
-                    <IconButton onClick={() => navigate(`/admin/equipment/${eq._id}`)}><VisibilityIcon /></IconButton>
+                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{eq.maintenanceDate ? new Date(eq.maintenanceDate).toLocaleDateString() : ''}</td>
+                  <td className="py-4 px-6 text-center">
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/equipment/view/${eq._id}`)}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/equipment/edit/${eq._id}`)}><EditIcon /></IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(eq._id)}><DeleteIcon /></IconButton>
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(eq._id)}><DeleteIcon /></IconButton>
                   </td>
                 </tr>
               ))}

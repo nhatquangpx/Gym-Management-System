@@ -11,8 +11,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function WorkoutList() {
   const navigate = useNavigate();
-  const [workouts, setWorkouts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [workouts, setWorkouts] = useState([
+    { _id: 1, date: '2024-06-01', memberName: 'Nguyễn Văn A', trainerName: 'HLV Trần B', duration: 60, status: 'completed' },
+    { _id: 2, date: '2024-06-02', memberName: 'Trần Thị B', trainerName: 'HLV Lê C', duration: 45, status: 'in-progress' },
+    { _id: 3, date: '2024-06-03', memberName: 'Lê Văn C', trainerName: 'HLV Nguyễn D', duration: 30, status: 'scheduled' },
+  ]);
+  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState({ member: '', trainer: '', status: '', date: '' });
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -64,7 +68,7 @@ export default function WorkoutList() {
             mb: 4
           }}
         >
-          Lịch sử tập luyện
+          Danh sách buổi tập
         </Typography>
         <Button
           variant="contained"
@@ -121,34 +125,34 @@ export default function WorkoutList() {
           <table className="min-w-full rounded-2xl">
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Ngày tập</th>
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Hội viên</th>
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Huấn luyện viên</th>
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Thời lượng</th>
-                <th className="py-3 px-4 text-left text-[var(--admin-primary)] font-bold">Trạng thái</th>
-                <th className="py-3 px-4 text-right text-[var(--admin-primary)] font-bold">Hành động</th>
+                <th className="py-3 px-4 text-center">Ngày tập</th>
+                <th className="py-3 px-4 text-center">Hội viên</th>
+                <th className="py-3 px-4 text-center">Huấn luyện viên</th>
+                <th className="py-3 px-4 text-center">Thời lượng</th>
+                <th className="py-3 px-4 text-center">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr><td colSpan={6}>Loading...</td></tr>
               ) : filteredWorkouts.length === 0 ? (
-                <tr><td colSpan={6}>Không có buổi tập nào</td></tr>
+                <tr><td colSpan={6} className="text-center py-4">Không có buổi tập nào</td></tr>
               ) : filteredWorkouts.map(wk => (
                 <tr key={wk._id}>
-                  <td className="text-[var(--admin-primary)]">{wk.date ? new Date(wk.date).toLocaleDateString() : ''}</td>
-                  <td className="text-[var(--admin-primary)]">{wk.memberName}</td>
-                  <td className="text-[var(--admin-primary)]">{wk.trainerName}</td>
-                  <td className="text-[var(--admin-primary)]">{wk.duration} phút</td>
-                  <td className="text-[var(--admin-primary)]">{
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{wk.date ? new Date(wk.date).toLocaleDateString() : ''}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{wk.memberName}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{wk.trainerName}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{wk.duration} phút</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{
                     wk.status === 'completed' ? 'Hoàn thành' :
                     wk.status === 'in-progress' ? 'Đang diễn ra' :
                     wk.status === 'scheduled' ? 'Đã lên lịch' : 'Đã hủy'
                   }</td>
-                  <td align="right">
-                    <IconButton onClick={() => navigate(`/admin/workouts/${wk._id}`)}><VisibilityIcon /></IconButton>
+                  <td className="px-6 py-4 text-center">
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/workouts/view/${wk._id}`)}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/workouts/edit/${wk._id}`)}><EditIcon /></IconButton>
-                    <IconButton color="error" onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
                   </td>
                 </tr>
               ))}

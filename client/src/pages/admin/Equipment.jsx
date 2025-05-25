@@ -18,8 +18,12 @@ const theme = createTheme({
 });
 
 export default function Equipment() {
-  const [equipment, setEquipment] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [equipment, setEquipment] = useState([
+    { _id: 1, name: 'Máy chạy bộ', type: 'Cardio', status: 'active', maintenanceDate: '2024-06-01' },
+    { _id: 2, name: 'Ghế đẩy tạ', type: 'Strength', status: 'active', maintenanceDate: '2024-07-01' },
+    { _id: 3, name: 'Xe đạp tập', type: 'Cardio', status: 'inactive', maintenanceDate: '2024-05-15' },
+  ]);
+  const [loading, setLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -75,7 +79,7 @@ export default function Equipment() {
               mb: 4 
             }}
           >
-            Quản lý thiết bị
+            Danh sách thiết bị
           </Typography>
           <Button
             variant="contained"
@@ -96,11 +100,13 @@ export default function Equipment() {
                 <TableCell>Loại</TableCell>
                 <TableCell>Trạng thái</TableCell>
                 <TableCell>Ngày bảo trì</TableCell>
-                <TableCell>Thao tác</TableCell>
+                <TableCell>Hành động</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {equipment.map((item) => (
+              {equipment.length === 0 ? (
+                <TableRow><TableCell colSpan={5} align="center">Không có thiết bị nào</TableCell></TableRow>
+              ) : equipment.map((item) => (
                 <TableRow key={item._id}>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.type}</TableCell>

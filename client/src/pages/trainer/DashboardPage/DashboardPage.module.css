@@ -70,9 +70,10 @@
 }
 
 .time {
-  width: 80px;
+  width: 120px;
   font-weight: 500;
   color: var(--trainer-primary);
+  letter-spacing: 0.5px;
 }
 
 .student {
