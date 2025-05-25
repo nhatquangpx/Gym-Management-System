@@ -26,8 +26,8 @@ const ScheduleSchema = new Schema(
         comment: String,
         status: {
             type: String,
-            enum: ['Chưa tham gia', 'Đã tham gia', 'Không tham gia'],
-            default: 'Chưa tham gia'
+            enum: ['Chưa tập', 'Đã tập', 'Vắng mặt'],
+            default: 'Chưa tập'
         }
     },
     { timestamps: true }
