@@ -38,9 +38,7 @@ exports.createEmployee = async (req, res) => {
         shiftSchedule,
         performanceRating
       }
-    });
-
-    // Save user
+    });    // Save user
     await user.save();
 
     res.status(201).json({
@@ -53,6 +51,7 @@ exports.createEmployee = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          isActive: user.isActive,
           employeeInfo: user.employeeInfo
         }
       }
@@ -96,9 +95,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
       performanceRating
     };
     
-    await user.save();
-
-    res.status(201).json({
+    await user.save();    res.status(201).json({
       success: true,
       message: "Thêm nhân viên thành công",
       data: {
@@ -108,6 +105,7 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          isActive: user.isActive,
           employeeInfo: user.employeeInfo
         }
       }
@@ -155,9 +153,7 @@ exports.updateEmployee = async (req, res) => {
     }
 
     // Save updated user
-    await user.save();
-
-    res.status(200).json({
+    await user.save();    res.status(200).json({
       success: true,
       message: "Cập nhật thông tin nhân viên thành công",
       data: {
@@ -167,6 +163,7 @@ exports.updateEmployee = async (req, res) => {
           email: user.email,
           phone: user.phone,
           role: user.role,
+          isActive: user.isActive,
           employeeInfo: user.employeeInfo
         }
       }

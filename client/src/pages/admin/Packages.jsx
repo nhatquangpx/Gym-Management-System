@@ -9,35 +9,44 @@ import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 
 export default function Packages() {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const navigate = useNavigate();
-  const [searchName, setSearchName] = useState("");
-  const [searchPrice, setSearchPrice] = useState("");
-  const [searchStatus, setSearchStatus] = useState("");
   
   useEffect(() => {
     fetchPackages();
   }, []);
   
   const fetchPackages = async () => {
-    setLoading(true);
     try {
-      const response = await fetch('/api/packages');
+      setLoading(true);
+      const response = await fetch('http://localhost:8001/api/packages');
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch packages');
+        throw new Error(`Lỗi kết nối: ${response.status}`);
       }
+      
       const data = await response.json();
-      setPackages(data);
-    } catch (error) {
-      console.error('Error fetching packages:', error);
+      
+      // Định dạng lại giá để hiển thị
+      const formattedPackages = data.map(pkg => ({
+        ...pkg,
+        formattedPrice: new Intl.NumberFormat('vi-VN').format(pkg.price) + pkg.period,
+        status: "Đang mở bán" // Giả định tất cả các gói đều đang mở bán
+      }));
+      
+      setPackages(formattedPackages);
+      setError(null);
+    } catch (err) {
+      console.error('Lỗi khi tải gói tập:', err);
+      setError('Không thể tải danh sách gói tập. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -50,31 +59,55 @@ export default function Packages() {
   
   const handleDeleteConfirm = async () => {
     try {
-      const response = await fetch(`/api/admins/packages/${itemToDelete}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete package');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Bạn cần đăng nhập lại để thực hiện chức năng này.');
+        setTimeout(() => navigate('/auth/login'), 2000);
+        return;
       }
       
-      // Refresh the package list
-      fetchPackages();
-      alert('Xóa gói tập thành công!');
-    } catch (error) {
-      console.error('Error deleting package:', error);
-      alert('Lỗi khi xóa gói tập: ' + error.message);
+      const response = await fetch(`http://localhost:8001/api/packages/${itemToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        // Tải lại danh sách gói tập sau khi xóa
+        fetchPackages();
+        alert('Xóa gói tập thành công!');
+      } else {
+        const errorData = await response.json();
+        console.error('Không thể xóa gói tập:', errorData.message || response.statusText);
+        setError(`Lỗi: ${errorData.message || 'Không thể xóa gói tập. Vui lòng thử lại sau.'}`);
+        
+        // Nếu lỗi là do xác thực, chuyển hướng đến trang đăng nhập
+        if (response.status === 401 || response.status === 403) {
+          alert('Phiên đăng nhập hết hạn hoặc không có quyền. Vui lòng đăng nhập lại.');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setTimeout(() => navigate('/auth/login'), 1000);
+        }
+      }
+    } catch (err) {
+      console.error('Lỗi khi xóa gói tập:', err);
+      setError(`Lỗi: ${err.message}`);
     } finally {
       setOpenConfirm(false);
       setItemToDelete(null);
     }
   };
   
-  // Lọc danh sách gói tập theo tên, giá, trạng thái
+  const navigate = useNavigate();
+  const [searchName, setSearchName] = useState("");
+  const [searchPrice, setSearchPrice] = useState("");
+  const [searchType, setSearchType] = useState("");  // Lọc theo loại gói
   const filteredPackages = packages.filter(p =>
-    p.name?.toLowerCase().includes(searchName.toLowerCase()) &&
-    (p.price && p.price.toString().includes(searchPrice)) &&
-    (p.status && p.status.toLowerCase().includes(searchStatus.toLowerCase()))
+    (p.name && p.name.toLowerCase().includes(searchName.toLowerCase())) &&
+    (p.formattedPrice && p.formattedPrice.includes(searchPrice)) &&
+    (p.type && p.type.toLowerCase().includes(searchType.toLowerCase()))
   );
   
   return (
@@ -97,6 +130,12 @@ export default function Packages() {
           </Button>
         </Link>
       </div>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
       {/* Thanh tìm kiếm */}
       <div className="flex gap-4 mb-6">
         <input
@@ -113,13 +152,15 @@ export default function Packages() {
           value={searchPrice}
           onChange={e => setSearchPrice(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Trạng thái"
-          className="p-2 rounded border border-gray-300 min-w-[120px]"
-          value={searchStatus}
-          onChange={e => setSearchStatus(e.target.value)}
-        />
+        <select
+          className="p-2 rounded border border-gray-300 min-w-[150px]"
+          value={searchType}
+          onChange={e => setSearchType(e.target.value)}
+        >
+          <option value="">Tất cả loại gói</option>
+          <option value="Tự tập">Tự tập</option>
+          <option value="Tập với PT">Tập với PT</option>
+        </select>
       </div>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
@@ -128,15 +169,20 @@ export default function Packages() {
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-center">Tên gói tập</th>
                 <th className="py-3 px-4 text-center">Giá</th>
-                <th className="py-3 px-4 text-center">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Loại gói</th>
+                <th className="py-3 px-4 text-center">Thời hạn</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
-            </thead>
-            <tbody>
+            </thead>            <tbody>
               {loading ? (
-                <tr><td colSpan={4} className="text-center py-4">Đang tải...</td></tr>
+                <tr>
+                  <td colSpan={5} className="text-center py-4">
+                    <CircularProgress size={24} sx={{ color: 'var(--admin-primary)' }} />
+                    <span className="ml-2">Đang tải dữ liệu...</span>
+                  </td>
+                </tr>
               ) : filteredPackages.length === 0 ? (
-                <tr><td colSpan={4} className="text-center py-4">Không có gói tập nào</td></tr>
+                <tr><td colSpan={5} className="text-center py-4">Không có gói tập nào</td></tr>
               ) : filteredPackages.map((p) => (
                 <tr key={p._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">
@@ -145,8 +191,9 @@ export default function Packages() {
                       {p.name}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.price}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.status}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.formattedPrice}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.type}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.duration} ngày</td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/packages/view/${p._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>

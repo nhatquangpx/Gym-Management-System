@@ -46,7 +46,24 @@ export default function Employees() {
     fetchEmployees();
   }, []);
 
-  const handleDelete = (id) => {
+
+  // Fetch employees from API
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+  const fetchEmployees = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/api/employees');
+      setEmployees(response.data.data);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+      setError('Không thể tải danh sách nhân viên');
+    } finally {
+      setLoading(false);
+    }
+  };  const handleDelete = (id) => {
     setItemToDelete(id);
     setOpenConfirm(true);
   };
@@ -70,6 +87,28 @@ export default function Employees() {
     employee.phone?.includes(searchPhone) &&
     (employee.employeeInfo?.position || "").toLowerCase().includes(searchRole.toLowerCase())
   );
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="bg-[var(--admin-bg)] min-h-screen p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-[var(--admin-text)]">Đang tải...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="bg-[var(--admin-bg)] min-h-screen p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-red-500">{error}</div>
+        </div>
+      </div>
+    );
+  }
 
   // Hiển thị loading khi đang tải dữ liệu
   if (loading) {

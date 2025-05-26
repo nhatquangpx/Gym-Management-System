@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Button, IconButton, Typography, Box, Chip, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent, DialogActions
+  Button, IconButton, Typography, Box, Chip, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent, DialogActions,
+  Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -22,6 +23,7 @@ export default function Equipment() {
   const [loading, setLoading] = useState(true);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchEquipment();
@@ -29,7 +31,7 @@ export default function Equipment() {
 
   const fetchEquipment = async () => {
     try {
-      const response = await fetch('/api/equipments');
+      const response = await fetch('http://localhost:8001/api/equipments');
       if (!response.ok) {
         throw new Error('Failed to fetch equipment');
       }
@@ -49,12 +51,24 @@ export default function Equipment() {
 
   const handleDeleteConfirm = async () => {
     try {
-      const response = await fetch(`/api/equipments/${itemToDelete}`, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/auth/login');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:8001/api/equipments/${itemToDelete}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       });
       
       if (!response.ok) {
-        throw new Error('Failed to delete equipment');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete equipment');
       }
       
       alert('Xóa thiết bị thành công!');
@@ -62,6 +76,13 @@ export default function Equipment() {
     } catch (error) {
       console.error('Error deleting equipment:', error);
       alert('Lỗi khi xóa thiết bị: ' + error.message);
+      
+      // Nếu lỗi là do xác thực, chuyển hướng đến trang đăng nhập
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/auth/login');
+      }
     } finally {
       setOpenConfirm(false);
       setItemToDelete(null);
@@ -104,9 +125,9 @@ export default function Equipment() {
             <TableHead>
               <TableRow className="bg-gray-100">
                 <TableCell>Tên thiết bị</TableCell>
-                <TableCell>Loại</TableCell>
+                <TableCell>Phòng tập</TableCell>
+                <TableCell>Mô tả</TableCell>
                 <TableCell>Trạng thái</TableCell>
-                <TableCell>Ngày bảo trì</TableCell>
                 <TableCell>Hành động</TableCell>
               </TableRow>
             </TableHead>
@@ -116,16 +137,29 @@ export default function Equipment() {
               ) : equipment.map((item) => (
                 <TableRow key={item._id}>
                   <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.type}</TableCell>
+                  <TableCell>
+                    {item.roomId && item.roomId.name ? (
+                      <Tooltip title={`Loại phòng: ${item.roomId.roomType || 'Không xác định'}`}>
+                        <span>{item.roomId.name}</span>
+                      </Tooltip>
+                    ) : (
+                      'Không xác định'
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title={item.description || ''}>
+                      <span>{item.description ? (item.description.length > 30 ? item.description.substring(0, 30) + '...' : item.description) : ''}</span>
+                    </Tooltip>
+                  </TableCell>
                   <TableCell>
                     <Chip
                       label={item.status === 'active' ? 'Hoạt động' : 
                              item.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
-                      color={item.status === 'active' ? 'success' : 'error'}
+                      color={item.status === 'active' ? 'success' : 
+                             item.status === 'maintenance' ? 'warning' : 'error'}
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{item.maintenanceDate ? new Date(item.maintenanceDate).toLocaleDateString() : ''}</TableCell>
                   <TableCell>
                     <IconButton
                       component={Link}

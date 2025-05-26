@@ -99,6 +99,41 @@
 .historySection {
   margin-top: 30px;
 }
+
+.loadingState {
+  background: rgba(40,40,40,0.9);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: #bbb;
+  font-size: 1rem;
+}
+
+.errorMessage {
+  background: rgba(220,53,69,0.2);
+  border: 1px solid rgba(220,53,69,0.5);
+  color: #f8d7da;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.noHistoryMessage, .noSessions {
+  padding: 15px;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  background: rgba(40,40,40,0.7);
+  border-radius: 8px;
+}
+
+.debugInfo {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #777;
+  font-style: normal;
+}
 .historySection h2 {
   color: var(--primary-red);
   font-size: 1.2rem;

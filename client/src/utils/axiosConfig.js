@@ -11,10 +11,14 @@ axios.interceptors.request.use(
     // Ưu tiên lấy token từ Redux store
     const storeToken = store.getState().auth.token;
     // Fallback về localStorage nếu không có token trong store
-    const token = storeToken || localStorage.getItem('token');
+    // Kiểm tra cả hai loại token có thể được lưu trữ
+    const token = storeToken || localStorage.getItem('token') || localStorage.getItem('authToken');
     
     if (token) {
+      console.log('Adding token to request headers');
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.log('No token found in localStorage');
     }
     return config;
   },

@@ -232,23 +232,36 @@ exports.vnpayReturn = async (req, res) => {
                         code: '03', 
                         message: 'Không tìm thấy thông tin gói tập',
                         paymentSuccess: isPaymentSuccess,
-                        redirectUrl: '/member/profile' // Chuyển hướng về trang hồ sơ
+                        redirectUrl: '/' // Chuyển hướng về trang hồ sơ
                     });
                 }
-                
-                console.log(`Activating user ${user._id} with package ${gymPackage.name}`);
-                
-                // Cập nhật trạng thái và thông tin gói tập cho người dùng
-                const membershipStart = new Date();
-                
-                // Tính thời gian kết thúc gói tập
-                const membershipExpiry = new Date(membershipStart);
-                membershipExpiry.setDate(membershipExpiry.getDate() + (gymPackage.duration || 30));
+                  console.log(`Activating user ${user._id} with package ${gymPackage.name}`);
                 
                 // Kích hoạt tài khoản và thiết lập thông tin gói tập
                 // Đảm bảo memberInfo tồn tại
                 if (!user.memberInfo) {
                   user.memberInfo = {};
+                }
+                
+                // Kiểm tra xem user đã có membership chưa và còn hiệu lực không
+                const now = new Date();
+                const hasActiveMembership = user.memberInfo.membershipEnd && 
+                                          new Date(user.memberInfo.membershipEnd) > now;
+                
+                let membershipStart, membershipExpiry;
+                
+                if (hasActiveMembership) {
+                    // Nếu đã có membership còn hiệu lực, gia hạn từ ngày kết thúc hiện tại
+                    membershipStart = user.memberInfo.membershipStart || now;
+                    membershipExpiry = new Date(user.memberInfo.membershipEnd);
+                    membershipExpiry.setDate(membershipExpiry.getDate() + (gymPackage.duration || 30));
+                    console.log(`Extending membership for user ${user._id} from ${user.memberInfo.membershipEnd} to ${membershipExpiry}`);
+                } else {
+                    // Nếu chưa có membership hoặc đã hết hạn, tạo mới
+                    membershipStart = now;
+                    membershipExpiry = new Date(membershipStart);
+                    membershipExpiry.setDate(membershipExpiry.getDate() + (gymPackage.duration || 30));
+                    console.log(`Creating new membership for user ${user._id} from ${membershipStart} to ${membershipExpiry}`);
                 }
                 
                 user.memberInfo.membershipStart = membershipStart;
@@ -282,8 +295,8 @@ exports.vnpayReturn = async (req, res) => {
                     code: vnp_Params['vnp_ResponseCode'], 
                     message: 'Thanh toán thành công! Tài khoản của bạn đã được kích hoạt.',
                     paymentSuccess: isPaymentSuccess,
-                    redirectUrl: '/member/profile', // Chuyển hướng về trang hồ sơ thành viên
-                    token: token, // Trả về token để client lưu vào localStorage
+                    redirectUrl: '/',
+                    token: token,
                     userId: user._id.toString(),
                     packageInfo: {
                         name: gymPackage.name,

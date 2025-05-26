@@ -156,11 +156,78 @@ exports.updateUser = async (req, res) => {
 exports.getMyPackages = async (req, res) => {
     try {
         const userId = req.user._id || req.user.id;
+        console.log(`Getting packages for user: ${userId}`);
+        
         const Order = require('../models/Order');
-        const paidOrders = await Order.find({ userId, status: "paid" }).populate('packageId');
-        const packages = paidOrders.map(order => order.packageId);
+        const User = require('../models/User');
+        
+        // Tìm user để lấy thông tin thành viên
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+        
+        // Tìm các đơn hàng đã thanh toán, sắp xếp theo thời gian tạo
+        const paidOrders = await Order.find({ userId, status: "paid" })
+            .populate('packageId')
+            .sort({ createdAt: 1 }); // Sắp xếp từ cũ đến mới
+        console.log(`Found ${paidOrders.length} paid orders for user ${userId}`);
+        
+        // Lọc các đơn hàng có packageId
+        const validOrders = paidOrders.filter(order => order.packageId);
+        console.log(`Found ${validOrders.length} valid orders with package information`);
+        
+        if (validOrders.length === 0) {
+            return res.status(200).json({ packages: [] });
+        }
+        
+        // Tính toán ngày bắt đầu và kết thúc cho từng gói
+        const packages = [];
+        let currentStartDate = user.memberInfo?.membershipStart ? new Date(user.memberInfo.membershipStart) : new Date();
+        
+        for (let i = 0; i < validOrders.length; i++) {
+            const order = validOrders[i];
+            const pkg = { ...order.packageId.toObject() };
+            const duration = pkg.duration || 30; // mặc định 30 ngày
+            
+            let startDate, endDate;
+            
+            if (i === 0) {
+                // Gói đầu tiên: sử dụng ngày bắt đầu từ memberInfo hoặc ngày tạo order
+                startDate = user.memberInfo?.membershipStart ? 
+                    new Date(user.memberInfo.membershipStart) : 
+                    new Date(order.createdAt);
+            } else {
+                // Các gói tiếp theo: bắt đầu từ ngày kết thúc của gói trước
+                startDate = new Date(currentStartDate);
+            }
+            
+            // Tính ngày kết thúc
+            endDate = new Date(startDate);
+            if (duration >= 30) {
+                // Nếu duration >= 30, coi như là tháng
+                endDate.setMonth(endDate.getMonth() + Math.floor(duration / 30));
+                endDate.setDate(endDate.getDate() + (duration % 30));
+            } else {
+                // Nếu duration < 30, coi như là ngày
+                endDate.setDate(endDate.getDate() + duration);
+            }
+            
+            // Cập nhật startDate cho gói tiếp theo
+            currentStartDate = new Date(endDate);
+            
+            // Thêm thông tin ngày vào package
+            pkg.startDate = startDate;
+            pkg.endDate = endDate;
+            pkg.orderDate = order.createdAt;
+            
+            packages.push(pkg);
+        }
+        
+        console.log(`Returning ${packages.length} packages with calculated dates`);
         res.status(200).json({ packages });
     } catch (err) {
+        console.error('Error in getMyPackages:', err);
         res.status(500).json({ message: 'Lỗi khi truy vấn gói tập của bạn!', error: err.message });
     }
 }

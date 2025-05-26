@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogActions
+  IconButton, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogActions,
+  Tooltip, Chip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,18 +14,33 @@ export default function EquipmentList() {
   const navigate = useNavigate();
   const [equipment, setEquipment] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState({ name: '', type: '', status: '' });
+  const [filter, setFilter] = useState({ name: '', description: '', status: '', roomId: '' });
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
+    fetchRooms();
     fetchEquipment();
   }, []);
+
+  const fetchRooms = async () => {
+    try {
+      const response = await fetch('http://localhost:8001/api/gymrooms');
+      if (!response.ok) {
+        throw new Error('Không thể tải danh sách phòng tập');
+      }
+      const data = await response.json();
+      setRooms(data);
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách phòng tập:', error);
+    }
+  };
 
   const fetchEquipment = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/equipments');
+      const res = await fetch('http://localhost:8001/api/equipments');
       if (!res.ok) {
         throw new Error('Failed to fetch equipment');
       }
@@ -44,8 +60,18 @@ export default function EquipmentList() {
 
   const handleDeleteConfirm = async () => {
     try {
-      const response = await fetch(`/api/equipments/${itemToDelete}`, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/auth/login');
+        return;
+      }
+
+      const response = await fetch(`http://localhost:8001/api/equipments/${itemToDelete}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       
       if (!response.ok) {
@@ -65,8 +91,9 @@ export default function EquipmentList() {
 
   const filteredEquipment = equipment.filter(eq =>
     (filter.name === '' || (eq.name && eq.name.toLowerCase().includes(filter.name.toLowerCase()))) &&
-    (filter.type === '' || eq.type === filter.type) &&
-    (filter.status === '' || eq.status === filter.status)
+    (filter.description === '' || (eq.description && eq.description.toLowerCase().includes(filter.description.toLowerCase()))) &&
+    (filter.status === '' || eq.status === filter.status) &&
+    (filter.roomId === '' || (eq.roomId && eq.roomId._id === filter.roomId))
   );
 
   return (
@@ -105,9 +132,9 @@ export default function EquipmentList() {
             size="small"
           />
           <TextField
-            label="Loại thiết bị"
-            value={filter.type}
-            onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
+            label="Tìm theo mô tả"
+            value={filter.description}
+            onChange={e => setFilter(f => ({ ...f, description: e.target.value }))}
             size="small"
           />
           <FormControl size="small" style={{ minWidth: 120 }}>
@@ -123,6 +150,19 @@ export default function EquipmentList() {
               <MenuItem value="inactive">Không hoạt động</MenuItem>
             </Select>
           </FormControl>
+          <FormControl size="small" style={{ minWidth: 150 }}>
+            <InputLabel>Phòng tập</InputLabel>
+            <Select
+              value={filter.roomId}
+              label="Phòng tập"
+              onChange={e => setFilter(f => ({ ...f, roomId: e.target.value }))}
+            >
+              <MenuItem value="">Tất cả</MenuItem>
+              {rooms.map(room => (
+                <MenuItem key={room._id} value={room._id}>{room.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
       </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
@@ -131,9 +171,9 @@ export default function EquipmentList() {
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Tên thiết bị</th>
-                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Loại</th>
+                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Phòng tập</th>
+                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Mô tả</th>
                 <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Trạng thái</th>
-                <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Ngày bảo trì gần nhất</th>
                 <th className="py-4 px-6 text-center text-[var(--admin-primary)] font-bold text-base">Hành động</th>
               </tr>
             </thead>
@@ -145,12 +185,29 @@ export default function EquipmentList() {
               ) : filteredEquipment.map(eq => (
                 <tr key={eq._id}>
                   <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{eq.name}</td>
-                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{eq.type}</td>
-                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{
-                    eq.status === 'active' ? 'Hoạt động' :
-                    eq.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'
-                  }</td>
-                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{eq.maintenanceDate ? new Date(eq.maintenanceDate).toLocaleDateString() : ''}</td>
+                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">
+                    {eq.roomId && eq.roomId.name ? (
+                      <Tooltip title={`Loại phòng: ${eq.roomId.roomType || 'Không xác định'}`}>
+                        <span>{eq.roomId.name}</span>
+                      </Tooltip>
+                    ) : (
+                      'Không xác định'
+                    )}
+                  </td>
+                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">
+                    <Tooltip title={eq.description || ''}>
+                      <span>{eq.description ? (eq.description.length > 30 ? eq.description.substring(0, 30) + '...' : eq.description) : ''}</span>
+                    </Tooltip>
+                  </td>
+                  <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">
+                    <Chip
+                      label={eq.status === 'active' ? 'Hoạt động' : 
+                             eq.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
+                      color={eq.status === 'active' ? 'success' : 
+                             eq.status === 'maintenance' ? 'warning' : 'error'}
+                      size="small"
+                    />
+                  </td>
                   <td className="py-4 px-6 text-center">
                     <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/equipment/view/${eq._id}`)}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/equipment/edit/${eq._id}`)}><EditIcon /></IconButton>
