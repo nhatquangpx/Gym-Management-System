@@ -67,6 +67,12 @@ import AddTrainer from './pages/admin/AddTrainer';
 import ViewTrainer from './pages/admin/ViewTrainer';
 import EditTrainer from './pages/admin/EditTrainer';
 
+// GymRoom components
+import GymRoomList from './pages/admin/GymRoomList';
+import AddGymRoom from './pages/admin/AddGymRoom';
+import EditGymRoom from './pages/admin/EditGymRoom';
+import ViewGymRoom from './pages/admin/ViewGymRoom';
+
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
 const Dashboard = () => <div>Dashboard Page</div>;
@@ -192,6 +198,10 @@ function App() {
             <Route path="equipment/view/:id" element={<ViewEquipment />} />
             <Route path="equipment/edit/:id" element={<EditEquipment />} />
             <Route path="equipment/add" element={<EditEquipment />} />
+            <Route path="gymrooms" element={<GymRoomList />} />
+            <Route path="gymrooms/add" element={<AddGymRoom />} />
+            <Route path="gymrooms/view/:id" element={<ViewGymRoom />} />
+            <Route path="gymrooms/edit/:id" element={<EditGymRoom />} />
             <Route path="workouts" element={<WorkoutList />} />
             <Route path="workouts/view/:id" element={<ViewWorkout />} />
             <Route path="workouts/edit/:id" element={<EditWorkout />} />

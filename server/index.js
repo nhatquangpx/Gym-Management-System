@@ -26,9 +26,10 @@ const PORT = process.env.PORT || 8001;
 // Cấu hình CORS để cho phép client gọi API
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:5173'],  // Cho phép cả hai origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   optionsSuccessStatus: 200, // IE11 có vấn đề với 204
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
+  credentials: true // Cho phép gửi credentials (cookies, authorization headers)
 }));
 
 // Debug route để test API connectivity

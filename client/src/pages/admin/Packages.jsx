@@ -38,7 +38,7 @@ export default function Packages() {
       // Định dạng lại giá để hiển thị
       const formattedPackages = data.map(pkg => ({
         ...pkg,
-        price: new Intl.NumberFormat('vi-VN').format(pkg.price) + 'đ',
+        formattedPrice: new Intl.NumberFormat('vi-VN').format(pkg.price) + pkg.period,
         status: "Đang mở bán" // Giả định tất cả các gói đều đang mở bán
       }));
       
@@ -59,21 +59,41 @@ export default function Packages() {
   
   const handleDeleteConfirm = async () => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Bạn cần đăng nhập lại để thực hiện chức năng này.');
+        setTimeout(() => navigate('/auth/login'), 2000);
+        return;
+      }
+      
       const response = await fetch(`http://localhost:8001/api/packages/${itemToDelete}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
       });
       
       if (response.ok) {
         // Tải lại danh sách gói tập sau khi xóa
         fetchPackages();
+        alert('Xóa gói tập thành công!');
       } else {
-        console.error('Không thể xóa gói tập');
+        const errorData = await response.json();
+        console.error('Không thể xóa gói tập:', errorData.message || response.statusText);
+        setError(`Lỗi: ${errorData.message || 'Không thể xóa gói tập. Vui lòng thử lại sau.'}`);
+        
+        // Nếu lỗi là do xác thực, chuyển hướng đến trang đăng nhập
+        if (response.status === 401 || response.status === 403) {
+          alert('Phiên đăng nhập hết hạn hoặc không có quyền. Vui lòng đăng nhập lại.');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setTimeout(() => navigate('/auth/login'), 1000);
+        }
       }
     } catch (err) {
       console.error('Lỗi khi xóa gói tập:', err);
+      setError(`Lỗi: ${err.message}`);
     } finally {
       setOpenConfirm(false);
       setItemToDelete(null);
@@ -83,12 +103,13 @@ export default function Packages() {
   const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
   const [searchPrice, setSearchPrice] = useState("");
-  const [searchStatus, setSearchStatus] = useState("");  // Lọc danh sách gói tập theo tên, giá, trạng thái
+  const [searchType, setSearchType] = useState("");  // Lọc theo loại gói
   const filteredPackages = packages.filter(p =>
     (p.name && p.name.toLowerCase().includes(searchName.toLowerCase())) &&
-    (p.price && p.price.includes(searchPrice)) &&
-    (p.status && p.status.toLowerCase().includes(searchStatus.toLowerCase()))
+    (p.formattedPrice && p.formattedPrice.includes(searchPrice)) &&
+    (p.type && p.type.toLowerCase().includes(searchType.toLowerCase()))
   );
+  
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
@@ -131,13 +152,15 @@ export default function Packages() {
           value={searchPrice}
           onChange={e => setSearchPrice(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Trạng thái"
-          className="p-2 rounded border border-gray-300 min-w-[120px]"
-          value={searchStatus}
-          onChange={e => setSearchStatus(e.target.value)}
-        />
+        <select
+          className="p-2 rounded border border-gray-300 min-w-[150px]"
+          value={searchType}
+          onChange={e => setSearchType(e.target.value)}
+        >
+          <option value="">Tất cả loại gói</option>
+          <option value="Tự tập">Tự tập</option>
+          <option value="Tập với PT">Tập với PT</option>
+        </select>
       </div>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
@@ -146,34 +169,36 @@ export default function Packages() {
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-center">Tên gói tập</th>
                 <th className="py-3 px-4 text-center">Giá</th>
-                <th className="py-3 px-4 text-center">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Loại gói</th>
+                <th className="py-3 px-4 text-center">Thời hạn</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>            <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-4">
+                  <td colSpan={5} className="text-center py-4">
                     <CircularProgress size={24} sx={{ color: 'var(--admin-primary)' }} />
                     <span className="ml-2">Đang tải dữ liệu...</span>
                   </td>
                 </tr>
               ) : filteredPackages.length === 0 ? (
-                <tr><td colSpan={4} className="text-center py-4">Không có gói tập nào</td></tr>
+                <tr><td colSpan={5} className="text-center py-4">Không có gói tập nào</td></tr>
               ) : filteredPackages.map((p) => (
-                <tr key={p.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
+                <tr key={p._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">
                     <span className="flex items-center gap-2 justify-center">
                       <FitnessCenterIcon className="text-[var(--admin-primary)]" style={{ fontSize: 22 }} />
                       {p.name}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.price}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.status}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.formattedPrice}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.type}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.duration} ngày</td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/packages/view/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/packages/edit/${p.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(p.id)}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/packages/view/${p._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/packages/edit/${p._id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(p._id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>

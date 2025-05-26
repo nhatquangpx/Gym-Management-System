@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 
@@ -6,32 +6,43 @@ export default function ViewEquipment() {
   const { id } = useParams();
   const [equipment, setEquipment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
-        // Dữ liệu mẫu để test giao diện
-        const mockEquipment = {
-          id: id,
-          name: 'Máy chạy bộ TechnoGym',
-          type: 'Cardio',
-          status: 'active',
-          maintenanceDate: '2024-06-01',
-          description: 'Máy chạy bộ cao cấp nhập khẩu từ Ý, hỗ trợ nhiều chế độ tập luyện và cảm biến nhịp tim.'
-        };
-        setEquipment(mockEquipment);
-        // Khi có API thật, dùng đoạn sau:
-        // const response = await fetch(`/api/equipment/${id}`);
-        // const data = await response.json();
-        // setEquipment(data);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+          navigate('/auth/login');
+          return;
+        }
+        
+        const response = await fetch(`http://localhost:8001/api/equipments/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch equipment');
+        }
+        const data = await response.json();
+        setEquipment(data);
       } catch (error) {
         console.error('Error fetching equipment:', error);
+        
+        if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/auth/login');
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchEquipment();
-  }, [id]);
+  }, [id, navigate]);
 
   if (loading) return <div className="p-6">Đang tải...</div>;
   if (!equipment) return <div className="p-6">Không tìm thấy thiết bị</div>;
@@ -65,8 +76,8 @@ export default function ViewEquipment() {
                 <p className="text-lg">{equipment.name}</p>
               </div>
               <div>
-                <label className="block text-sm text-gray-500">Loại</label>
-                <p className="text-lg">{equipment.type}</p>
+                <label className="block text-sm text-gray-500">Phòng tập</label>
+                <p className="text-lg">{equipment.roomId && equipment.roomId.name ? equipment.roomId.name : 'Không xác định'}</p>
               </div>
               <div>
                 <label className="block text-sm text-gray-500">Trạng thái</label>
@@ -76,14 +87,18 @@ export default function ViewEquipment() {
                 }</p>
               </div>
               <div>
-                <label className="block text-sm text-gray-500">Ngày bảo trì gần nhất</label>
-                <p className="text-lg">{equipment.maintenanceDate ? new Date(equipment.maintenanceDate).toLocaleDateString() : ''}</p>
+                <label className="block text-sm text-gray-500">Ngày mua</label>
+                <p className="text-lg">{equipment.purchaseDate ? new Date(equipment.purchaseDate).toLocaleDateString() : 'Không có thông tin'}</p>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-500">Ngày hết hạn bảo hành</label>
+                <p className="text-lg">{equipment.warrantyDate ? new Date(equipment.warrantyDate).toLocaleDateString() : 'Không có thông tin'}</p>
               </div>
             </div>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-2">Mô tả</h3>
-            <p className="text-gray-700 whitespace-pre-wrap">{equipment.description}</p>
+            <p className="text-gray-700 whitespace-pre-wrap">{equipment.description || 'Không có mô tả'}</p>
           </div>
         </div>
       </div>
