@@ -29,7 +29,7 @@ export default function EditEquipment() {
 
   const fetchEquipment = async () => {
     try {
-      const response = await fetch(`/api/equipment/${id}`);
+      const response = await fetch(`/api/equipments/${id}`);
       const data = await response.json();
       setEquipment({
         ...data,
@@ -54,7 +54,7 @@ export default function EditEquipment() {
     e.preventDefault();
     try {
       const method = id ? 'PUT' : 'POST';
-      const url = id ? `/api/equipment/${id}` : '/api/equipment';
+      const url = id ? `/api/equipments/${id}` : '/api/equipments';
       
       await fetch(url, {
         method,

@@ -11,29 +11,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export default function EquipmentList() {
   const navigate = useNavigate();
-  const [equipment, setEquipment] = useState([
-    {
-      _id: 1,
-      name: 'Máy chạy bộ TechnoGym',
-      type: 'Cardio',
-      status: 'active',
-      maintenanceDate: '2024-06-01',
-    },
-    {
-      _id: 2,
-      name: 'Ghế đẩy ngực Impulse',
-      type: 'Strength',
-      status: 'maintenance',
-      maintenanceDate: '2024-05-20',
-    },
-    {
-      _id: 3,
-      name: 'Xe đạp tập Life Fitness',
-      type: 'Cardio',
-      status: 'inactive',
-      maintenanceDate: '2024-04-15',
-    },
-  ]);
+  const [equipment, setEquipment] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({ name: '', type: '', status: '' });
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -46,13 +24,17 @@ export default function EquipmentList() {
   const fetchEquipment = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/equipment');
+      const res = await fetch('/api/equipments');
+      if (!res.ok) {
+        throw new Error('Failed to fetch equipment');
+      }
       const data = await res.json();
       setEquipment(data);
     } catch (error) {
       console.error('Error fetching equipment:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleDelete = async (id) => {
@@ -62,19 +44,27 @@ export default function EquipmentList() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await fetch(`/api/equipment/${itemToDelete}`, {
+      const response = await fetch(`/api/equipments/${itemToDelete}`, {
         method: 'DELETE',
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete equipment');
+      }
+      
       fetchEquipment();
+      alert('Xóa thiết bị thành công!');
     } catch (error) {
       console.error('Error deleting equipment:', error);
+      alert('Lỗi khi xóa thiết bị: ' + error.message);
+    } finally {
+      setOpenConfirm(false);
+      setItemToDelete(null);
     }
-    setOpenConfirm(false);
-    setItemToDelete(null);
   };
 
   const filteredEquipment = equipment.filter(eq =>
-    (filter.name === '' || eq.name.toLowerCase().includes(filter.name.toLowerCase())) &&
+    (filter.name === '' || (eq.name && eq.name.toLowerCase().includes(filter.name.toLowerCase()))) &&
     (filter.type === '' || eq.type === filter.type) &&
     (filter.status === '' || eq.status === filter.status)
   );
@@ -149,9 +139,9 @@ export default function EquipmentList() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={5} className="py-4 px-6 text-base">Loading...</td></tr>
+                <tr><td colSpan={5} className="py-4 px-6 text-base text-center">Đang tải...</td></tr>
               ) : filteredEquipment.length === 0 ? (
-                <tr><td colSpan={5} className="py-4 px-6 text-base">Không có thiết bị nào</td></tr>
+                <tr><td colSpan={5} className="py-4 px-6 text-base text-center">Không có thiết bị nào</td></tr>
               ) : filteredEquipment.map(eq => (
                 <tr key={eq._id}>
                   <td className="py-4 px-6 text-[var(--admin-text)] text-base text-center">{eq.name}</td>

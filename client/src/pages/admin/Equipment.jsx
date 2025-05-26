@@ -18,12 +18,8 @@ const theme = createTheme({
 });
 
 export default function Equipment() {
-  const [equipment, setEquipment] = useState([
-    { _id: 1, name: 'Máy chạy bộ', type: 'Cardio', status: 'active', maintenanceDate: '2024-06-01' },
-    { _id: 2, name: 'Ghế đẩy tạ', type: 'Strength', status: 'active', maintenanceDate: '2024-07-01' },
-    { _id: 3, name: 'Xe đạp tập', type: 'Cardio', status: 'inactive', maintenanceDate: '2024-05-15' },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [equipment, setEquipment] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -33,12 +29,15 @@ export default function Equipment() {
 
   const fetchEquipment = async () => {
     try {
-      const response = await fetch('/api/equipment');
+      const response = await fetch('/api/equipments');
+      if (!response.ok) {
+        throw new Error('Failed to fetch equipment');
+      }
       const data = await response.json();
       setEquipment(data);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching equipment:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -50,19 +49,27 @@ export default function Equipment() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await fetch(`/api/equipment/${itemToDelete}`, {
+      const response = await fetch(`/api/equipments/${itemToDelete}`, {
         method: 'DELETE',
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete equipment');
+      }
+      
+      alert('Xóa thiết bị thành công!');
       fetchEquipment();
     } catch (error) {
       console.error('Error deleting equipment:', error);
+      alert('Lỗi khi xóa thiết bị: ' + error.message);
+    } finally {
+      setOpenConfirm(false);
+      setItemToDelete(null);
     }
-    setOpenConfirm(false);
-    setItemToDelete(null);
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   return (
@@ -112,12 +119,13 @@ export default function Equipment() {
                   <TableCell>{item.type}</TableCell>
                   <TableCell>
                     <Chip
-                      label={item.status}
+                      label={item.status === 'active' ? 'Hoạt động' : 
+                             item.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
                       color={item.status === 'active' ? 'success' : 'error'}
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{new Date(item.maintenanceDate).toLocaleDateString()}</TableCell>
+                  <TableCell>{item.maintenanceDate ? new Date(item.maintenanceDate).toLocaleDateString() : ''}</TableCell>
                   <TableCell>
                     <IconButton
                       component={Link}

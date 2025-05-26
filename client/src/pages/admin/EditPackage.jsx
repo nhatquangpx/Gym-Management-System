@@ -1,26 +1,66 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from "../../components/features/admin/Button/Button";
-
-const packages = [
-  { id: 1, name: 'Gói 1 tháng', price: '500.000đ', status: 'Đang mở bán' },
-  { id: 2, name: 'Gói 3 tháng', price: '1.200.000đ', status: 'Đang mở bán' },
-  { id: 3, name: 'Gói 6 tháng', price: '2.000.000đ', status: 'Tạm dừng' },
-];
 
 export default function EditPackage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const pkg = packages.find(p => p.id === Number(id));
-  const [form, setForm] = useState(pkg || {});
-  if (!pkg) return <div className="text-[var(--admin-text)] p-6">Không tìm thấy gói tập.</div>;
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = e => {
-    e.preventDefault();
-    // TODO: Gửi dữ liệu lên server
-    alert('Đã lưu thay đổi!');
-    navigate('/admin/packages');
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({
+    name: '',
+    price: '',
+    status: ''
+  });
+  
+  useEffect(() => {
+    fetchPackage();
+  }, [id]);
+  
+  const fetchPackage = async () => {
+    try {
+      const response = await fetch(`/api/packages/${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch package');
+      }
+      const data = await response.json();
+      setForm(data);
+    } catch (error) {
+      console.error('Error fetching package:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+  
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/admins/packages/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update package');
+      }
+      
+      alert('Đã lưu thay đổi!');
+      navigate('/admin/packages');
+    } catch (error) {
+      console.error('Error updating package:', error);
+      alert('Lỗi khi cập nhật gói tập: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div className="text-[var(--admin-text)] p-6">Đang tải...</div>;
+  
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <h1 className="text-2xl font-bold mb-6">Chỉnh sửa gói tập</h1>
@@ -41,7 +81,9 @@ export default function EditPackage() {
           </select>
         </div>
         <div className="flex gap-3">
-          <Button type="submit" color="primary">Lưu</Button>
+          <Button type="submit" color="primary" disabled={loading}>
+            {loading ? 'Đang lưu...' : 'Lưu'}
+          </Button>
           <Link to="/admin/packages"><Button type="button" color="secondary">Hủy</Button></Link>
         </div>
       </form>
