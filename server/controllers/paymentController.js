@@ -232,7 +232,7 @@ exports.vnpayReturn = async (req, res) => {
                         code: '03', 
                         message: 'Không tìm thấy thông tin gói tập',
                         paymentSuccess: isPaymentSuccess,
-                        redirectUrl: '/member/profile' // Chuyển hướng về trang hồ sơ
+                        redirectUrl: '/' // Chuyển hướng về trang hồ sơ
                     });
                 }
                   console.log(`Activating user ${user._id} with package ${gymPackage.name}`);
@@ -295,8 +295,8 @@ exports.vnpayReturn = async (req, res) => {
                     code: vnp_Params['vnp_ResponseCode'], 
                     message: 'Thanh toán thành công! Tài khoản của bạn đã được kích hoạt.',
                     paymentSuccess: isPaymentSuccess,
-                    redirectUrl: '/member/profile', // Chuyển hướng về trang hồ sơ thành viên
-                    token: token, // Trả về token để client lưu vào localStorage
+                    redirectUrl: '/',
+                    token: token,
                     userId: user._id.toString(),
                     packageInfo: {
                         name: gymPackage.name,
