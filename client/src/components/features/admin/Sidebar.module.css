@@ -20,7 +20,9 @@
   gap: 16px;
   height: 80px;
   border-bottom: 1.5px solid var(--admin-border);
-  background: var(--admin-header);
+  padding-bottom: 24px;
+
+  margin-top: 12px;
 }
 
 .logo {
@@ -34,6 +36,9 @@
   font-weight: 700;
   color: var(--admin-primary);
   letter-spacing: 2px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .nav {
