@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { store } from '../redux/store';
+import { setLogout } from '../redux/slices/authSlice';
 
 // Cấu hình mặc định cho axios
 axios.defaults.baseURL = 'http://localhost:8001';
@@ -6,8 +8,12 @@ axios.defaults.baseURL = 'http://localhost:8001';
 // Thêm interceptor để tự động thêm token vào header
 axios.interceptors.request.use(
   config => {
+    // Ưu tiên lấy token từ Redux store
+    const storeToken = store.getState().auth.token;
+    // Fallback về localStorage nếu không có token trong store
     // Kiểm tra cả hai loại token có thể được lưu trữ
-    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    const token = storeToken || localStorage.getItem('token') || localStorage.getItem('authToken');
+    
     if (token) {
       console.log('Adding token to request headers');
       config.headers.Authorization = `Bearer ${token}`;
@@ -17,32 +23,27 @@ axios.interceptors.request.use(
     return config;
   },
   error => {
-    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
-// Thêm interceptor phản hồi để ghi log các lỗi
+// Thêm interceptor để xử lý lỗi xác thực
 axios.interceptors.response.use(
-  response => {
-    // Xử lý phản hồi thành công
-    return response;
-  },
+  response => response,
   error => {
-    // Ghi log các lỗi
-    if (error.response) {
-      // Máy chủ trả về mã trạng thái nằm ngoài phạm vi 2xx
-      console.error('Response error:', {
-        status: error.response.status,
-        data: error.response.data,
-        headers: error.response.headers
-      });
-    } else if (error.request) {
-      // Yêu cầu được tạo nhưng không nhận được phản hồi
-      console.error('Request error (no response):', error.request);
-    } else {
-      // Có lỗi khi thiết lập yêu cầu
-      console.error('Error setting up request:', error.message);
+    // Nếu server trả về lỗi 401 Unauthorized hoặc 403 Forbidden, 
+    // có thể token đã hết hạn hoặc không hợp lệ
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      console.log('Phiên đăng nhập hết hạn hoặc không hợp lệ');
+      
+      // Kiểm tra xem lỗi có phải do token không hợp lệ không
+      const errorMessage = error.response.data?.message || '';
+      if (errorMessage.includes('Token không hợp lệ') || 
+          errorMessage.includes('không có token') ||
+          errorMessage.includes('không có quyền')) {
+        // Đăng xuất người dùng
+        store.dispatch(setLogout());
+      }
     }
     return Promise.reject(error);
   }

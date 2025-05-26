@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
+import { useEffect } from 'react';
+import { checkAuthStatus } from './utils/authUtils';
 
 // Member pages
 import LoginPage from './pages/member/LoginPage/LoginPage';
@@ -104,6 +106,11 @@ import TrainerWorkoutLogPage from './pages/trainer/WorkoutLogPage/WorkoutLogPage
 import ProgressPage from './pages/trainer/ProgressPage/ProgressPage';
 
 function App() {
+  // Kiểm tra trạng thái xác thực khi ứng dụng khởi động
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
   return (
     <Router>
       <Routes>
