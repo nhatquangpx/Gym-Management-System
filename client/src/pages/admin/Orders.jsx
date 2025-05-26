@@ -7,35 +7,88 @@ import { Link } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
 export default function Orders() {
-  const orders = [
-    { id: 1, customer: "Nguyễn Văn A", package: "Gói 1 tháng", total: "500.000đ", status: "Đã thanh toán" },
-    { id: 2, customer: "Trần Thị B", package: "Gói 3 tháng", total: "1.200.000đ", status: "Chờ thanh toán" },
-    { id: 3, customer: "Lê Văn C", package: "Gói 6 tháng", total: "2.000.000đ", status: "Đã hủy" },
-  ];
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [searchCustomer, setSearchCustomer] = useState("");
   const [searchPackage, setSearchPackage] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
+  
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+  
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/orders');
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+      const data = await response.json();
+      setOrders(data.data || data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDelete = (id) => {
     setItemToDelete(id);
     setOpenConfirm(true);
   };
-  const handleDeleteConfirm = () => {
-    // TODO: Gọi API xóa đơn hàng với itemToDelete
-    setOpenConfirm(false);
-    setItemToDelete(null);
+  
+  const handleDeleteConfirm = async () => {
+    try {
+      const response = await fetch(`/api/orders/${itemToDelete}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'cancelled' })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to cancel order');
+      }
+      
+      fetchOrders();
+      alert('Đã hủy đơn hàng thành công!');
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert('Lỗi khi hủy đơn hàng: ' + error.message);
+    } finally {
+      setOpenConfirm(false);
+      setItemToDelete(null);
+    }
   };
+  
   // Lọc danh sách đơn hàng theo khách hàng, gói tập, trạng thái
-  const filteredOrders = orders.filter(o =>
-    o.customer.toLowerCase().includes(searchCustomer.toLowerCase()) &&
-    o.package.toLowerCase().includes(searchPackage.toLowerCase()) &&
-    o.status.toLowerCase().includes(searchStatus.toLowerCase())
-  );
+  const filteredOrders = orders.filter(o => {
+    const customerName = o.userId?.name || '';
+    const packageName = o.packageId?.name || '';
+    const orderStatus = o.status || '';
+    
+    return customerName.toLowerCase().includes(searchCustomer.toLowerCase()) &&
+      packageName.toLowerCase().includes(searchPackage.toLowerCase()) &&
+      orderStatus.toLowerCase().includes(searchStatus.toLowerCase());
+  });
+  
+  const getStatusText = (status) => {
+    switch(status) {
+      case 'completed': return 'Đã thanh toán';
+      case 'pending': return 'Chờ thanh toán';
+      case 'cancelled': return 'Đã hủy';
+      default: return status;
+    }
+  };
+  
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
@@ -80,22 +133,24 @@ export default function Orders() {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.length === 0 ? (
+              {loading ? (
+                <tr><td colSpan={5} className="text-center py-4">Đang tải...</td></tr>
+              ) : filteredOrders.length === 0 ? (
                 <tr><td colSpan={5} className="text-center py-4">Không có đơn hàng nào</td></tr>
               ) : filteredOrders.map((o) => (
-                <tr key={o.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                <tr key={o._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
                   <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] justify-center text-center">
                     <ShoppingCartIcon className="text-[var(--admin-primary)]" />
-                    <span>{o.customer}</span>
+                    <span>{o.userId?.name || 'N/A'}</span>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{o.package}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{o.total}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{o.status}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{o.packageId?.name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{o.totalAmount}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{getStatusText(o.status)}</td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/orders/view/${o.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/orders/edit/${o.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(o.id)}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/orders/view/${o._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/orders/edit/${o._id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Hủy đơn hàng"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(o._id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -105,11 +160,11 @@ export default function Orders() {
         </div>
       </Paper>
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle>Xác nhận xóa</DialogTitle>
-        <DialogContent>Bạn có chắc chắn muốn xóa đơn hàng này?</DialogContent>
+        <DialogTitle>Xác nhận hủy đơn hàng</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn hủy đơn hàng này?</DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+          <Button onClick={() => setOpenConfirm(false)}>Không</Button>
+          <Button color="error" onClick={handleDeleteConfirm}>Có, hủy đơn hàng</Button>
         </DialogActions>
       </Dialog>
     </div>

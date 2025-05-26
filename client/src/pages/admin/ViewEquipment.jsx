@@ -10,9 +10,17 @@ export default function ViewEquipment() {
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
-        // Dữ liệu mẫu để test giao diện
+        const response = await fetch(`/api/equipments/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch equipment');
+        }
+        const data = await response.json();
+        setEquipment(data);
+      } catch (error) {
+        console.error('Error fetching equipment:', error);
+        // Fallback to mock data only if fetch fails
         const mockEquipment = {
-          id: id,
+          _id: id,
           name: 'Máy chạy bộ TechnoGym',
           type: 'Cardio',
           status: 'active',
@@ -20,12 +28,6 @@ export default function ViewEquipment() {
           description: 'Máy chạy bộ cao cấp nhập khẩu từ Ý, hỗ trợ nhiều chế độ tập luyện và cảm biến nhịp tim.'
         };
         setEquipment(mockEquipment);
-        // Khi có API thật, dùng đoạn sau:
-        // const response = await fetch(`/api/equipment/${id}`);
-        // const data = await response.json();
-        // setEquipment(data);
-      } catch (error) {
-        console.error('Error fetching equipment:', error);
       } finally {
         setLoading(false);
       }

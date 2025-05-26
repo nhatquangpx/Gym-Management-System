@@ -4,25 +4,39 @@ import Button from "../../components/features/admin/Button/Button";
 
 export default function AddPackage() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: '',
     price: '',
     status: 'Đang mở bán',
   });
+  
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  
   const handleSubmit = async e => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await fetch('/api/packages', {
+      const response = await fetch('/api/packages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create package');
+      }
+      
+      alert('Thêm gói tập thành công!');
       navigate('/admin/packages');
     } catch (error) {
-      alert('Có lỗi xảy ra!');
+      console.error('Error creating package:', error);
+      alert('Có lỗi xảy ra: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
+  
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <h1 className="text-2xl font-bold mb-6">Thêm gói tập mới</h1>
@@ -43,7 +57,9 @@ export default function AddPackage() {
           </select>
         </div>
         <div className="flex gap-3">
-          <Button type="submit" color="primary">Lưu</Button>
+          <Button type="submit" color="primary" disabled={loading}>
+            {loading ? 'Đang lưu...' : 'Lưu'}
+          </Button>
           <Link to="/admin/packages"><Button type="button" color="secondary">Hủy</Button></Link>
         </div>
       </form>
