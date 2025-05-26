@@ -679,3 +679,68 @@
   cursor: pointer;
   z-index: 2;
 }
+
+.timePickerRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.timePickerSelect {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #888;
+  font-size: 1.1em;
+  color: #fff;
+  background: #35353a;
+  font-family: inherit;
+  font-weight: 600;
+  min-width: 70px;
+  text-align: center;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.timePickerSelect:focus {
+  border: 1.5px solid var(--primary-red, #ff1744);
+}
+
+.sessionModalTextarea {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #888;
+  font-size: 1.1em;
+  color: #fff;
+  background: #35353a;
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.sessionModalTextarea:focus {
+  border: 1.5px solid var(--primary-red, #ff1744);
+  outline: none;
+}
+
+.sessionModalTextarea:disabled {
+  background: #35353a;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.sessionModalTextareaBold {
+  font-weight: 600;
+}
+
+.dateChangeNote {
+  font-size: 0.95em;
+  color: #c1bbbb;
+  margin-top: 6px;
+  margin-bottom: 10px;
+  font-style: italic;
+  line-height: 1.5;
+  letter-spacing: 0.1px;
+}
