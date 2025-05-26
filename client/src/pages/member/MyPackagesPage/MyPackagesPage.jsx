@@ -67,9 +67,7 @@ const MyPackagesPage = () => {
           setPackageHistory([]);
           setIsLoadingHistory(false);
           return;
-        }
-        
-        // Transform data into the expected format
+        }        
         const formattedHistory = response.data.packages.map((pkg, index) => {
           if (!pkg) {
             console.log('Package data is null or undefined at index', index);
@@ -78,31 +76,52 @@ const MyPackagesPage = () => {
           
           console.log('Processing package:', pkg);
           
-          // Create realistic dates from user memberInfo if available
+          let startDate, endDate;
           const today = new Date();
-          const isActive = index === 0; // Assume most recent package is active
           
-          let endDate = new Date();
-          if (isActive) {
-            endDate.setMonth(today.getMonth() + 1); // End date 1 month in the future
+          if (pkg.startDate && pkg.endDate) {
+            startDate = new Date(pkg.startDate);
+            endDate = new Date(pkg.endDate);
+            console.log(`Package ${pkg.name}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
           } else {
-            endDate = today;
-            today.setMonth(today.getMonth() - (index + 1)); // Start date in the past
+            console.log('No date data from API, using fallback dates');
+            const isActive = index === 0; // Assume most recent package is active
+            startDate = new Date(today);
+            endDate = new Date(today);
+            
+            if (isActive) {
+              endDate.setMonth(today.getMonth() + 1);
+            } else {
+              startDate.setMonth(today.getMonth() - (index + 1));
+              endDate = new Date(startDate);
+              endDate.setMonth(startDate.getMonth() + 1);
+            }
           }
+          
+          const isActive = endDate > today;
+          const daysDiff = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+          const remaining = isActive ? Math.max(0, daysDiff) : 0;
           
           return {
             id: pkg._id,
             name: pkg.name,
-            start: today.toISOString().split('T')[0].replace(/-/g, '/'),
+            start: startDate.toISOString().split('T')[0].replace(/-/g, '/'),
             end: endDate.toISOString().split('T')[0].replace(/-/g, '/'),
             status: isActive ? 'Đang sử dụng' : 'Đã hết hạn',
-            remaining: isActive ? 5 : 0,
+            remaining: remaining,
             sessions: pkg.sessions || [] // If the API doesn't return sessions, provide an empty array
           };
         }).filter(pkg => pkg !== null); // Lọc bỏ các mục null
+          console.log('Formatted history:', formattedHistory);
         
-        console.log('Formatted history:', formattedHistory);
-        setPackageHistory(formattedHistory);
+        const sortedHistory = formattedHistory.sort((a, b) => {
+          if (a.status === 'Đang sử dụng' && b.status !== 'Đang sử dụng') return -1;
+          if (b.status === 'Đang sử dụng' && a.status !== 'Đang sử dụng') return 1;
+          
+          return new Date(b.end.replace(/\//g, '-')) - new Date(a.end.replace(/\//g, '-'));
+        });
+        
+        setPackageHistory(sortedHistory);
       } catch (error) {
         console.error('Error fetching user packages:', error);
         setError('Không thể tải lịch sử gói tập. Vui lòng thử lại sau.');
@@ -132,7 +151,6 @@ const MyPackagesPage = () => {
     setLoading(true);
     setError('');
     try {
-      // Giả lập payload, thực tế cần userId, packageId...
       const payload = {
         userId: user?.id,
         packageId: selectedPackage.id,
@@ -197,10 +215,9 @@ const MyPackagesPage = () => {
                     </>}
                     {!hasCurrent && <p>Bạn chưa đăng ký gói tập nào.</p>}
                   </div>
-                  <div className={styles.packageStats}>
-                    {hasCurrent && <>
+                  <div className={styles.packageStats}>                    {hasCurrent && <>
                       <div className={styles.remainingBox}>
-                        <span className={styles.remainingLabel}>Số buổi còn lại</span>
+                        <span className={styles.remainingLabel}>Số ngày còn lại</span>
                         <span className={styles.remainingValue}>{currentHistory.remaining}</span>
                       </div>
                       <div className={styles.statusBox}>
@@ -232,7 +249,8 @@ const MyPackagesPage = () => {
           </section>
 
           <section className={styles.historySection}>
-            <h2>Lịch sử sử dụng gói tập</h2>            {isLoadingHistory ? (
+            <h2>Lịch sử sử dụng gói tập</h2>            
+            {isLoadingHistory ? (
               <div className={styles.loadingState}>Đang tải lịch sử gói tập...</div>
             ) : sortedHistory.length === 0 ? (
               <div className={styles.noHistoryMessage}>
@@ -248,9 +266,9 @@ const MyPackagesPage = () => {
                       <th>Tên gói</th>
                     <th>Thời gian</th>
                     <th>Trạng thái</th>
-                    <th>Số buổi còn lại</th>
                     <th></th>
-                  </tr>                </thead>
+                  </tr>                
+                  </thead>
                 <tbody>
                   {sortedHistory.map(pkg => (
                     <React.Fragment key={pkg.id}>
@@ -258,7 +276,6 @@ const MyPackagesPage = () => {
                         <td>{pkg.name}</td>
                         <td>{pkg.start} - {pkg.end}</td>
                         <td>{pkg.status}</td>
-                        <td>{pkg.remaining}</td>
                         <td>
                           <Button size="small" onClick={() => toggleHistory(pkg.id)}>
                             {expandedHistory[pkg.id] ? 'Ẩn các buổi tập' : 'Xem các buổi tập'}
