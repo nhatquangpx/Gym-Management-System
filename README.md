@@ -12,6 +12,6 @@ Main Features:
 - Provide reports on revenue, attendance, and staff performance.
 
 Technologies:
-- Frontend: React.js, HTML/CSS
-- Backend: Node.js
-- Database: MySQL
+- Frontend: React.js, Tailwind/CSS
+- Backend: Node.js, Express.js
+- Database: MongoDB
