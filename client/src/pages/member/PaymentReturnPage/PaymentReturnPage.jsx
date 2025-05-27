@@ -9,10 +9,102 @@ const PaymentReturn = () => {
   const [paymentInfo, setPaymentInfo] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Log debug info when component loads
+    // Log debug info when component loads
   console.log('PaymentReturn component loaded');
-  console.log('Current URL search params:', location.search);useEffect(() => {
+  console.log('Current URL search params:', location.search);  // Function to detect payment context and set appropriate success message
+  const detectPaymentContext = async (txnRef) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        // No token, assume new registration
+        setMessage('Thanh toán thành công! Tài khoản của bạn đã được kích hoạt.');
+        return;
+      }
+
+      // Try to get the order information first using the new endpoint
+      try {
+        const orderResponse = await fetch(`http://localhost:8001/api/orders/by-txnref/${txnRef}`);
+
+        if (orderResponse.ok) {
+          const orderResult = await orderResponse.json();
+          const orderData = orderResult.data;
+          
+          if (orderData && orderData.userId) {
+            const user = orderData.userId;
+            
+            // Check if user had existing membership before this order
+            if (user.memberInfo && user.memberInfo.membershipStart) {
+              const membershipStart = new Date(user.memberInfo.membershipStart);
+              const orderDate = new Date(orderData.createdAt);
+              
+              // If membership started significantly before this order (more than 1 hour), 
+              // it's an existing member purchasing additional package
+              const oneHourInMs = 60 * 60 * 1000;
+              if (membershipStart.getTime() < orderDate.getTime() - oneHourInMs) {
+                setMessage('Thanh toán thành công! Gói tập đã được mua thành công.');
+                return;
+              }
+            }
+            
+            // Check user role - if already a member, it's a package purchase
+            if (user.role === 'member') {
+              setMessage('Thanh toán thành công! Gói tập đã được mua thành công.');
+              return;
+            }
+          }
+          
+          // If we can't determine from order data, assume new registration
+          setMessage('Thanh toán thành công! Tài khoản của bạn đã được kích hoạt.');
+          return;
+        }
+      } catch (orderError) {
+        console.log('Could not fetch order details, trying alternative method:', orderError);
+      }
+
+      // Fallback: Check user profile to determine context
+      try {
+        const userResponse = await fetch('http://localhost:8001/api/users/profile', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          const user = userData.user || userData;
+          
+          // If user is already a member with existing membership, it's a package purchase
+          if (user.role === 'member' && user.memberInfo && user.memberInfo.membershipStart) {
+            const membershipStart = new Date(user.memberInfo.membershipStart);
+            const now = new Date();
+            const timeSinceActivation = now.getTime() - membershipStart.getTime();
+            const oneHourInMs = 60 * 60 * 1000;
+            
+            // If membership was activated more than 1 hour ago, it's likely an existing member
+            if (timeSinceActivation > oneHourInMs) {
+              setMessage('Thanh toán thành công! Gói tập đã được mua thành công.');
+              return;
+            }
+          }
+        }
+      } catch (userError) {
+        console.log('Could not fetch user profile:', userError);
+      }
+
+      // Default to new registration message if we can't determine context
+      setMessage('Thanh toán thành công! Tài khoản của bạn đã được kích hoạt.');
+      
+    } catch (error) {
+      console.error('Error detecting payment context:', error);
+      // Fallback message if error occurs
+      setMessage('Thanh toán thành công!');
+    }
+  };
+
+useEffect(() => {
     // Trích xuất query parameters từ URL
     const queryParams = new URLSearchParams(location.search);
     const allParams = {};
@@ -43,16 +135,17 @@ const PaymentReturn = () => {
         const queryParams = new URLSearchParams(location.search);
         const responseCode = queryParams.get('vnp_ResponseCode');
         const txnRef = queryParams.get('vnp_TxnRef');
-        
-        // Kiểm tra xem thanh toán có thành công không dựa trên mã response
+          // Kiểm tra xem thanh toán có thành công không dựa trên mã response
         if (responseCode === '00') {
           console.log('Payment successful based on response code');
           setStatus('success');
-          setMessage('Thanh toán thành công! Tài khoản của bạn đã được kích hoạt.');
+          
+          // Detect payment context: new registration vs existing member purchase
+          await detectPaymentContext(txnRef);
           
           // Tự động chuyển hướng sau 3 giây
           setTimeout(() => {
-            navigate('/member/profile');
+            navigate('/');
           }, 3000);
         } else {
           console.log('Payment failed based on response code:', responseCode);
@@ -69,8 +162,7 @@ const PaymentReturn = () => {
         
         // Lấy token từ localStorage nếu có
         const token = localStorage.getItem('authToken');
-        
-        if (token && responseCode === '00') {
+          if (token && responseCode === '00') {
           // Gọi API kích hoạt tài khoản
           try {
             const activateResponse = await fetch('http://localhost:8001/api/registration/activate-after-payment', {
@@ -93,7 +185,7 @@ const PaymentReturn = () => {
           } catch (activateError) {
             console.error('Error activating account:', activateError);
           }
-        }      } catch (error) {
+        }} catch (error) {
         console.error('Lỗi xử lý kết quả thanh toán:', error);
         setStatus('error');
         setMessage('Có lỗi xảy ra khi xử lý thanh toán. Vui lòng liên hệ hỗ trợ.');
@@ -173,14 +265,13 @@ const PaymentReturn = () => {
             <pre>{debug}</pre>
           </div>
         )}
-        
-        {/* Navigation fallback button */}
+          {/* Navigation fallback button */}
         {(status === 'success' || status === 'error' || status === 'failed') && (
           <div className={styles.navigationButtons}>
             {status === 'success' ? (
               <button 
                 className={styles.navButton} 
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/')}
               >
                 Đi đến trang hồ sơ
               </button>

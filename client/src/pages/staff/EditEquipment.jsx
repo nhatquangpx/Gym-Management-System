@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Paper, Typography, Box, TextField, Button, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 
-export default function AddEquipment() {
+export default function EditEquipment() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: '',
@@ -12,13 +13,14 @@ export default function AddEquipment() {
     warrantyDate: '',
     roomId: ''
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     fetchRooms();
-  }, []);
+    fetchEquipment();
+  }, [id]);
 
   const fetchRooms = async () => {
     try {
@@ -47,6 +49,48 @@ export default function AddEquipment() {
     }
   };
 
+  const fetchEquipment = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/auth/login');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:8001/api/equipments/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch equipment');
+      }
+      
+      const data = await response.json();
+      setForm({
+        ...data,
+        roomId: data.roomId ? data.roomId._id || data.roomId : '',
+        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).toISOString().split('T')[0] : '',
+        warrantyDate: data.warrantyDate ? new Date(data.warrantyDate).toISOString().split('T')[0] : ''
+      });
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching equipment:', error);
+      setError('Không thể tải thông tin thiết bị: ' + error.message);
+      
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/auth/login');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -70,8 +114,8 @@ export default function AddEquipment() {
         return;
       }
       
-      const response = await fetch('http://localhost:8001/api/equipments', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8001/api/equipments/${id}`, {
+        method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -81,13 +125,13 @@ export default function AddEquipment() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Không thể thêm thiết bị');
+        throw new Error(errorData.message || 'Không thể cập nhật thiết bị');
       }
       
-      alert('Thêm thiết bị thành công!');
+      alert('Cập nhật thiết bị thành công!');
       navigate('/staff/equipment');
     } catch (error) {
-      console.error('Lỗi khi thêm thiết bị:', error);
+      console.error('Lỗi khi cập nhật thiết bị:', error);
       setError(error.message);
       alert('Có lỗi xảy ra: ' + error.message);
       
@@ -101,10 +145,18 @@ export default function AddEquipment() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="p-6">
+        <Typography>Đang tải...</Typography>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
       <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" style={{ background: '#232323' }}>
-        <Typography variant="h4" className="font-bold text-white mb-6">Thêm thiết bị mới</Typography>
+        <Typography variant="h4" className="font-bold text-white mb-6">Chỉnh sửa thiết bị</Typography>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}

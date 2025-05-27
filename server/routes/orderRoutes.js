@@ -12,6 +12,9 @@ router.get("/", [verifyToken, verifyRole(["admin"])], orderController.getAllOrde
 // Get user's orders (authenticated user)
 router.get("/user", verifyToken, orderController.getUserOrders);
 
+// Get order by transaction reference (public - needed for payment return page)
+router.get("/by-txnref/:txnRef", orderController.getOrderByTxnRef);
+
 // Get order by ID (admin or order owner)
 router.get("/:id", verifyToken, orderController.getOrderById);
 

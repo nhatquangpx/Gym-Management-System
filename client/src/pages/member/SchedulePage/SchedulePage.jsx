@@ -42,6 +42,9 @@ const initialSessions = [
   },
 ];
 
+const hours = Array.from({ length: 24 }, (_, i) => (i < 10 ? '0' : '') + i);
+const minutes = Array.from({ length: 12 }, (_, i) => (i * 5 < 10 ? '0' : '') + i * 5);
+
 const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selectedDate }) => {
   const [form, setForm] = React.useState(session || { startTime: '', endTime: '', detail: '', date: selectedDate });
   const [error, setError] = React.useState('');
@@ -63,15 +66,36 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleDateChange = e => {
     setForm({ ...form, date: e.target.value });
   };
+
+  // Helper để lấy giờ và phút từ chuỗi "HH:mm"
+  const getHour = (val) => val ? val.split(':')[0] : '';
+  const getMinute = (val) => val ? val.split(':')[1] : '';
+  
+  // Helper để set lại giờ/phút
+  const setTime = (field, hour, minute) => {
+    if (hour && minute) {
+      setForm(f => ({ ...f, [field]: `${hour}:${minute}` }));
+    } else if (hour) {
+      setForm(f => ({ ...f, [field]: `${hour}:00` }));
+    } else if (minute) {
+      setForm(f => ({ ...f, [field]: `00:${minute}` }));
+    } else {
+      setForm(f => ({ ...f, [field]: '' }));
+    }
+  };
+
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
+
   const handleConfirmOverlayClick = (e) => {
     if (e.target === e.currentTarget) setShowConfirmModal(false);
   };
+
   const handleTryConfirm = (action) => {
     if (action === 'save') {
       if (!form.startTime || !form.endTime || !form.detail || !form.date) {
@@ -87,6 +111,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
     setConfirmAction(action);
     setShowConfirmModal(true);
   };
+
   const handleConfirmAction = () => {
     if (confirmAction === 'save') {
       onSave({ ...form, id: session?.id });
@@ -95,6 +120,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
     }
     setShowConfirmModal(false);
   };
+
   return (
     <div className={styles.sessionModalOverlay} onClick={handleOverlayClick}>
       <div className={styles.sessionModal} onClick={e => e.stopPropagation()}>
@@ -116,7 +142,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
                 className={styles.sessionModalInput}
                 value={form.date}
                 onChange={handleDateChange}
-                disabled={isDetail}
+                disabled={isDetail || isEdit}
                 min={new Date().getFullYear() + '-01-01'}
                 max={new Date().getFullYear() + 2 + '-12-31'}
               />
@@ -128,62 +154,98 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
             </span>
           )}
         </div>
+        {isEdit && (
+          <div className={styles.dateChangeNote}>
+            Không thể thay đổi ngày khi sửa buổi tập. Nếu muốn đổi ngày, vui lòng xóa buổi tập này và tạo buổi tập mới.
+          </div>
+        )}
         <form className={styles.sessionModalForm} onSubmit={e => { e.preventDefault(); handleTryConfirm('save'); }}>
           <div className={styles.timeInputs}>
             <div>
               <label className={styles.sessionModalLabel}>Giờ bắt đầu</label>
-              <input
-                className={styles.sessionModalInput}
-                name="startTime"
-                type="time"
-                value={form.startTime}
-                onChange={handleChange}
-                disabled={isDetail}
-                step="300"
-                style={{ fontSize: '1.2em', fontWeight: 600, letterSpacing: 1 }}
-              />
+              <div className={styles.timePickerRow}>
+                <select
+                  className={styles.timePickerSelect}
+                  value={getHour(form.startTime)}
+                  onChange={e => setTime('startTime', e.target.value, getMinute(form.startTime))}
+                  disabled={isDetail}
+                >
+                  <option value="">--</option>
+                  {hours.map(h => <option key={h} value={h}>{h}</option>)}
+                </select>
+                <span style={{ margin: '0 4px' }}>:</span>
+                <select
+                  className={styles.timePickerSelect}
+                  value={getMinute(form.startTime)}
+                  onChange={e => setTime('startTime', getHour(form.startTime), e.target.value)}
+                  disabled={isDetail}
+                >
+                  <option value="">--</option>
+                  {minutes.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
             </div>
             <div>
               <label className={styles.sessionModalLabel}>Giờ kết thúc</label>
-              <input
-                className={styles.sessionModalInput}
-                name="endTime"
-                type="time"
-                value={form.endTime}
-                onChange={handleChange}
-                disabled={isDetail}
-                step="300"
-                style={{ fontSize: '1.2em', fontWeight: 600, letterSpacing: 1 }}
-              />
+              <div className={styles.timePickerRow}>
+                <select
+                  className={styles.timePickerSelect}
+                  value={getHour(form.endTime)}
+                  onChange={e => setTime('endTime', e.target.value, getMinute(form.endTime))}
+                  disabled={isDetail}
+                >
+                  <option value="">--</option>
+                  {hours.map(h => <option key={h} value={h}>{h}</option>)}
+                </select>
+                <span style={{ margin: '0 4px' }}>:</span>
+                <select
+                  className={styles.timePickerSelect}
+                  value={getMinute(form.endTime)}
+                  onChange={e => setTime('endTime', getHour(form.endTime), e.target.value)}
+                  disabled={isDetail}
+                >
+                  <option value="">--</option>
+                  {minutes.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
             </div>
           </div>
           <label className={styles.sessionModalLabel}>Chi tiết buổi tập</label>
-          <input
-            className={styles.sessionModalInput}
+          <textarea
+            className={styles.sessionModalTextarea + (isEdit ? ' ' + styles.sessionModalTextareaBold : '')}
             name="detail"
             value={form.detail}
             onChange={handleChange}
             disabled={isDetail}
-            style={{ fontWeight: isEdit ? 600 : 400 }}
+            rows={4}
           />
           {/* Không hiển thị error khi chỉ xem chi tiết */}
           {!isDetail && error && <div style={{ color: '#ff1744', fontWeight: 500 }}>{error}</div>}
           <div className={styles.sessionModalFooter}>
             <button type="button" className={`${styles.sessionModalBtn} ${styles.secondary}`} onClick={onClose}>Đóng</button>
             {!isDetail && <button type="submit" className={`${styles.sessionModalBtn} ${styles.primary}`}>{isAdd ? 'Thêm' : 'Lưu'}</button>}
-            {isEdit && onDelete && <button type="button" className={`${styles.sessionModalBtn} ${styles.danger}`} onClick={() => handleTryConfirm('delete')}>Xóa</button>}
           </div>
         </form>
       </div>
       {showConfirmModal && (
         <div className={styles.confirmModalOverlay} onClick={handleConfirmOverlayClick}>
           <div className={styles.confirmModal} onClick={e => e.stopPropagation()}>
-            <h3>{confirmAction === 'save' ? 'Xác nhận lưu thay đổi?' : 'Xác nhận xóa buổi tập?'}</h3>
-            <p>{confirmAction === 'save' ? 'Bạn có chắc chắn muốn lưu các thay đổi này?' : 'Bạn có chắc chắn muốn xóa buổi tập này?'}</p>
+            <h3>
+              {confirmAction === 'save' && isAdd && 'Xác nhận thêm buổi tập?'}
+              {confirmAction === 'save' && isEdit && 'Xác nhận lưu thay đổi?'}
+              {confirmAction === 'delete' && 'Xác nhận xóa buổi tập?'}
+            </h3>
+            <p>
+              {confirmAction === 'save' && isAdd && 'Bạn có chắc chắn muốn thêm buổi tập này?'}
+              {confirmAction === 'save' && isEdit && 'Bạn có chắc chắn muốn lưu các thay đổi này?'}
+              {confirmAction === 'delete' && 'Bạn có chắc chắn muốn xóa buổi tập này?'}
+            </p>
             <div className={styles.confirmModalFooter}>
               <button className={`${styles.sessionModalBtn} ${styles.secondary}`} onClick={() => setShowConfirmModal(false)}>Hủy</button>
               <button className={`${styles.sessionModalBtn} ${confirmAction === 'save' ? styles.primary : styles.danger}`} onClick={handleConfirmAction}>
-                {confirmAction === 'save' ? 'Xác nhận' : 'Xóa'}
+                {confirmAction === 'save' && isAdd && 'Thêm'}
+                {confirmAction === 'save' && isEdit && 'Lưu'}
+                {confirmAction === 'delete' && 'Xóa'}
               </button>
             </div>
           </div>
@@ -201,6 +263,7 @@ const SchedulePage = () => {
     return today.toISOString().slice(0, 10);
   });
   const [modal, setModal] = useState({ open: false, mode: 'add', session: null });
+  const [deleteModal, setDeleteModal] = useState({ open: false, session: null });
 
   const weekDays = getWeekDays(baseDate);
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -276,10 +339,8 @@ const SchedulePage = () => {
     setModal({ open: false, mode: 'edit', session: null });
   };
   const handleDetailSession = (session) => {
-    setModal(prev => {
-      if (prev.open && prev.session && prev.session.id === session.id && prev.mode === 'detail') return prev;
-      return { open: true, mode: 'detail', session };
-    });
+    if (modal.open && modal.session && modal.session.id === session.id && modal.mode === 'detail') return;
+    setModal({ open: true, mode: 'detail', session });
   };
 
   return (
@@ -333,7 +394,7 @@ const SchedulePage = () => {
                   <div className={styles.sessionGuide}>{session.detail}</div>
                   <div className={styles.sessionActions}>
                     <button className={styles.editBtn} title="Sửa" onClick={e => { e.stopPropagation(); setModal({ open: true, mode: 'edit', session }); }}><FaEdit /></button>
-                    <button className={styles.deleteBtn} title="Xóa" onClick={e => { e.stopPropagation(); setModal({ open: true, mode: 'edit', session }); }}><FaTrash /></button>
+                    <button className={styles.deleteBtn} title="Xóa" onClick={e => { e.stopPropagation(); setDeleteModal({ open: true, session }); }}><FaTrash /></button>
                   </div>
                 </div>
               ))
@@ -348,6 +409,18 @@ const SchedulePage = () => {
             session={modal.session}
             selectedDate={selectedDate}
           />
+          {deleteModal.open && (
+            <div className={styles.confirmModalOverlay} onClick={e => { if (e.target === e.currentTarget) setDeleteModal({ open: false, session: null }); }}>
+              <div className={styles.confirmModal} onClick={e => e.stopPropagation()}>
+                <h3>Xác nhận xóa buổi tập?</h3>
+                <p>Bạn có chắc chắn muốn xóa buổi tập này?</p>
+                <div className={styles.confirmModalFooter}>
+                  <button className={`${styles.sessionModalBtn} ${styles.secondary}`} onClick={() => setDeleteModal({ open: false, session: null })}>Hủy</button>
+                  <button className={`${styles.sessionModalBtn} ${styles.danger}`} onClick={() => { handleDeleteSession(deleteModal.session); setDeleteModal({ open: false, session: null }); }}>Xóa</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />

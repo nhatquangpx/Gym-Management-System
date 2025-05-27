@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Button, IconButton, Typography, Box, Chip, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent, DialogActions
+  Button, IconButton, Typography, Box, Chip, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent, DialogActions,
+  Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -18,14 +19,11 @@ const theme = createTheme({
 });
 
 export default function Equipment() {
-  const [equipment, setEquipment] = useState([
-    { _id: 1, name: 'Máy chạy bộ', type: 'Cardio', status: 'active', maintenanceDate: '2024-06-01' },
-    { _id: 2, name: 'Ghế đẩy tạ', type: 'Strength', status: 'active', maintenanceDate: '2024-07-01' },
-    { _id: 3, name: 'Xe đạp tập', type: 'Cardio', status: 'inactive', maintenanceDate: '2024-05-15' },
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [equipment, setEquipment] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchEquipment();
@@ -33,12 +31,15 @@ export default function Equipment() {
 
   const fetchEquipment = async () => {
     try {
-      const response = await fetch('/api/equipment');
+      const response = await fetch('http://localhost:8001/api/equipments');
+      if (!response.ok) {
+        throw new Error('Failed to fetch equipment');
+      }
       const data = await response.json();
       setEquipment(data);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching equipment:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -50,19 +51,46 @@ export default function Equipment() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await fetch(`/api/equipment/${itemToDelete}`, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/auth/login');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:8001/api/equipments/${itemToDelete}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete equipment');
+      }
+      
+      alert('Xóa thiết bị thành công!');
       fetchEquipment();
     } catch (error) {
       console.error('Error deleting equipment:', error);
+      alert('Lỗi khi xóa thiết bị: ' + error.message);
+      
+      // Nếu lỗi là do xác thực, chuyển hướng đến trang đăng nhập
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/auth/login');
+      }
+    } finally {
+      setOpenConfirm(false);
+      setItemToDelete(null);
     }
-    setOpenConfirm(false);
-    setItemToDelete(null);
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   return (
@@ -97,9 +125,9 @@ export default function Equipment() {
             <TableHead>
               <TableRow className="bg-gray-100">
                 <TableCell>Tên thiết bị</TableCell>
-                <TableCell>Loại</TableCell>
+                <TableCell>Phòng tập</TableCell>
+                <TableCell>Mô tả</TableCell>
                 <TableCell>Trạng thái</TableCell>
-                <TableCell>Ngày bảo trì</TableCell>
                 <TableCell>Hành động</TableCell>
               </TableRow>
             </TableHead>
@@ -109,15 +137,29 @@ export default function Equipment() {
               ) : equipment.map((item) => (
                 <TableRow key={item._id}>
                   <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.type}</TableCell>
+                  <TableCell>
+                    {item.roomId && item.roomId.name ? (
+                      <Tooltip title={`Loại phòng: ${item.roomId.roomType || 'Không xác định'}`}>
+                        <span>{item.roomId.name}</span>
+                      </Tooltip>
+                    ) : (
+                      'Không xác định'
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title={item.description || ''}>
+                      <span>{item.description ? (item.description.length > 30 ? item.description.substring(0, 30) + '...' : item.description) : ''}</span>
+                    </Tooltip>
+                  </TableCell>
                   <TableCell>
                     <Chip
-                      label={item.status}
-                      color={item.status === 'active' ? 'success' : 'error'}
+                      label={item.status === 'active' ? 'Hoạt động' : 
+                             item.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
+                      color={item.status === 'active' ? 'success' : 
+                             item.status === 'maintenance' ? 'warning' : 'error'}
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{new Date(item.maintenanceDate).toLocaleDateString()}</TableCell>
                   <TableCell>
                     <IconButton
                       component={Link}

@@ -1,90 +1,142 @@
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../../components/layout/Navbar/Navbar';
 import Footer from '../../../components/layout/Footer/Footer';
 import Button from '../../../components/common/Button/Button';
 import styles from './MyPackagesPage.module.css';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
-// Dữ liệu mẫu lấy từ PackagesSection.jsx
-const allPackages = [
-  {
-    id: 1,
-    name: "Gói Linh Hoạt",
-    price: "500,000đ",
-    period: "/tháng",
-    type: "Tự tập",
-    description: "Phù hợp cho người mới bắt đầu hoặc muốn duy trì thói quen tập luyện.",
-    highlight: true,
-  },
-  {
-    id: 2,
-    name: "Gói Chuyên Sâu PT",
-    price: "1,200,000đ",
-    period: "/tháng",
-    type: "Tập với PT",
-    description: "Đạt mục tiêu nhanh hơn với sự hướng dẫn 1:1 từ huấn luyện viên chuyên nghiệp.",
-  },
-  {
-    id: 3,
-    name: "Gói Toàn Diện VIP",
-    price: "2,000,000đ",
-    period: "/tháng",
-    type: "Tập với PT",
-    description: "Trải nghiệm dịch vụ cao cấp nhất với nhiều đặc quyền và hỗ trợ toàn diện.",
-  }
-];
-
-// Dữ liệu mẫu lịch sử sử dụng và buổi tập
-const sampleHistory = [
-  {
-    id: 1,
-    name: "Gói Linh Hoạt",
-    start: "2025/03/01",
-    end: "2025/04/30",
-    status: "Đã hết hạn",
-    remaining: 0,
-    sessions: [
-      { date: "2025/03/02", workout: "Cardio + Ngực" },
-      { date: "2025/03/05", workout: "Lưng xô" },
-      { date: "2025/03/10", workout: "Chân + Bụng" },
-      { date: "2025/03/15", workout: "Vai + Cardio" },
-      { date: "2025/03/20", workout: "Tay trước, Tay sau" },
-      { date: "2025/03/25", workout: "Fullbody" },
-      { date: "2025/04/01", workout: "Yoga" },
-      { date: "2025/04/10", workout: "Cardio nhẹ" },
-    ]
-  },
-  {
-    id: 2,
-    name: "Gói Chuyên Sâu PT",
-    start: "2025/05/01",
-    end: "2025/06/30",
-    status: "Đang sử dụng",
-    remaining: 5,
-    sessions: [
-      { date: "2025/05/02", workout: "PT: Ngực + Cardio" },
-      { date: "2025/05/05", workout: "PT: Lưng + Tay" },
-      { date: "2025/05/10", workout: "PT: Chân" },
-      { date: "2025/05/15", workout: "PT: Vai + Bụng" },
-      { date: "2025/05/20", workout: "PT: Cardio" },
-    ]
-  }
-];
+import axios from '../../../utils/axiosConfig';
 
 const MyPackagesPage = () => {
   const navigate = useNavigate();
   const { user } = useSelector(state => state.auth);
-  // Sắp xếp lịch sử theo thời gian mới nhất lên đầu
-  const sortedHistory = [...sampleHistory].sort((a, b) => new Date(b.end) - new Date(a.end));
-  const currentHistory = sortedHistory.find(h => h.status === 'Đang sử dụng');
-  const currentPackage = currentHistory ? allPackages.find(p => p.name === currentHistory.name) : null;
+  const [allPackages, setAllPackages] = useState([]);
+  const [packageHistory, setPackageHistory] = useState([]);
+  const [isLoadingPackages, setIsLoadingPackages] = useState(true);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState('');
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [expandedHistory, setExpandedHistory] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // Fetch packages available in the system
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const response = await axios.get('/api/packages');
+        const formattedPackages = response.data.map(pkg => ({
+          id: pkg._id,
+          name: pkg.name,
+          price: `${pkg.price.toLocaleString()}đ`,
+          period: `/${pkg.period}`,
+          type: pkg.type === 'personal_training' ? 'Tập với PT' : 'Tự tập',
+          description: pkg.description,
+          highlight: pkg.price < 600000, // Highlight affordable options
+        }));
+        setAllPackages(formattedPackages);
+      } catch (error) {
+        console.error('Error fetching packages:', error);
+        setError('Không thể tải danh sách gói tập. Vui lòng thử lại sau.');
+      } finally {
+        setIsLoadingPackages(false);
+      }
+    };
+    
+    fetchPackages();
+  }, []);
+    // Fetch user's package history
+  useEffect(() => {    const fetchUserPackages = async () => {
+      try {
+        // Kiểm tra token (thử cả hai loại token được lưu)
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        if (!token) {
+          console.log('No token found, user might not be logged in');
+          setIsLoadingHistory(false);
+          return;
+        }
+        
+        console.log('Fetching user packages...');
+        const response = await axios.get('/api/users/my-packages');
+        console.log('User packages response:', response.data);
+        
+        // Kiểm tra nếu không có packages hoặc mảng rỗng
+        if (!response.data.packages || response.data.packages.length === 0) {
+          console.log('No packages found for user');
+          setPackageHistory([]);
+          setIsLoadingHistory(false);
+          return;
+        }        
+        const formattedHistory = response.data.packages.map((pkg, index) => {
+          if (!pkg) {
+            console.log('Package data is null or undefined at index', index);
+            return null;
+          }
+          
+          console.log('Processing package:', pkg);
+          
+          let startDate, endDate;
+          const today = new Date();
+          
+          if (pkg.startDate && pkg.endDate) {
+            startDate = new Date(pkg.startDate);
+            endDate = new Date(pkg.endDate);
+            console.log(`Package ${pkg.name}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+          } else {
+            console.log('No date data from API, using fallback dates');
+            const isActive = index === 0; // Assume most recent package is active
+            startDate = new Date(today);
+            endDate = new Date(today);
+            
+            if (isActive) {
+              endDate.setMonth(today.getMonth() + 1);
+            } else {
+              startDate.setMonth(today.getMonth() - (index + 1));
+              endDate = new Date(startDate);
+              endDate.setMonth(startDate.getMonth() + 1);
+            }
+          }
+          
+          const isActive = endDate > today;
+          const daysDiff = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+          const remaining = isActive ? Math.max(0, daysDiff) : 0;
+          
+          return {
+            id: pkg._id,
+            name: pkg.name,
+            start: startDate.toISOString().split('T')[0].replace(/-/g, '/'),
+            end: endDate.toISOString().split('T')[0].replace(/-/g, '/'),
+            status: isActive ? 'Đang sử dụng' : 'Đã hết hạn',
+            remaining: remaining,
+            sessions: pkg.sessions || [] // If the API doesn't return sessions, provide an empty array
+          };
+        }).filter(pkg => pkg !== null); // Lọc bỏ các mục null
+          console.log('Formatted history:', formattedHistory);
+        
+        const sortedHistory = formattedHistory.sort((a, b) => {
+          if (a.status === 'Đang sử dụng' && b.status !== 'Đang sử dụng') return -1;
+          if (b.status === 'Đang sử dụng' && a.status !== 'Đang sử dụng') return 1;
+          
+          return new Date(b.end.replace(/\//g, '-')) - new Date(a.end.replace(/\//g, '-'));
+        });
+        
+        setPackageHistory(sortedHistory);
+      } catch (error) {
+        console.error('Error fetching user packages:', error);
+        setError('Không thể tải lịch sử gói tập. Vui lòng thử lại sau.');
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+    
+    fetchUserPackages();
+  }, []);
+  
+  // Process data for display
+  const sortedHistory = [...packageHistory].sort((a, b) => new Date(b.end) - new Date(a.end));
+  const currentHistory = sortedHistory.find(h => h.status === 'Đang sử dụng');
+  const currentPackage = currentHistory ? allPackages.find(p => p.id === currentHistory.id) : null;
 
   // Xử lý mở popup xác nhận
   const handleAction = (action, pkg) => {
@@ -99,7 +151,6 @@ const MyPackagesPage = () => {
     setLoading(true);
     setError('');
     try {
-      // Giả lập payload, thực tế cần userId, packageId...
       const payload = {
         userId: user?.id,
         packageId: selectedPackage.id,
@@ -145,73 +196,86 @@ const MyPackagesPage = () => {
     <div className={styles.pageWrapper}>
       <Navbar />
       <main className={styles.mainContent}>
-        <div className={styles.container}>
-          <h1 className={styles.title}>Gói tập của tôi</h1>
+        <div className={styles.container}>          <h1 className={styles.title}>Gói tập của tôi</h1>
+          {error && <div className={styles.errorMessage}>{error}</div>}
+          
           <section className={styles.currentPackageSection}>
             <h2>Gói hiện tại</h2>
-            <div className={styles.packageInfoBox}>
-              <div>
-                <h3>{hasCurrent ? currentPackage.name : 'Chưa có gói tập'}</h3>
-                {hasCurrent && <>
-                  <p><strong>Loại:</strong> {currentPackage.type}</p>
-                  <p><strong>Thời hạn:</strong> {currentHistory.start} - {currentHistory.end}</p>
-                  <p><strong>Mô tả:</strong> {currentPackage.description}</p>
-                </>}
-                {!hasCurrent && <p>Bạn chưa đăng ký gói tập nào.</p>}
-              </div>
-              <div className={styles.packageStats}>
-                {hasCurrent && <>
-                  <div className={styles.remainingBox}>
-                    <span className={styles.remainingLabel}>Số buổi còn lại</span>
-                    <span className={styles.remainingValue}>{currentHistory.remaining}</span>
+            {isLoadingPackages || isLoadingHistory ? (
+              <div className={styles.loadingState}>Đang tải thông tin gói tập...</div>
+            ) : (
+              <>
+                <div className={styles.packageInfoBox}>
+                  <div>
+                    <h3>{hasCurrent ? currentPackage?.name : 'Chưa có gói tập'}</h3>
+                    {hasCurrent && currentPackage && <>
+                      <p><strong>Loại:</strong> {currentPackage.type}</p>
+                      <p><strong>Thời hạn:</strong> {currentHistory.start} - {currentHistory.end}</p>
+                      <p><strong>Mô tả:</strong> {currentPackage.description}</p>
+                    </>}
+                    {!hasCurrent && <p>Bạn chưa đăng ký gói tập nào.</p>}
                   </div>
-                  <div className={styles.statusBox}>
-                    <span className={styles.statusLabel}>Trạng thái</span>
-                    <span className={styles.statusValue}>{currentHistory.status}</span>
+                  <div className={styles.packageStats}>                    {hasCurrent && <>
+                      <div className={styles.remainingBox}>
+                        <span className={styles.remainingLabel}>Số ngày còn lại</span>
+                        <span className={styles.remainingValue}>{currentHistory.remaining}</span>
+                      </div>
+                      <div className={styles.statusBox}>
+                        <span className={styles.statusLabel}>Trạng thái</span>
+                        <span className={styles.statusValue}>{currentHistory.status}</span>
+                      </div>
+                    </>}
                   </div>
-                </>}
-              </div>
-            </div>
-            <div className={styles.actionButtons}>
-              {isExpired && (
-                <Button onClick={() => handleAction('renew', currentPackage)} className={styles.renewButton}>
-                  Gia hạn gói tập
-                </Button>
-              )}
-              {isActive && (
-                <Button onClick={() => handleAction('buyMore', currentPackage)} className={styles.buyMoreButton}>
-                  Mua thêm gói tập
-                </Button>
-              )}
-              {!hasCurrent && (
-                <Button onClick={() => handleAction('register', allPackages[0])} className={styles.registerButton}>
-                  Đăng ký gói tập
-                </Button>
-              )}
-            </div>
+                </div>
+                <div className={styles.actionButtons}>
+                  {isExpired && (
+                    <Button onClick={() => handleAction('renew', currentPackage)} className={styles.renewButton}>
+                      Gia hạn gói tập
+                    </Button>
+                  )}
+                  {isActive && (
+                    <Button onClick={() => handleAction('buyMore', currentPackage)} className={styles.buyMoreButton}>
+                      Mua thêm gói tập
+                    </Button>
+                  )}
+                  {!hasCurrent && allPackages.length > 0 && (
+                    <Button onClick={() => handleAction('register', allPackages[0])} className={styles.registerButton}>
+                      Đăng ký gói tập
+                    </Button>
+                  )}
+                </div>
+              </>
+            )}
           </section>
 
           <section className={styles.historySection}>
-            <h2>Lịch sử sử dụng gói tập</h2>
-            <div className={styles.historyTableWrapper}>
-              <table className={styles.historyTable}>
-                <thead>
-                  <tr>
-                    <th>Tên gói</th>
+            <h2>Lịch sử sử dụng gói tập</h2>            
+            {isLoadingHistory ? (
+              <div className={styles.loadingState}>Đang tải lịch sử gói tập...</div>
+            ) : sortedHistory.length === 0 ? (
+              <div className={styles.noHistoryMessage}>
+                <p>Chưa có lịch sử sử dụng gói tập nào.</p>
+                <small>Nếu bạn đã thanh toán gói tập, vui lòng thử đăng xuất và đăng nhập lại.</small>
+                <p className={styles.debugInfo}>Debug: {JSON.stringify({auth: !!localStorage.getItem('token') || !!localStorage.getItem('authToken')})}</p>
+              </div>
+            ) : (
+              <div className={styles.historyTableWrapper}>
+                <table className={styles.historyTable}>
+                  <thead>
+                    <tr>
+                      <th>Tên gói</th>
                     <th>Thời gian</th>
                     <th>Trạng thái</th>
-                    <th>Số buổi còn lại</th>
                     <th></th>
-                  </tr>
-                </thead>
+                  </tr>                
+                  </thead>
                 <tbody>
                   {sortedHistory.map(pkg => (
-                    <>
-                      <tr key={pkg.id}>
+                    <React.Fragment key={pkg.id}>
+                      <tr>
                         <td>{pkg.name}</td>
                         <td>{pkg.start} - {pkg.end}</td>
                         <td>{pkg.status}</td>
-                        <td>{pkg.remaining}</td>
                         <td>
                           <Button size="small" onClick={() => toggleHistory(pkg.id)}>
                             {expandedHistory[pkg.id] ? 'Ẩn các buổi tập' : 'Xem các buổi tập'}
@@ -223,23 +287,28 @@ const MyPackagesPage = () => {
                           <td colSpan={5} className={styles.usageDatesCell}>
                             <div className={styles.usageDatesList}>
                               <strong>Các buổi tập đã sử dụng:</strong>
-                              <div className={styles.sessionsGrid}>
-                                {pkg.sessions.map((s, idx) => (
-                                  <div key={s.date} className={styles.sessionItem}>
-                                    <span className={styles.sessionDate}>{s.date}</span>
-                                    <span className={styles.sessionWorkout}>{s.workout}</span>
-                                  </div>
-                                ))}
-                              </div>
+                              {pkg.sessions && pkg.sessions.length > 0 ? (
+                                <div className={styles.sessionsGrid}>
+                                  {pkg.sessions.map((s, idx) => (
+                                    <div key={idx} className={styles.sessionItem}>
+                                      <span className={styles.sessionDate}>{s.date || s.sessionDate}</span>
+                                      <span className={styles.sessionWorkout}>{s.workout || s.workoutName || 'Buổi tập'}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className={styles.noSessions}>Không có dữ liệu buổi tập</p>
+                              )}
                             </div>
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
             </div>
+            )}
           </section>
         </div>
       </main>
@@ -250,12 +319,11 @@ const MyPackagesPage = () => {
           <div className={styles.paymentModal}>
             <h2 className={styles.paymentModalTitle}>
               {modalAction === 'renew' ? 'Gia hạn gói tập' : modalAction === 'buyMore' ? 'Mua thêm gói tập' : 'Đăng ký gói tập'}
-            </h2>
-            <div className={styles.paymentModalInfo}>
-              <p><strong>Tên gói:</strong> {selectedPackage?.name}</p>
-              <p><strong>Loại:</strong> {selectedPackage?.type}</p>
-              <p><strong>Mô tả:</strong> {selectedPackage?.description}</p>
-              <p><strong>Giá:</strong> <span className={styles.paymentModalPrice}>{selectedPackage?.price}{selectedPackage?.period}</span></p>
+            </h2>          <div className={styles.paymentModalInfo}>
+              <p><strong>Tên gói:</strong> {selectedPackage ? selectedPackage.name : ''}</p>
+              <p><strong>Loại:</strong> {selectedPackage ? selectedPackage.type : ''}</p>
+              <p><strong>Mô tả:</strong> {selectedPackage ? selectedPackage.description : ''}</p>
+              <p><strong>Giá:</strong> <span className={styles.paymentModalPrice}>{selectedPackage ? selectedPackage.price : ''}{selectedPackage ? selectedPackage.period : ''}</span></p>
             </div>
             {error && <div className={styles.paymentModalError}>{error}</div>}
             <div className={styles.paymentModalActions}>

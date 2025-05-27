@@ -10,7 +10,9 @@ exports.createEmployee = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }    const { name, email, password, phone, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
+    }
+
+    const { name, email, password, phone, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
 
     // Check if user already exists
     let user = await User.findOne({ email });
@@ -68,7 +70,9 @@ exports.createEmployeeFromExistingUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }    const { userId, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
+    }
+
+    const { userId, position, salary, shiftSchedule, performanceRating, isActive } = req.body;
 
     // Check if user exists
     const user = await User.findById(userId);
@@ -120,7 +124,9 @@ exports.updateEmployee = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
-    }    const { position, salary, shiftSchedule, performanceRating, name, email, phone, isActive } = req.body;
+    }
+
+    const { position, salary, shiftSchedule, performanceRating, name, email, phone, isActive } = req.body;
     const userId = req.params.id;
 
     // Find user with employee role

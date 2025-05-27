@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
+import { useEffect } from 'react';
+import { checkAuthStatus } from './utils/authUtils';
 
 // Member pages
 import LoginPage from './pages/member/LoginPage/LoginPage';
@@ -37,7 +39,7 @@ import AdminAccount from './pages/admin/Account';
 import ViewMember from './pages/admin/ViewMember';
 import EditMember from './pages/admin/EditMember';
 import ViewEmployee from './pages/admin/ViewEmployee';
-import EditEmployee from './pages/admin/EditEmployee';
+// import EditEmployee from './pages/admin/EditEmployee';
 import ViewPackage from './pages/admin/ViewPackage';
 import EditPackage from './pages/admin/EditPackage';
 import ViewOrder from './pages/admin/ViewOrder';
@@ -54,7 +56,7 @@ import EditWorkout from './pages/admin/EditWorkout';
 import EquipmentList from './pages/admin/EquipmentList';
 import WorkoutList from './pages/admin/WorkoutList';
 import AddMember from './pages/admin/AddMember';
-import AddEmployee from './pages/admin/AddEmployee';
+// import AddEmployee from './pages/admin/AddEmployee';
 import AddPackage from './pages/admin/AddPackage';
 import Promotions from './pages/admin/Promotions';
 import AddPromotion from './pages/admin/AddPromotion';
@@ -64,6 +66,12 @@ import Trainers from './pages/admin/Trainers';
 import AddTrainer from './pages/admin/AddTrainer';
 import ViewTrainer from './pages/admin/ViewTrainer';
 import EditTrainer from './pages/admin/EditTrainer';
+
+// GymRoom components
+import GymRoomList from './pages/admin/GymRoomList';
+import AddGymRoom from './pages/admin/AddGymRoom';
+import EditGymRoom from './pages/admin/EditGymRoom';
+import ViewGymRoom from './pages/admin/ViewGymRoom';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
@@ -104,6 +112,11 @@ import TrainerWorkoutLogPage from './pages/trainer/WorkoutLogPage/WorkoutLogPage
 import ProgressPage from './pages/trainer/ProgressPage/ProgressPage';
 
 function App() {
+  // Kiểm tra trạng thái xác thực khi ứng dụng khởi động
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -171,9 +184,9 @@ function App() {
             <Route path="members/view/:id" element={<ViewMember />} />
             <Route path="members/edit/:id" element={<EditMember />} />
             <Route path="employees" element={<AdminEmployees />} />
-            <Route path="employees/add" element={<AddEmployee />} />
+            {/* <Route path="employees/add" element={<AddEmployee />} /> */}
             <Route path="employees/view/:id" element={<ViewEmployee />} />
-            <Route path="employees/edit/:id" element={<EditEmployee />} />
+            {/* <Route path="employees/edit/:id" element={<EditEmployee />} /> */}
             <Route path="packages" element={<AdminPackages />} />
             <Route path="packages/add" element={<AddPackage />} />
             <Route path="packages/view/:id" element={<ViewPackage />} />
@@ -185,6 +198,10 @@ function App() {
             <Route path="equipment/view/:id" element={<ViewEquipment />} />
             <Route path="equipment/edit/:id" element={<EditEquipment />} />
             <Route path="equipment/add" element={<EditEquipment />} />
+            <Route path="gymrooms" element={<GymRoomList />} />
+            <Route path="gymrooms/add" element={<AddGymRoom />} />
+            <Route path="gymrooms/view/:id" element={<ViewGymRoom />} />
+            <Route path="gymrooms/edit/:id" element={<EditGymRoom />} />
             <Route path="workouts" element={<WorkoutList />} />
             <Route path="workouts/view/:id" element={<ViewWorkout />} />
             <Route path="workouts/edit/:id" element={<EditWorkout />} />

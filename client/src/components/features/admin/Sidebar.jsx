@@ -10,6 +10,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import HistoryIcon from '@mui/icons-material/History';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import logo from "../../../assets/logo.svg";
 import styles from './Sidebar.module.css';
 
@@ -21,6 +22,7 @@ const menu = [
   { name: "Gói tập", path: "/admin/packages", icon: <FitnessCenterIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/admin/orders", icon: <ReceiptLongIcon /> },
   { name: "Ưu đãi", path: "/admin/promotions", icon: <LocalOfferIcon /> },
+  { name: "Phòng tập", path: "/admin/gymrooms", icon: <MeetingRoomIcon /> },
   { name: "Thiết bị", path: "/admin/equipment", icon: <BuildIcon /> },
   { name: "Lịch sử tập luyện", path: "/admin/workouts", icon: <HistoryIcon /> },
   { name: "Phản hồi", path: "/admin/feedback", icon: <FeedbackIcon /> },
@@ -31,6 +33,7 @@ export default function Sidebar() {
   // Danh sách các path cần đổi màu icon khi active
   const whiteIconPaths = [
     '/admin/equipment',
+    '/admin/gymrooms',
     '/admin/workouts',
     '/admin/feedback',
   ];

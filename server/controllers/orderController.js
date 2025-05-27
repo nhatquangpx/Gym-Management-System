@@ -274,3 +274,41 @@ exports.uploadReceipt = async (req, res) => {
         });
     }
 };
+
+// @desc    Get order by transaction reference
+// @route   GET /api/orders/by-txnref/:txnRef
+// @access  Public (needed for payment return page)
+exports.getOrderByTxnRef = async (req, res) => {
+    try {
+        const { txnRef } = req.params;
+        
+        if (!txnRef) {
+            return res.status(400).json({
+                success: false,
+                message: "Thiếu mã giao dịch"
+            });
+        }
+        
+        const order = await Order.findOne({ vnp_TxnRef: txnRef })
+            .populate('userId', 'name email role memberInfo')
+            .populate('packageId', 'name price description duration');
+        
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Không tìm thấy đơn hàng với mã giao dịch này"
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            data: order
+        });
+    } catch (error) {
+        console.error('Error fetching order by txnRef:', error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server"
+        });
+    }
+};
