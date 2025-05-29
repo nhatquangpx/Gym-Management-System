@@ -33,7 +33,7 @@ router.get('/get-schedule-by-id/:memberId', [verifyToken, verifyRole(['trainer']
 // @route   POST /api/trainers/add-schedule
 // @desc    Thêm lịch tập mới
 // @access  Private (Trainer)
-router.post("/add-schedule", [verifyToken, verifyRole(["trainer"])], scheduleController.addSchedule);
+router.post("/add-schedule", [verifyToken, verifyRole(["trainer"])], scheduleController.trainerAddSchedule);
 
 // @route   PUT /api/trainers/update-schedule/:scheduleId
 // @desc    Cập nhật lịch tập

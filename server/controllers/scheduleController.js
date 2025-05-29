@@ -5,15 +5,14 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 
 // @desc    Lấy lịch tập theo học viên
-// @route   GET /api/trainers/get-schedule-by-id/:memberId
-// @access  Private (Admin, Trainer)
+// @route   GET /get-schedule-by-id/:memberId
+// @access  Private (Trainer, Admin, Member)
 exports.getSchedulesByMember = async (req, res) => {
   try {
     const { memberId } = req.params;
     const schedules = await Schedule.find({ memberId })
       .select('-createdAt -updatedAt')
-      .populate('memberId', 'name')
-      .populate('trainerId', 'name');
+      .populate('memberId', 'name');
     res.status(200).json({
       success: true,
       count: schedules.length,
@@ -30,9 +29,9 @@ exports.getSchedulesByMember = async (req, res) => {
 };
 
 // @desc    Add training schedule
-// @route   POST /api/trainers/schedule
+// @route   POST /add-schedule
 // @access  Private (Trainer)
-exports.addSchedule = async (req, res) => {
+exports.trainerAddSchedule = async (req, res) => {
   try {
     const trainerId = req.user.id;
     const { memberId, workoutType, date, timeStart, timeEnd, exercises, comment, status } = req.body;
@@ -122,9 +121,66 @@ exports.addSchedule = async (req, res) => {
   }
 };
 
+// @desc    Member tự tạo lịch tập cho bản thân
+// @route   POST /add-schedule
+// @access  Private (Member)
+exports.memberAddSchedule = async (req, res) => {
+  try {
+    const memberId = req.user.id;
+    const { workoutType, date, timeStart, timeEnd, exercises, comment, status } = req.body;
+
+    if (!date || !timeStart || !timeEnd || !exercises) {
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng cung cấp đầy đủ thông tin: loại tập, ngày, giờ bắt đầu, giờ kết thúc và bài tập"
+      });
+    }
+
+    // Kiểm tra trùng lịch cho member
+    const existingMemberSchedule = await Schedule.findOne({
+      memberId,
+      date
+    });
+    if (existingMemberSchedule) {
+      return res.status(400).json({
+        success: false,
+        message: "Bạn đã có lịch tập cho ngày này"
+      });
+    }
+
+    // Tạo lịch tập mới
+    const newSchedule = new Schedule({
+      memberId,
+      workoutType,
+      date,
+      timeStart,
+      timeEnd,
+      exercises,
+      comment,
+      status: status || 'Chưa tập'
+    });
+
+    await newSchedule.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Tạo lịch tập thành công",
+      data: newSchedule
+    });
+
+  } catch (error) {
+    console.error('Error adding schedule for member:', error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server",
+      error: error.message
+    });
+  }
+};
+
 // @desc    Cập nhật lịch tập
-// @route   PUT /api/trainers/update-schedule/:id
-// @access  Private (Trainer, Admin)
+// @route   PUT /update-schedule/:id
+// @access  Private (Trainer, Admin, Member)
 exports.updateSchedule = async (req, res) => {
   try {
     const { id } = req.params;
@@ -159,8 +215,8 @@ exports.updateSchedule = async (req, res) => {
 };
 
 // @desc    Xóa lịch tập
-// @route   DELETE /api/trainers/delete-schedule/:id
-// @access  Private (Trainer, Admin)
+// @route   DELETE /delete-schedule/:id
+// @access  Private (Trainer, Admin, Member)
 exports.deleteSchedule = async (req, res) => {
   try {
     const { id } = req.params;
