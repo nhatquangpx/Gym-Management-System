@@ -39,9 +39,21 @@
 }
 .formGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 35px;
+  grid-template-columns: 1fr;
+  gap: 18px;
   margin-bottom: 25px;
+}
+.formRow {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  align-items: flex-start;
+}
+.starRow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
 }
 .formGroup {
   display: flex;
@@ -85,6 +97,7 @@
   font-size: 0.98rem;
   resize: vertical;
   transition: border-color 0.2s;
+  overflow-y: auto;
 }
 .textareaInput:focus, .selectInput:focus {
   border-color: var(--primary-red);
@@ -97,6 +110,7 @@
   gap: 6px;
   font-size: 2rem;
   user-select: none;
+  margin-bottom: 10px;
 }
 .filledStar {
   color: var(--primary-red);
@@ -207,6 +221,11 @@
   color: #eee;
   font-size: 0.98rem;
   margin-top: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-height: none;
+  overflow-y: visible;
 }
 
 .historyHeaderRow {
