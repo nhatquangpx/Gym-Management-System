@@ -1,39 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../../../components/layout/Navbar/Navbar';
 import Footer from '../../../components/layout/Footer/Footer';
 import Button from '../../../components/common/Button/Button';
 import InputField from '../../../components/common/InputField/InputField';
 import styles from './ComplaintsPage.module.css';
-
-// Dữ liệu mẫu (replace with API/BE data)
-const usedPackages = [
-  { id: 1, name: 'Gói Linh Hoạt' },
-  { id: 2, name: 'Gói Chuyên Sâu PT' },
-];
-const usedTrainers = [
-  { id: 1, name: 'Nguyễn Văn A' },
-  { id: 2, name: 'Trần Thị B' },
-];
-
-// Dummy history (replace with BE data)
-const sampleHistory = [
-  {
-    id: 1,
-    type: 'Gói tập',
-    target: 'Gói Linh Hoạt',
-    stars: 5,
-    content: 'Gói tập rất tốt, phòng tập sạch sẽ.',
-    date: '2025/05/10',
-  },
-  {
-    id: 2,
-    type: 'Huấn luyện viên',
-    target: 'Nguyễn Văn A',
-    stars: 4,
-    content: 'HLV nhiệt tình, hướng dẫn kỹ.',
-    date: '2025/05/10',
-  },
-];
 
 // Star rating component
 function StarRating({ value, onChange }) {
@@ -61,16 +31,18 @@ const ComplaintsPage = () => {
   const [stars, setStars] = useState(0);
   const [content, setContent] = useState('');
   const [errors, setErrors] = useState({});
-  const [history, setHistory] = useState(sampleHistory);
+  const [history, setHistory] = useState([]);
   const [successMsg, setSuccessMsg] = useState('');
   const [filter, setFilter] = useState('Tất cả');
+  const [usedPackages, setUsedPackages] = useState([]);
+  const [usedTrainers, setUsedTrainers] = useState([]);
 
   const handleTypeChange = (e) => {
     setType(e.target.value);
     setTargetId('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let valid = true;
     const newErrors = {};
@@ -84,24 +56,32 @@ const ComplaintsPage = () => {
     }
     setErrors(newErrors);
     if (!valid) return;
-    // TODO: Call BE API to submit feedback
-    const newEntry = {
-      id: history.length + 1,
-      type,
-      target:
-        type === 'Gói tập'
-          ? usedPackages.find((p) => p.id === Number(targetId))?.name
-          : usedTrainers.find((t) => t.id === Number(targetId))?.name,
-      stars,
-      content,
-      date: new Date().toISOString().split('T')[0].replace(/-/g, '/'),
-    };
-    setHistory([newEntry, ...history]);
-    setSuccessMsg('Gửi đánh giá thành công!');
-    setStars(0);
-    setContent('');
-    setTargetId('');
-    setTimeout(() => setSuccessMsg(''), 2000);
+    // Gọi API gửi feedback
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:8001/api/feedbacks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        type,
+        star: stars,
+        text: content,
+        targetId
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      setSuccessMsg('Gửi đánh giá thành công!');
+      setStars(0);
+      setContent('');
+      setTargetId('');
+      fetchFeedbackHistory(filter); // reload history
+      setTimeout(() => setSuccessMsg(''), 2000);
+    } else {
+      setErrors({ submit: data.message || 'Có lỗi xảy ra, vui lòng thử lại.' });
+    }
   };
 
   // Lọc lịch sử theo filter
@@ -111,6 +91,67 @@ const ComplaintsPage = () => {
       : history.filter((item) =>
           filter === 'Gói tập' ? item.type === 'Gói tập' : item.type === 'Huấn luyện viên'
         );
+
+  const fetchUsedPackages = async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:8001/api/feedbacks/used-packages', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    const data = await res.json();
+    console.log('usedPackages from server:', data);
+    if (data.success) {
+      setUsedPackages(data.data);
+    }
+  };
+
+  const fetchUsedTrainers = async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch('http://localhost:8001/api/feedbacks/used-trainers', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    const data = await res.json();
+    if (data.success) {
+      setUsedTrainers(data.data);
+    }
+  };
+
+  const fetchFeedbackHistory = async (filterType = 'Tất cả') => {
+    const token = localStorage.getItem('token');
+    let url = 'http://localhost:8001/api/feedbacks/history';
+    if (filterType && filterType !== 'Tất cả') {
+      url += `?type=${encodeURIComponent(filterType)}`;
+    }
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    const data = await res.json();
+    if (data.success) {
+      setHistory(data.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsedPackages();
+    fetchUsedTrainers();
+    fetchFeedbackHistory();
+  }, []);
+
+  // Lấy tên đối tượng từ id
+  const getTargetName = (item) => {
+    if (item.type === 'Gói tập') {
+      const pkg = usedPackages.find(p => p._id === (item.targetId || item.packageId));
+      return pkg ? pkg.name : 'Gói tập';
+    } else {
+      const trainer = usedTrainers.find(t => t._id === (item.targetId || item.trainerId));
+      return trainer ? trainer.name : 'Huấn luyện viên';
+    }
+  };
 
   return (
     <div className={styles.pageWrapper}>
@@ -142,7 +183,7 @@ const ComplaintsPage = () => {
                   >
                     <option value="">-- Chọn --</option>
                     {(type === 'Gói tập' ? usedPackages : usedTrainers).map((item) => (
-                      <option key={item.id} value={item.id}>{item.name}</option>
+                      <option key={item._id} value={item._id}>{item.name}</option>
                     ))}
                   </select>
                   {errors.targetId && <span className={styles.errorMsg}>{errors.targetId}</span>}
@@ -171,6 +212,7 @@ const ComplaintsPage = () => {
               </div>
             </div>
             {successMsg && <div className={styles.successMsg}>{successMsg}</div>}
+            {errors.submit && <div className={styles.errorMsg}>{errors.submit}</div>}
             <div className={styles.buttonGroup}>
               <Button type="button" className={styles.backButton} onClick={() => window.history.back()}>
                 Quay lại
@@ -187,7 +229,10 @@ const ComplaintsPage = () => {
               <select
                 className={styles.filterSelect}
                 value={filter}
-                onChange={e => setFilter(e.target.value)}
+                onChange={e => {
+                  setFilter(e.target.value);
+                  fetchFeedbackHistory(e.target.value);
+                }}
               >
                 <option value="Tất cả">Tất cả</option>
                 <option value="Gói tập">Gói tập</option>
@@ -197,7 +242,7 @@ const ComplaintsPage = () => {
             <div className={styles.historyList}>
               {filteredHistory.length === 0 && <p>Bạn chưa gửi đánh giá nào.</p>}
               {filteredHistory.map((item) => (
-                <div key={item.id} className={styles.historyItem}>
+                <div key={item._id} className={styles.historyItem}>
                   <div className={styles.historyHeader}>
                     <span className={
                       item.type === 'Gói tập'
@@ -206,11 +251,11 @@ const ComplaintsPage = () => {
                     }>
                       {item.type}
                     </span>
-                    <span className={styles.historyTarget}>{item.target}</span>
-                    <span className={styles.historyStars}>{'★'.repeat(item.stars)}{'☆'.repeat(5 - item.stars)}</span>
-                    <span className={styles.historyDate}>{item.date}</span>
+                    <span className={styles.historyTarget}>{getTargetName(item)}</span>
+                    <span className={styles.historyStars}>{'★'.repeat(item.star)}{'☆'.repeat(5 - item.star)}</span>
+                    <span className={styles.historyDate}>{new Date(item.createdAt).toLocaleDateString('vi-VN')}</span>
                   </div>
-                  {item.content && <div className={styles.historyContent}>{item.content}</div>}
+                  {item.text && <div className={styles.historyContent}>{item.text}</div>}
                 </div>
               ))}
             </div>
