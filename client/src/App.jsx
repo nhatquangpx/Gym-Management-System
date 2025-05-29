@@ -151,7 +151,7 @@ function App() {
         <Route path="/packages" element={<PackageManagement />} />
 
         {/* Staff routes */}
-        <Route element={<PrivateRoute allowedRoles={["staff"]} />}>
+        <Route element={<PrivateRoute allowedRoles={["employee"]} />}>
           <Route path="/staff" element={<StaffLayout />}>
             <Route path="dashboard" element={<StaffDashboard />} />
             <Route path="members" element={<StaffMembers />} />
