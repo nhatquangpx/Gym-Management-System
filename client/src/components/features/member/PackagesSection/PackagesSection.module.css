@@ -111,19 +111,29 @@
 }
 
 .detailsLink {
+  background: #2a2a2a;
   color: var(--primary-red);
-  text-decoration: none;
-  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.08rem;
+  padding: 13px 28px;
+  margin-top: 10px;
   display: inline-flex;
   align-items: center;
-  transition: color 0.3s ease;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255,23,68,0.08);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 .detailsLink:hover {
-  color: #ff4081;
+  background: var(--primary-red);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255,23,68,0.18);
 }
 .detailsLink i {
-    margin-left: 5px;
-    font-size: 18px;
+  margin-left: 8px;
+  font-size: 20px;
 }
 
 .promoSection {
@@ -150,4 +160,103 @@
 }
 .promoButton:hover {
     background-color: #e0002d;
+}
+
+.packageModalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.packageModalContent {
+  background: #232323;
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  min-width: 340px;
+  max-width: 95vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  border: 1.5px solid var(--primary-red);
+  text-align: center;
+  position: relative;
+}
+.packageModalTitle {
+  color: var(--primary-red);
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  letter-spacing: 0.5px;
+}
+.packageModalMessage {
+  color: #e0e0e0;
+  font-size: 1.05rem;
+  margin-bottom: 28px;
+  text-align: left;
+}
+.packageModalInfoRow {
+  margin-bottom: 8px;
+}
+.packageModalInfoLabel {
+  color: #b0b0b0;
+  font-weight: 500;
+}
+.packageModalInfoValue {
+  color: #fff;
+  font-weight: 600;
+}
+.packageModalPrice {
+  color: #4caf50;
+  font-weight: 700;
+}
+.packageModalButtons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.packageModalConfirmBtn {
+  background: var(--primary-red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.packageModalConfirmBtn:hover {
+  background: #e0002d;
+}
+.packageModalCancelBtn {
+  background: #333;
+  color: #b0b0b0;
+  border: 1px solid #555;
+  border-radius: 8px;
+  font-size: 1.08rem;
+  font-weight: 500;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.packageModalCancelBtn:hover {
+  background: #444;
+  color: #fff;
+}
+.packageModalIcon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255,23,68,0.13);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+}
+.packageModalIcon i {
+  font-size: 32px;
+  color: var(--primary-red);
 }
