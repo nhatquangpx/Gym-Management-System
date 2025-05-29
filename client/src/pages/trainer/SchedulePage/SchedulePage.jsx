@@ -265,7 +265,7 @@ const SchedulePage = () => {
     const fetchStudents = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch('http://localhost:8001/api/trainers/trainees', {
+        const res = await fetch('http://localhost:8001/api/trainers/students', {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token,

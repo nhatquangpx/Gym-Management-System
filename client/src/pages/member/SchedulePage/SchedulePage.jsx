@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../../../components/layout/Navbar/Navbar';
 import Footer from '../../../components/layout/Footer/Footer';
 import { FaChevronLeft, FaChevronRight, FaPlus, FaEdit, FaTrash, FaTimes, FaRegCalendarAlt } from 'react-icons/fa';
@@ -52,7 +52,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
   const [confirmAction, setConfirmAction] = React.useState(null);
   const dateInputRef = React.useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setForm(session ? { ...session, date: session.date || selectedDate } : { startTime: '', endTime: '', detail: '', date: selectedDate });
     setError('');
   }, [session, open, selectedDate]);
@@ -256,7 +256,54 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
 };
 
 const SchedulePage = () => {
-  const [sessions, setSessions] = useState(initialSessions);
+  const [sessions, setSessions] = useState([]);
+
+  // Hàm nhóm lịch tập theo ngày
+  const groupSchedulesByDate = (schedules) => {
+    const map = {};
+    schedules.forEach(s => {
+      const date = new Date(s.date).toISOString().slice(0, 10);
+      if (!map[date]) map[date] = [];
+      map[date].push({
+        id: s._id,
+        startTime: s.timeStart,
+        endTime: s.timeEnd,
+        detail: s.exercises
+      });
+    });
+    return Object.entries(map).map(([date, sessions]) => ({
+      date,
+      sessions
+    }));
+  };
+
+  useEffect(() => {
+    const fetchMemberSchedules = async (memberId) => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`http://localhost:8001/api/members/get-schedules/${memberId}`, {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          const grouped = groupSchedulesByDate(data.data);
+          setSessions(grouped);
+        } else {
+          setSessions([]);
+        }
+      } catch (err) {
+        setSessions([]);
+      }
+    };
+    const memberId = JSON.parse(localStorage.getItem('user'))?._id || JSON.parse(localStorage.getItem('user'))?.id;
+    console.log('Member ID:', memberId);
+    if (memberId) {
+      fetchMemberSchedules(memberId);
+    } 
+  }, []);
+
   const [baseDate, setBaseDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
@@ -292,51 +339,118 @@ const SchedulePage = () => {
   };
 
   // Thêm/sửa/xóa buổi tập
-  const handleAddSession = (session) => {
-    setSessions(prev => {
-      const idx = prev.findIndex(s => s.date === session.date);
-      const newSession = { ...session, id: Date.now() };
-      if (idx === -1) {
-        return [...prev, { date: session.date, sessions: [newSession] }];
-      } else {
-        const updatedSessions = [...prev[idx].sessions, newSession].sort((a, b) => a.startTime.localeCompare(b.startTime));
-        return prev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
-      }
-    });
-    setModal({ open: false, mode: 'add', session: null });
-  };
-  const handleEditSession = (session) => {
-    setSessions(prev => {
-      let newPrev = prev.map(day => {
-        if (day.sessions.some(s => s.id === session.id)) {
-          return { ...day, sessions: day.sessions.filter(s => s.id !== session.id) };
-        }
-        return day;
+  const handleAddSession = async (session) => {
+    try {
+      const token = localStorage.getItem('token');
+      // Gửi API thêm buổi tập
+      const res = await fetch('http://localhost:8001/api/members/add-schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          date: session.date,
+          timeStart: session.startTime,
+          timeEnd: session.endTime,
+          exercises: session.detail,
+          comment: session.comment || '',
+          status: session.status || 'Chưa tập'
+        })
       });
-      const idx = newPrev.findIndex(s => s.date === session.date);
-      if (idx === -1) {
-        newPrev.push({ date: session.date, sessions: [{ ...session }] });
+      const data = await res.json();
+      if (data.success) {
+        setSessions(prev => {
+          const idx = prev.findIndex(s => s.date === session.date);
+          const newSession = {
+            ...session,
+            id: data.data._id,
+          };
+          if (idx === -1) {
+            return [...prev, { date: session.date, sessions: [newSession] }];
+          } else {
+            const updatedSessions = [...prev[idx].sessions, newSession].sort((a, b) => a.startTime.localeCompare(b.startTime));
+            return prev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
+          }
+        });
+        setModal({ open: false, mode: 'add', session: null });
       } else {
-        const updatedSessions = [...newPrev[idx].sessions, { ...session }].sort((a, b) => a.startTime.localeCompare(b.startTime));
-        newPrev = newPrev.map((s, i) => i === idx ? { ...s, sessions: updatedSessions } : s);
+        alert(data.message || 'Thêm buổi tập thất bại!');
       }
-      newPrev = newPrev.filter(day => day.sessions.length > 0);
-      return newPrev;
-    });
-    setModal({ open: false, mode: 'edit', session: null });
+    } catch (err) {
+      alert('Lỗi khi thêm buổi tập!');
+    }
   };
-  const handleDeleteSession = (session) => {
-    setSessions(prev => {
-      let newPrev = prev.map(day =>
-        day.date === selectedDate
-          ? { ...day, sessions: day.sessions.filter(s => s.id !== session.id) }
-          : day
-      );
-      newPrev = newPrev.map(day => ({ ...day, sessions: [...day.sessions].sort((a, b) => a.startTime.localeCompare(b.startTime)) }));
-      newPrev = newPrev.filter(day => day.sessions.length > 0);
-      return newPrev;
-    });
-    setModal({ open: false, mode: 'edit', session: null });
+  const handleEditSession = async (session) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:8001/api/members/update-schedule/${session.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          workoutType: session.workoutType,
+          date: session.date,
+          timeStart: session.startTime,
+          timeEnd: session.endTime,
+          exercises: session.detail,
+          comment: session.comment || '',
+          status: session.status || 'Chưa tập'
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Cập nhật lại state nếu cần
+        setSessions(prev => {
+          const dayIdx = prev.findIndex(d => d.date === session.date);
+          if (dayIdx === -1) return prev;
+          const updatedSessions = prev[dayIdx].sessions.map(s =>
+            s.id === session.id ? { ...session } : s
+          ).sort((a, b) => a.startTime.localeCompare(b.startTime));
+          return prev.map((d, i) =>
+            i === dayIdx ? { ...d, sessions: updatedSessions } : d
+          );
+        });
+        setModal({ open: false, mode: 'edit', session: null });
+      } else {
+        alert(data.message || 'Cập nhật buổi tập thất bại!');
+      }
+    } catch (err) {
+      alert('Lỗi khi cập nhật buổi tập!');
+    }
+  };
+  const handleDeleteSession = async (session) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:8001/api/members/delete-schedule/${session.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSessions(prev => {
+          let newPrev = prev.map(day =>
+            day.date === session.date
+              ? { ...day, sessions: day.sessions.filter(s => s.id !== session.id) }
+              : day
+          );
+          // Sort lại các session trong ngày (nếu còn)
+          newPrev = newPrev.map(day => ({ ...day, sessions: [...day.sessions].sort((a, b) => a.startTime.localeCompare(b.startTime)) }));
+          // Xóa ngày không còn session nào
+          newPrev = newPrev.filter(day => day.sessions.length > 0);
+          return newPrev;
+        });
+        setModal({ open: false, mode: 'edit', session: null });
+      } else {
+        alert(data.message || 'Xóa buổi tập thất bại!');
+      }
+    } catch (err) {
+      alert('Lỗi khi xóa buổi tập!');
+    }
   };
   const handleDetailSession = (session) => {
     if (modal.open && modal.session && modal.session.id === session.id && modal.mode === 'detail') return;

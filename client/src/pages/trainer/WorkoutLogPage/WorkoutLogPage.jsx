@@ -1,12 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './WorkoutLogPage.module.css';
 
 const today = new Date().toISOString().slice(0, 10);
-const mockTodayStudents = [
-  'John Doe',
-  'Jane Smith',
-  'Nguyễn Văn A',
-];
 
 const WorkoutLogPage = () => {
   const [form, setForm] = useState({
@@ -17,6 +12,37 @@ const WorkoutLogPage = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [students, setStudents] = useState([]);
+
+  // Fetch danh sách học viên hôm nay
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8001/api/trainers/today-schedule', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        const data = await res.json();
+        if (data.success) {
+          // Lấy danh sách schedule duy nhất theo id
+          const unique = [];
+          const seen = new Set();
+          data.data.forEach(item => {
+            if (!seen.has(item.id)) {
+              seen.add(item.id);
+              unique.push({ id: item.id, name: item.student });
+            }
+          });
+          setStudents(unique);
+        }
+      } catch (err) {
+        setStudents([]);
+      }
+    };
+    fetchStudents();
+  }, []); 
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,7 +56,7 @@ const WorkoutLogPage = () => {
     return '';
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const err = validate();
     if (err) {
@@ -38,10 +64,33 @@ const WorkoutLogPage = () => {
       setSuccess('');
       return;
     }
-    // Giả lập ghi nhận thành công
-    setSuccess('Đã ghi nhận buổi tập thành công!');
-    setError('');
-    setForm({ ...form, note: '' });
+    try {
+      const token = localStorage.getItem('token');
+      // Gửi API ghi nhận buổi tập với id schedule
+      const res = await fetch(`http://localhost:8001/api/trainers/log-workout/${form.student}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          status: form.status === 'present' ? 'Đã tập' : 'Vắng mặt',
+          comment: form.note
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSuccess('Đã ghi nhận buổi tập thành công!');
+        setError('');
+        setForm({ ...form, note: '' });
+      } else {
+        setError(data.message || 'Ghi nhận thất bại!');
+        setSuccess('');
+      }
+    } catch (err) {
+      setError('Lỗi khi ghi nhận buổi tập!');
+      setSuccess('');
+    }
   };
 
   return (
@@ -57,7 +106,9 @@ const WorkoutLogPage = () => {
             onChange={handleChange}
           >
             <option value="">Chọn học viên</option>
-            {mockTodayStudents.map(s => <option key={s} value={s}>{s}</option>)}
+            {students.map(s => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -102,4 +153,4 @@ const WorkoutLogPage = () => {
   );
 };
 
-export default WorkoutLogPage; 
+export default WorkoutLogPage;

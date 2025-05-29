@@ -3,7 +3,16 @@ const router = express.Router();
 const { verifyToken, verifyRole } = require("../middleware/authMiddleware");
 const memberController = require("../controllers/memberController");
 const { createMemberValidation, updateMemberValidation, createMemberFromUserValidation, packageValidation } = require("../validations/memberValidation");
+const verifyActiveMember = require("../middleware/memberActiveMiddleware");
+const scheduleController = require("../controllers/scheduleController");
 
+router.get('/get-schedules/:memberId', [verifyToken, verifyRole(["member"])], scheduleController.getSchedulesByMember);
+
+router.post('/add-schedule', [verifyToken, verifyRole(["member"]), verifyActiveMember], scheduleController.memberAddSchedule);
+
+router.put('/update-schedule/:id', [verifyToken, verifyRole(["member"]), verifyActiveMember], scheduleController.updateSchedule);
+
+router.delete('/delete-schedule/:id', [verifyToken, verifyRole(["member"]), verifyActiveMember], scheduleController.deleteSchedule);
 // @route   POST /api/members
 // @desc    Create a new member
 // @access  Private (Admin)
