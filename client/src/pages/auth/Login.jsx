@@ -70,7 +70,7 @@ const Login = () => {
         case 'admin':
           navigate('/admin/dashboard');
           break;
-        case 'staff':
+        case 'employee':
           navigate('/staff/dashboard');
           break;
         case 'trainer':
