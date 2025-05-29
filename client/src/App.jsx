@@ -39,7 +39,8 @@ import AdminAccount from './pages/admin/Account';
 import ViewMember from './pages/admin/ViewMember';
 import EditMember from './pages/admin/EditMember';
 import ViewEmployee from './pages/admin/ViewEmployee';
-import EditEmployee from './pages/admin/EditEmployee';
+// import EditEmployee from './pages/admin/EditEmployee';
+import AddEmployee from './pages/admin/AddEmployee';
 import ViewPackage from './pages/admin/ViewPackage';
 import EditPackage from './pages/admin/EditPackage';
 import ViewOrder from './pages/admin/ViewOrder';
@@ -176,8 +177,7 @@ function App() {
             <Route path="members" element={<AdminMembers />} />
             <Route path="members/add" element={<AddMember />} />
             <Route path="members/view/:id" element={<ViewMember />} />
-            <Route path="members/edit/:id" element={<EditMember />} />
-            <Route path="employees" element={<AdminEmployees />} />
+            <Route path="members/edit/:id" element={<EditMember />} />            <Route path="employees" element={<AdminEmployees />} />
             <Route path="employees/add" element={<AddEmployee />} />
             <Route path="employees/view/:id" element={<ViewEmployee />} />
             <Route path="employees/edit/:id" element={<EditEmployee />} />
