@@ -39,7 +39,7 @@ const homeTrainers = [
   // Thêm HLV
   {
     id: 5,
-    name: "Lê QUốc Đảng",
+    name: "Lê Quốc Đảng",
     specialty: "Boxing, MMA",
     experience: "8 năm kinh nghiệm",
     rating: 4.9,

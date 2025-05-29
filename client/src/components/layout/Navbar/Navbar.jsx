@@ -40,6 +40,7 @@ const Navbar = () => {
   ];
 
   const loggedInNavItems = [
+    { name: 'Trang chủ', path: '/' },
     { name: 'Lịch tập', path: '/schedule' },
     { name: 'Gói tập của tôi', path: '/my-packages' },
     { name: 'Đánh giá & Khiếu nại', path: '/complaints' },
@@ -56,6 +57,10 @@ const Navbar = () => {
     if (!isLoggedIn) {
       setShowAuthModal(true);
       setPendingNavigation(path);
+      return;
+    }
+    if (path === '/' && window.location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     navigate(path);
@@ -115,6 +120,7 @@ const Navbar = () => {
                   <button 
                     onClick={() => handleAuthenticatedNavigation(item.path)}
                     className={styles.navLink}
+                    style={{ outline: 'none' }}
                   >
                     {item.name}
                   </button>
