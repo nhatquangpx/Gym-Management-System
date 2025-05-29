@@ -19,6 +19,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const registrationRoutes = require("./routes/registrationRoutes");
 const equipmentRoutes = require('./routes/equipmentRoutes');
 const gymRoomRoutes = require('./routes/gymRoomRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -26,9 +27,10 @@ const PORT = process.env.PORT || 8001;
 // Cấu hình CORS để cho phép client gọi API
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:5173'],  // Cho phép cả hai origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   optionsSuccessStatus: 200, // IE11 có vấn đề với 204
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept'],
+  credentials: true // Cho phép gửi credentials (cookies, authorization headers)
 }));
 
 // Debug route để test API connectivity
@@ -70,10 +72,11 @@ app.use("/api/trainers", trainerRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/packages", packageRoutes);
-app.use("/api/user", userRoutes);
+app.use("/api/users", userRoutes); // Sửa từ "user" thành "users"
 app.use("/api/orders", orderRoutes);
 app.use("/api/registration", registrationRoutes);
 app.use('/api/equipments', equipmentRoutes);
 app.use('/api/gymrooms', gymRoomRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 
 app.listen(PORT, () => console.log(`Server run in port: ${PORT}`));
