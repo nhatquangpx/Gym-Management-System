@@ -1,6 +1,9 @@
 import styles from './PackagesSection.module.css';
 import { Link } from 'react-router-dom';
 import Button from '../../../common/Button/Button';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
 const homePackages = [ // Dữ liệu gói tập cho trang chủ
   {
@@ -30,7 +33,57 @@ const homePackages = [ // Dữ liệu gói tập cho trang chủ
   }
 ];
 
+// Modal riêng cho PackagesSection
+function PackageModal({ open, onClose, onConfirm, title, infoRows, confirmText, cancelText, icon }) {
+  if (!open) return null;
+  return (
+    <div className={styles.packageModalOverlay} onClick={onClose}>
+      <div className={styles.packageModalContent} onClick={e => e.stopPropagation()}>
+        {icon && <div className={styles.packageModalIcon}><i className="material-icons">{icon}</i></div>}
+        <div className={styles.packageModalTitle}>{title}</div>
+        <div className={styles.packageModalMessage}>
+          {infoRows.map((row, idx) => (
+            <div className={styles.packageModalInfoRow} key={idx}>
+              <span className={styles.packageModalInfoLabel}>{row.label}</span> 
+              <span className={row.isPrice ? styles.packageModalPrice : styles.packageModalInfoValue}>{row.value}</span>
+            </div>
+          ))}
+        </div>
+        <div className={styles.packageModalButtons}>
+          <button className={styles.packageModalConfirmBtn} onClick={onConfirm}>{confirmText}</button>
+          <button className={styles.packageModalCancelBtn} onClick={onClose}>{cancelText}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const PackagesSection = () => {
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = React.useState(false);
+  const [modalType, setModalType] = React.useState(''); // 'info' | 'register'
+  const [selectedPackage, setSelectedPackage] = React.useState(null);
+
+  // Giả lập kiểm tra user có gói tập đang sử dụng không
+  const hasActivePackage = user && user.activePackage; // hoặc lấy từ redux/api thực tế
+
+  const handlePackageClick = (pkg) => {
+    setSelectedPackage(pkg);
+    if (user) {
+      if (hasActivePackage) {
+        setModalType('info');
+        setShowModal(true);
+      } else {
+        setModalType('register');
+        setShowModal(true);
+      }
+    } else {
+      // Chưa đăng nhập thì vẫn link sang đăng ký
+      navigate('/register/package');
+    }
+  };
+
   return (
     <section id="packages-section" className={styles.packagesSection}>
       <div className={styles.container}>
@@ -49,20 +102,55 @@ const PackagesSection = () => {
                 <span className={styles.period}>{pkg.period}</span>
               </div>
               <p className={styles.packageDescription}>{pkg.description}</p>
-              <Link to="/register/package" className={styles.detailsLink}>
+              <button className={styles.detailsLink} onClick={() => handlePackageClick(pkg)}>
                 Xem chi tiết & Đăng ký
                 <i className="material-icons">arrow_forward</i>
-              </Link>
+              </button>
             </div>
           ))}
         </div>
-        <div className={styles.promoSection}>
+        {/* Promo section chỉ hiện khi chưa đăng nhập */}
+        {!user && (
+          <div className={styles.promoSection}>
             <h4>Ưu Đãi Đặc Biệt!</h4>
             <p>Đăng ký ngay hôm nay để nhận giảm giá <strong>15%</strong> cho gói tập đầu tiên và một buổi tập thử miễn phí với PT!</p>
             <Link to="/register/package">
-                <Button className={styles.promoButton}>Nhận Ưu Đãi Ngay</Button>
+              <Button className={styles.promoButton}>Nhận Ưu Đãi Ngay</Button>
             </Link>
-        </div>
+          </div>
+        )}
+        {/* Modal xử lý đăng ký hoặc thông báo đã có gói tập */}
+        {showModal && modalType === 'info' && (
+          <PackageModal
+            open={showModal}
+            onClose={() => setShowModal(false)}
+            onConfirm={() => { setShowModal(false); navigate('/my-packages'); }}
+            title="Bạn đang sử dụng gói tập"
+            icon="info"
+            infoRows={[
+              { label: '', value: 'Bạn đang sử dụng một gói tập. Vui lòng quản lý hoặc gia hạn tại trang Gói tập của tôi.', isPrice: false }
+            ]}
+            confirmText="Xem gói tập của tôi"
+            cancelText="Đóng"
+          />
+        )}
+        {showModal && modalType === 'register' && selectedPackage && user && (
+          <PackageModal
+            open={showModal}
+            onClose={() => setShowModal(false)}
+            onConfirm={() => { setShowModal(false); /* Xử lý thanh toán sau */ }}
+            title="Đăng ký gói tập"
+            icon="how_to_reg"
+            infoRows={[
+              { label: 'Tên gói: ', value: selectedPackage.name },
+              { label: 'Loại: ', value: selectedPackage.type },
+              { label: 'Mô tả: ', value: selectedPackage.description },
+              { label: 'Giá: ', value: `${selectedPackage.price}${selectedPackage.period}`, isPrice: true },
+            ]}
+            confirmText="Thanh toán"
+            cancelText="Để sau"
+          />
+        )}
       </div>
     </section>
   );

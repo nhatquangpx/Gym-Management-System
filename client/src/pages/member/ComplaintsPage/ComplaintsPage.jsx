@@ -120,45 +120,54 @@ const ComplaintsPage = () => {
           <h1 className={styles.title}>Đánh giá & Khiếu nại</h1>
           <form className={styles.feedbackForm} onSubmit={handleSubmit}>
             <div className={styles.formGrid}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Đánh giá cho</label>
-                <select
-                  className={styles.selectInput}
-                  value={type}
-                  onChange={handleTypeChange}
-                >
-                  <option value="Gói tập">Gói tập</option>
-                  <option value="Huấn luyện viên">Huấn luyện viên</option>
-                </select>
+              {/* Hàng 1: 2 select */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup} style={{flex: 1}}>
+                  <label className={styles.label}>Đánh giá cho</label>
+                  <select
+                    className={styles.selectInput}
+                    value={type}
+                    onChange={handleTypeChange}
+                  >
+                    <option value="Gói tập">Gói tập</option>
+                    <option value="Huấn luyện viên">Huấn luyện viên</option>
+                  </select>
+                </div>
+                <div className={styles.formGroup} style={{flex: 1}}>
+                  <label className={styles.label}>Chọn {type === 'Gói tập' ? 'gói tập' : 'huấn luyện viên'}</label>
+                  <select
+                    className={styles.selectInput}
+                    value={targetId}
+                    onChange={e => setTargetId(e.target.value)}
+                  >
+                    <option value="">-- Chọn --</option>
+                    {(type === 'Gói tập' ? usedPackages : usedTrainers).map((item) => (
+                      <option key={item.id} value={item.id}>{item.name}</option>
+                    ))}
+                  </select>
+                  {errors.targetId && <span className={styles.errorMsg}>{errors.targetId}</span>}
+                </div>
               </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Chọn {type === 'Gói tập' ? 'gói tập' : 'huấn luyện viên'}</label>
-                <select
-                  className={styles.selectInput}
-                  value={targetId}
-                  onChange={e => setTargetId(e.target.value)}
-                >
-                  <option value="">-- Chọn --</option>
-                  {(type === 'Gói tập' ? usedPackages : usedTrainers).map((item) => (
-                    <option key={item.id} value={item.id}>{item.name}</option>
-                  ))}
-                </select>
-                {errors.targetId && <span className={styles.errorMsg}>{errors.targetId}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Số sao <span className={styles.required}>*</span></label>
-                <StarRating value={stars} onChange={setStars} />
+              {/* Hàng 2: Số sao */}
+              <div className={styles.formRow}>
+                <div className={styles.starRow}>
+                  <label className={styles.label} style={{marginBottom: 0}}>Số sao <span className={styles.required}>*</span></label>
+                  <StarRating value={stars} onChange={setStars} />
+                </div>
                 {errors.stars && <span className={styles.errorMsg}>{errors.stars}</span>}
               </div>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Nội dung đánh giá</label>
-                <textarea
-                  className={styles.textareaInput}
-                  value={content}
-                  onChange={e => setContent(e.target.value)}
-                  placeholder="Nhập nội dung đánh giá (không bắt buộc)"
-                  rows={4}
-                />
+              {/* Hàng 3: Nội dung đánh giá */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup} style={{width: '100%'}}>
+                  <label className={styles.label}>Nội dung đánh giá</label>
+                  <textarea
+                    className={styles.textareaInput}
+                    value={content}
+                    onChange={e => setContent(e.target.value)}
+                    placeholder="Nhập nội dung đánh giá (không bắt buộc)"
+                    rows={4}
+                  />
+                </div>
               </div>
             </div>
             {successMsg && <div className={styles.successMsg}>{successMsg}</div>}
