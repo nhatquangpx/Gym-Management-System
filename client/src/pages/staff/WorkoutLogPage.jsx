@@ -1,153 +1,164 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import {
+  Paper, Typography, Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import styles from '../trainer/WorkoutLogPage/WorkoutLogPage.module.css';
 
-const today = new Date().toISOString().slice(0, 10);
-
-const StaffWorkoutLogPage = () => {
-  const [form, setForm] = useState({
-    student: '',
-    date: today,
-    startTime: '',
-    status: 'present',
-  });
+export default function StaffWorkoutLogPage() {
+  const [search, setSearch] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [packageInfo, setPackageInfo] = useState(null);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [students, setStudents] = useState([]);
 
-  // Fetch danh sách học viên hôm nay
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        // TODO: Đổi API phù hợp cho staff nếu cần
-        const res = await fetch('/api/members', {
-          headers: {
-            'Authorization': 'Bearer ' + token
-          }
-        });
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setStudents(data.map(m => ({ id: m._id, name: m.name })));
-        } else if (Array.isArray(data.data)) {
-          setStudents(data.data.map(m => ({ id: m._id, name: m.name })));
-        } else {
-          setStudents([]);
-        }
-      } catch (err) {
-        setStudents([]);
-      }
-    };
-    fetchStudents();
-  }, []);
-
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError('');
-    setSuccess('');
-  };
-
-  const validate = () => {
-    if (!form.student) return 'Vui lòng chọn hội viên!';
-    if (!form.date) return 'Vui lòng chọn ngày!';
-    if (!form.startTime) return 'Vui lòng nhập giờ bắt đầu!';
-    return '';
-  };
-
-  const handleSubmit = async e => {
+  // Tìm kiếm hội viên
+  const handleSearch = async (e) => {
     e.preventDefault();
-    const err = validate();
-    if (err) {
-      setError(err);
-      setSuccess('');
-      return;
-    }
+    setLoading(true);
+    setError('');
+    setResults([]);
     try {
       const token = localStorage.getItem('token');
-      // TODO: Đổi API phù hợp cho staff nếu cần
-      const res = await fetch('/api/staff/log-workout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({
-          memberId: form.student,
-          date: form.date,
-          startTime: form.startTime,
-          status: form.status === 'present' ? 'Đã tập' : 'Vắng mặt',
-        })
+      const res = await fetch(`/api/members?name=${encodeURIComponent(search)}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
       });
       const data = await res.json();
-      if (data.success) {
-        setSuccess('Đã ghi nhận buổi tập thành công!');
-        setError('');
-        setForm({ ...form, startTime: '' });
+      if (Array.isArray(data)) {
+        setResults(data);
+      } else if (Array.isArray(data.data)) {
+        setResults(data.data);
       } else {
-        setError(data.message || 'Ghi nhận thất bại!');
-        setSuccess('');
+        setResults([]);
       }
     } catch (err) {
-      setError('Lỗi khi ghi nhận buổi tập!');
-      setSuccess('');
+      setError('Lỗi khi tìm kiếm hội viên.');
     }
+    setLoading(false);
+  };
+
+  // Khi chọn hội viên, lấy thông tin gói tập
+  const handleSelectMember = async (member) => {
+    setSelectedMember(member);
+    setPackageInfo(null);
+    setPopupOpen(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/members/${member._id}/package-status`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      if (data.success && data.data && data.data.currentPackage) {
+        setPackageInfo(data.data.currentPackage);
+      } else {
+        setPackageInfo(null);
+      }
+    } catch (err) {
+      setPackageInfo(null);
+    }
+  };
+
+  // Xác nhận tham gia buổi tập
+  const handleConfirm = async () => {
+    // TODO: Gọi API xác nhận ghi nhận buổi tập nếu có
+    setPopupOpen(false);
+    setSnackbar({ open: true, message: 'Xác nhận tham gia thành công!', severity: 'success' });
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Ghi nhận buổi tập</h1>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div>
-          <label className={styles.label}>Hội viên</label>
-          <select
-            className={styles.input}
-            name="student"
-            value={form.student}
-            onChange={handleChange}
-          >
-            <option value="">Chọn hội viên</option>
-            {students.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className={styles.label}>Ngày</label>
-          <input
-            className={styles.input}
-            type="date"
-            name="date"
-            value={form.date}
-            onChange={handleChange}
+    <Box className="min-h-screen p-6 bg-[var(--admin-bg)]">
+      <Typography variant="h4" className="font-bold" sx={{ color: '#4f8cff', fontWeight: 700, fontSize: '2.2em', mb: 4 }}>
+        Ghi nhận buổi tập
+      </Typography>
+      <Paper className="p-4 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>
+        <form onSubmit={handleSearch} className="flex gap-4 items-center">
+          <TextField
+            label="Tìm kiếm hội viên theo tên"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ minWidth: 260 }}
+            onKeyDown={e => { if (e.key === 'Enter') handleSearch(e); }}
           />
-        </div>
-        <div>
-          <label className={styles.label}>Giờ bắt đầu</label>
-          <input
-            className={styles.input}
-            type="time"
-            name="startTime"
-            value={form.startTime}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label className={styles.label}>Trạng thái</label>
-          <select
-            className={styles.statusSelect}
-            name="status"
-            value={form.status}
-            onChange={handleChange}
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            startIcon={<SearchIcon />}
+            disabled={loading}
+            sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
           >
-            <option value="present">Đã tập</option>
-            <option value="absent">Vắng mặt</option>
-          </select>
-        </div>
-        {error && <div className={styles.error}>{error}</div>}
-        {success && <div className={styles.success}>{success}</div>}
-        <button className={styles.submitBtn} type="submit">Ghi nhận</button>
-      </form>
-    </div>
+            Tìm kiếm
+          </Button>
+        </form>
+        {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>}
+      </Paper>
+      {results.length > 0 && (
+        <TableContainer component={Paper} sx={{ background: 'var(--admin-sidebar)', mb: 4 }}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ background: 'var(--admin-header)' }}>
+                <TableCell sx={{ color: 'var(--admin-primary)' }}>ID</TableCell>
+                <TableCell sx={{ color: 'var(--admin-primary)' }}>Tên hội viên</TableCell>
+                <TableCell sx={{ color: 'var(--admin-primary)' }}>Email</TableCell>
+                <TableCell sx={{ color: 'var(--admin-primary)' }}>Số điện thoại</TableCell>
+                <TableCell sx={{ color: 'var(--admin-primary)' }}>Hành động</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {results.map(m => (
+                <TableRow key={m._id} hover>
+                  <TableCell>{m._id}</TableCell>
+                  <TableCell>{m.name}</TableCell>
+                  <TableCell>{m.email}</TableCell>
+                  <TableCell>{m.phone}</TableCell>
+                  <TableCell>
+                    <Button variant="outlined" color="primary" onClick={() => handleSelectMember(m)}>
+                      Chọn
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+      {/* Popup xác nhận */}
+      <Dialog open={popupOpen} onClose={() => setPopupOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700, color: 'var(--admin-primary)' }}>Xác nhận tham gia buổi tập</DialogTitle>
+        <DialogContent>
+          {selectedMember && (
+            <Box sx={{ mb: 2 }}>
+              <Typography><b>ID Member:</b> {selectedMember._id}</Typography>
+              <Typography><b>Tên Member:</b> {selectedMember.name}</Typography>
+            </Box>
+          )}
+          {packageInfo ? (
+            <Box sx={{ mb: 2 }}>
+              <Typography><b>ID gói tập:</b> {packageInfo._id}</Typography>
+              <Typography><b>Tên gói tập:</b> {packageInfo.name}</Typography>
+            </Box>
+          ) : (
+            <Typography color="error">Không tìm thấy gói tập hiện tại của hội viên này.</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPopupOpen(false)} color="secondary">Hủy</Button>
+          <Button onClick={handleConfirm} variant="contained" color="primary" sx={{ backgroundColor: 'var(--admin-primary)' }}>
+            Xác nhận tham gia
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
-};
-
-export default StaffWorkoutLogPage; 
+} 
