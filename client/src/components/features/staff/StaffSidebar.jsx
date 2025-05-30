@@ -9,6 +9,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import logo from "../../../assets/logo.svg";
 import styles from './StaffSidebar.module.css';
 
@@ -16,6 +17,7 @@ const menu = [
   { name: "Dashboard", path: "/staff/dashboard", icon: <DashboardIcon /> },
   { name: "Hội viên", path: "/staff/members", icon: <GroupIcon /> },
   { name: "Gói tập", path: "/staff/packages", icon: <FitnessCenterIcon /> },
+  { name: "Phòng tập", path: "/staff/gymrooms", icon: <MeetingRoomIcon /> },
   { name: "Thiết bị", path: "/staff/equipment", icon: <BuildIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/staff/orders", icon: <MonetizationOnIcon /> },
   { name: "Lịch sử tập luyện", path: "/staff/workouts", icon: <HistoryIcon /> },
