@@ -19,7 +19,6 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'admin'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -76,6 +75,9 @@ const Login = () => {
         case 'trainer':
           navigate('/trainer/dashboard');
           break;
+        case 'member':
+          navigate('/');
+          break;
         default:
           setError('Vai trò không hợp lệ');
       }
@@ -87,97 +89,88 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--admin-bg)' }}>
-      <Paper 
-        elevation={3} 
-        className="p-8 w-full max-w-md"
-        sx={{ 
-          backgroundColor: 'var(--admin-sidebar)',
-          color: 'var(--admin-text)'
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'background.default'
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          width: '100%',
+          maxWidth: 400,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
         }}
       >
-        <Box className="flex flex-col items-center mb-6">
-          <LockOutlinedIcon 
-            sx={{ 
-              fontSize: 40,
-              color: 'var(--admin-primary)',
-              marginBottom: 2
-            }} 
-          />
-          <Typography 
-            variant="h4" 
-            component="h1" 
-            className="font-bold"
-            sx={{ color: 'var(--admin-text)' }}
-          >
-            Đăng nhập
-          </Typography>
+        <Box
+          sx={{
+            width: 40,
+            height: 40,
+            borderRadius: '50%',
+            bgcolor: 'primary.main',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2
+          }}
+        >
+          <LockOutlinedIcon sx={{ color: 'white' }} />
         </Box>
 
+        <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+          Đăng nhập
+        </Typography>
+
         {error && (
-          <Alert severity="error" className="mb-4">
+          <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
             {error}
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
           <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
             label="Email"
             name="email"
-            type="email"
+            autoComplete="email"
+            autoFocus
             value={formData.email}
             onChange={handleChange}
-            fullWidth
-            required
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
-            }}
           />
-
           <TextField
-            label="Mật khẩu"
+            margin="normal"
+            required
+            fullWidth
             name="password"
+            label="Mật khẩu"
             type="password"
+            id="password"
+            autoComplete="current-password"
             value={formData.password}
             onChange={handleChange}
-            fullWidth
-            required
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
-            }}
           />
-
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            size="large"
+            sx={{ mt: 3, mb: 2 }}
             disabled={loading}
-            sx={{
-              backgroundColor: 'var(--admin-primary)',
-              color: '#fff',
-              fontWeight: 700,
-              '&:hover': {
-                backgroundColor: '#2563eb',
-                color: '#fff',
-                opacity: 0.95
-              },
-              marginTop: 2
-            }}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Đăng nhập'}
+            {loading ? <CircularProgress size={24} /> : 'Đăng nhập'}
           </Button>
-        </form>
+        </Box>
       </Paper>
-    </div>
+    </Box>
   );
 };
 

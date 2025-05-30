@@ -8,12 +8,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddIcon from '@mui/icons-material/Add';
-import AddButton from '../../components/AddButton';
+import axios from '../../utils/axiosConfig';
 
 export default function StaffMembers() {
   const navigate = useNavigate();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState({ name: '', phone: '' });
 
   useEffect(() => {
@@ -22,12 +23,13 @@ export default function StaffMembers() {
 
   const fetchMembers = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch('/api/members');
-      const data = await res.json();
-      setMembers(data);
+      const response = await axios.get('/api/members');
+      setMembers(response.data.data || []);
     } catch (error) {
       console.error('Error fetching members:', error);
+      setError('Không thể tải danh sách hội viên. Vui lòng thử lại sau.');
     }
     setLoading(false);
   };
@@ -35,10 +37,11 @@ export default function StaffMembers() {
   const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa hội viên này?')) {
       try {
-        await fetch(`/api/members/${id}`, { method: 'DELETE' });
+        await axios.delete(`/api/members/${id}`);
         fetchMembers();
       } catch (error) {
         console.error('Error deleting member:', error);
+        alert('Không thể xóa hội viên. Vui lòng thử lại sau.');
       }
     }
   };
@@ -108,22 +111,46 @@ export default function StaffMembers() {
           </TableHead>
           <TableBody>
             {loading ? (
-              <TableRow><TableCell colSpan={5} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
-            ) : filteredMembers.length === 0 ? (
-              <TableRow><TableCell colSpan={5} sx={{ color: 'var(--admin-text)' }}>Không có hội viên nào</TableCell></TableRow>
-            ) : filteredMembers.map(m => (
-              <TableRow key={m._id} className="hover:bg-[var(--admin-accent)]">
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{m.name}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{m.phone}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{m.email}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{m.createdAt ? new Date(m.createdAt).toLocaleDateString() : ''}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => navigate(`/staff/members/${m._id}`)} sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => navigate(`/staff/members/edit/${m._id}`)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(m._id)}><DeleteIcon /></IconButton>
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ color: 'var(--admin-text)' }}>
+                  Đang tải...
                 </TableCell>
               </TableRow>
-            ))}
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ color: 'error.main' }}>
+                  {error}
+                </TableCell>
+              </TableRow>
+            ) : filteredMembers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ color: 'var(--admin-text)' }}>
+                  Không có hội viên nào
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredMembers.map(m => (
+                <TableRow key={m._id} className="hover:bg-[var(--admin-accent)]">
+                  <TableCell sx={{ color: 'var(--admin-text)' }}>{m.name}</TableCell>
+                  <TableCell sx={{ color: 'var(--admin-text)' }}>{m.phone}</TableCell>
+                  <TableCell sx={{ color: 'var(--admin-text)' }}>{m.email}</TableCell>
+                  <TableCell sx={{ color: 'var(--admin-text)' }}>
+                    {m.createdAt ? new Date(m.createdAt).toLocaleDateString() : ''}
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton onClick={() => navigate(`/staff/members/${m._id}`)} sx={{ color: 'var(--admin-primary)' }}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton onClick={() => navigate(`/staff/members/edit/${m._id}`)} sx={{ color: 'var(--admin-text)' }}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="error" onClick={() => handleDelete(m._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

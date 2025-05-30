@@ -31,16 +31,14 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => response,
   error => {
-    // Nếu server trả về lỗi 401 Unauthorized hoặc 403 Forbidden, 
-    // có thể token đã hết hạn hoặc không hợp lệ
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    // Chỉ đăng xuất khi token không hợp lệ hoặc hết hạn (401)
+    if (error.response && error.response.status === 401) {
       console.log('Phiên đăng nhập hết hạn hoặc không hợp lệ');
       
       // Kiểm tra xem lỗi có phải do token không hợp lệ không
       const errorMessage = error.response.data?.message || '';
       if (errorMessage.includes('Token không hợp lệ') || 
-          errorMessage.includes('không có token') ||
-          errorMessage.includes('không có quyền')) {
+          errorMessage.includes('không có token')) {
         // Đăng xuất người dùng
         store.dispatch(setLogout());
       }
