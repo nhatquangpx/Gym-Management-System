@@ -1,86 +1,87 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Paper, Typography, Box, Button, Chip, Grid, Divider
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Chip
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import EditIcon from '@mui/icons-material/Edit';
+import axios from 'axios';
 
-export default function ViewGymRoom() {
+const ViewGymRoom = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [gymRoom, setGymRoom] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [equipments, setEquipments] = useState([]);
-  const [loadingEquipments, setLoadingEquipments] = useState(true);
+  const [error, setError] = useState(null);
+  const [room, setRoom] = useState(null);
+  const [equipment, setEquipment] = useState([]);
 
   useEffect(() => {
-    fetchGymRoom();
-    fetchEquipments();
-  }, [id]);
-
-  const fetchGymRoom = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
-        navigate('/auth/login');
-        return;
-      }
-      
-      const response = await fetch(`http://localhost:8001/api/gymrooms/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+    const fetchRoom = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+          navigate('/auth/login');
+          return;
         }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch gym room');
-      }
-      
-      const data = await response.json();
-      setGymRoom(data);
-    } catch (error) {
-      console.error('Error fetching gym room:', error);
-      
-      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/auth/login');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchEquipments = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
+        const response = await axios.get(`http://localhost:8001/api/gymrooms/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setRoom(response.data);
+
+        // Fetch equipment list for this room
+        const equipmentResponse = await axios.get(`http://localhost:8001/api/equipments/room/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setEquipment(equipmentResponse.data);
+      } catch (err) {
+        console.error('Error fetching room:', err);
+        setError(err.response?.data?.message || 'Không thể tải thông tin phòng tập. Vui lòng thử lại sau.');
+      } finally {
+        setLoading(false);
       }
-      
-      const response = await fetch('http://localhost:8001/api/equipments', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch equipment');
-      }
-      
-      const data = await response.json();
-      // Lọc thiết bị theo phòng tập
-      const roomEquipments = data.filter(eq => eq.roomId && eq.roomId._id === id);
-      setEquipments(roomEquipments);
-    } catch (error) {
-      console.error('Error fetching equipment:', error);
-    } finally {
-      setLoadingEquipments(false);
-    }
-  };
+    };
+
+    fetchRoom();
+  }, [id, navigate]);
+
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen p-6">
+        <div className="text-center text-[#333]">Đang tải...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white min-h-screen p-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!room) {
+    return (
+      <div className="bg-white min-h-screen p-6">
+        <div className="text-center text-[#333]">Không tìm thấy phòng tập</div>
+      </div>
+    );
+  }
 
   const getRoomTypeLabel = (type) => {
     switch(type) {
@@ -102,137 +103,102 @@ export default function ViewGymRoom() {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'active': return 'success';
-      case 'maintenance': return 'warning';
-      case 'inactive': return 'error';
-      default: return 'default';
-    }
-  };
-
-  if (loading) {
-    return <div className="p-6">Đang tải...</div>;
-  }
-
-  if (!gymRoom) {
-    return <div className="p-6">Không tìm thấy phòng tập</div>;
-  }
-
   return (
-    <div className="p-6">
-      <Box className="flex justify-between items-center mb-6">
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/admin/gymrooms')}
-        >
-          Quay lại
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<EditIcon />}
-          onClick={() => navigate(`/admin/gymrooms/edit/${id}`)}
-        >
-          Chỉnh sửa
-        </Button>
-      </Box>
+    <div className="bg-white min-h-screen p-6">
+      <Typography variant="h4" className="font-bold mb-6" sx={{ color: '#1a237e' }}>
+        Chi tiết phòng tập
+      </Typography>
 
-      <Paper className="p-6 shadow-lg rounded-lg mb-6">
-        <Typography variant="h4" className="font-bold text-gray-800 mb-6">
-          {gymRoom.name}
-        </Typography>
+      <Paper className="bg-white p-6 max-w-lg mx-auto">
+        <div className="space-y-4">
+          <div>
+            <Typography variant="h6" className="font-semibold mb-2" sx={{ color: '#1a237e' }}>Tên phòng</Typography>
+            <Typography sx={{ color: '#333' }}>{room.name}</Typography>
+          </div>
 
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <Typography variant="subtitle1" className="font-medium text-gray-600">
-              Loại phòng:
-            </Typography>
-            <Typography variant="body1" className="mb-4">
-              {getRoomTypeLabel(gymRoom.roomType)}
-            </Typography>
-
-            <Typography variant="subtitle1" className="font-medium text-gray-600">
-              Trạng thái:
-            </Typography>
-            <Chip 
-              label={getStatusLabel(gymRoom.status)}
-              color={getStatusColor(gymRoom.status)}
-              className="mb-4"
+          <div>
+            <Typography variant="h6" className="font-semibold mb-2" sx={{ color: '#1a237e' }}>Trạng thái</Typography>
+            <Chip
+              label={getStatusLabel(room.status)}
+              color={room.status === 'active' ? 'success' : 
+                     room.status === 'maintenance' ? 'warning' : 'error'}
+              size="small"
             />
+          </div>
 
-            <Typography variant="subtitle1" className="font-medium text-gray-600">
-              Ngày tạo:
-            </Typography>
-            <Typography variant="body1" className="mb-4">
-              {new Date(gymRoom.createdAt).toLocaleDateString('vi-VN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </Typography>
+          <div>
+            <Typography variant="h6" className="font-semibold mb-2" sx={{ color: '#1a237e' }}>Loại phòng</Typography>
+            <Typography sx={{ color: '#333' }}>{getRoomTypeLabel(room.roomType)}</Typography>
+          </div>
 
-            <Typography variant="subtitle1" className="font-medium text-gray-600">
-              Cập nhật lần cuối:
-            </Typography>
-            <Typography variant="body1" className="mb-4">
-              {new Date(gymRoom.updatedAt).toLocaleDateString('vi-VN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </Typography>
-          </Grid>
-        </Grid>
-      </Paper>
+          <div>
+            <Typography variant="h6" className="font-semibold mb-2" sx={{ color: '#1a237e' }}>Thiết bị trong phòng</Typography>
+            {equipment.length === 0 ? (
+              <Typography sx={{ color: '#333' }}>Chưa có thiết bị nào</Typography>
+            ) : (
+              <List>
+                {equipment.map((item, index) => (
+                  <React.Fragment key={item._id}>
+                    <ListItem>
+                      <ListItemText
+                        primary={
+                          <Typography sx={{ color: '#333' }}>
+                            {item.name}
+                          </Typography>
+                        }
+                        secondary={
+                          <Box className="mt-1">
+                            <Chip
+                              label={getStatusLabel(item.status)}
+                              color={item.status === 'active' ? 'success' : 
+                                     item.status === 'maintenance' ? 'warning' : 'error'}
+                              size="small"
+                              className="mr-2"
+                            />
+                            <Typography variant="body2" sx={{ color: '#666', display: 'inline' }}>
+                              {item.description}
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                    {index < equipment.length - 1 && <Divider />}
+                  </React.Fragment>
+                ))}
+              </List>
+            )}
+          </div>
+        </div>
 
-      <Paper className="p-6 shadow-lg rounded-lg">
-        <Typography variant="h5" className="font-bold text-gray-800 mb-4">
-          Danh sách thiết bị trong phòng
-        </Typography>
-        <Divider className="mb-4" />
-
-        {loadingEquipments ? (
-          <Typography>Đang tải danh sách thiết bị...</Typography>
-        ) : equipments.length === 0 ? (
-          <Typography>Chưa có thiết bị nào trong phòng này</Typography>
-        ) : (
-          <Grid container spacing={2}>
-            {equipments.map(equipment => (
-              <Grid item xs={12} sm={6} md={4} key={equipment._id}>
-                <Paper className="p-4 h-full" elevation={3}>
-                  <Typography variant="h6" className="font-bold">
-                    {equipment.name}
-                  </Typography>
-                  <Typography variant="body2" className="text-gray-600 mb-2">
-                    {equipment.description}
-                  </Typography>
-                  <Chip 
-                    label={
-                      equipment.status === 'active' ? 'Hoạt động' : 
-                      equipment.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'
-                    }
-                    color={
-                      equipment.status === 'active' ? 'success' : 
-                      equipment.status === 'maintenance' ? 'warning' : 'error'
-                    }
-                    size="small"
-                  />
-                  <Box className="mt-2">
-                    <Button 
-                      size="small" 
-                      color="primary"
-                      onClick={() => navigate(`/admin/equipment/view/${equipment._id}`)}
-                    >
-                      Xem chi tiết
-                    </Button>
-                  </Box>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        )}
+        <Box className="flex gap-3 mt-6">
+          <Button 
+            variant="contained"
+            onClick={() => navigate(`/admin/gymrooms/edit/${id}`)}
+            sx={{ 
+              backgroundColor: 'var(--admin-primary)',
+              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+            }}
+          >
+            Chỉnh sửa
+          </Button>
+          <Button 
+            variant="outlined"
+            onClick={() => navigate('/admin/gymrooms')}
+            sx={{ 
+              color: 'var(--admin-primary)', 
+              borderColor: 'var(--admin-primary)',
+              '&:hover': {
+                borderColor: 'var(--admin-primary)',
+                backgroundColor: 'rgba(26, 35, 126, 0.04)'
+              }
+            }}
+          >
+            Quay lại
+          </Button>
+        </Box>
       </Paper>
     </div>
   );
-} 
+};
+
+export default ViewGymRoom; 

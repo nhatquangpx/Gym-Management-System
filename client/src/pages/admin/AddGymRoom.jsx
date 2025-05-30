@@ -1,33 +1,39 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Paper, Typography, Box, Grid, TextField, Button,
-  MenuItem, FormControl, InputLabel, Select
+import {
+  Box,
+  Typography,
+  Paper,
+  TextField,
+  Button,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  CircularProgress
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SaveIcon from '@mui/icons-material/Save';
+import axios from 'axios';
 
-export default function AddGymRoom() {
+const AddGymRoom = () => {
   const navigate = useNavigate();
-  const [gymRoom, setGymRoom] = useState({
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [form, setForm] = useState({
     name: '',
     roomType: 'cardio',
     status: 'active'
   });
-  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setGymRoom(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
-    
+    setError(null);
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -35,108 +41,111 @@ export default function AddGymRoom() {
         navigate('/auth/login');
         return;
       }
-      
-      const response = await fetch('http://localhost:8001/api/gymrooms', {
-        method: 'POST',
+
+      await axios.post('http://localhost:8001/api/gymrooms', form, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(gymRoom),
+        }
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Không thể tạo phòng tập');
-      }
-      
-      alert('Phòng tập đã được tạo thành công!');
+      alert('Thêm phòng tập thành công!');
       navigate('/admin/gymrooms');
-    } catch (error) {
-      console.error('Lỗi khi tạo phòng tập:', error);
-      alert('Lỗi khi tạo phòng tập: ' + error.message);
-      
-      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/auth/login');
-      }
+    } catch (err) {
+      console.error('Error adding room:', err);
+      setError(err.response?.data?.message || 'Không thể thêm phòng tập. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-6">
-      <Box className="flex justify-between items-center mb-6">
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/admin/gymrooms')}
-        >
-          Quay lại
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<SaveIcon />}
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? 'Đang lưu...' : 'Lưu'}
-        </Button>
-      </Box>
+    <div className="bg-white min-h-screen p-6">
+      <Typography variant="h4" className="font-bold mb-6" sx={{ color: '#1a237e' }}>
+        Thêm phòng tập mới
+      </Typography>
 
-      <Paper className="p-6 shadow-lg rounded-lg">
-        <Typography variant="h4" className="font-bold text-gray-800 mb-6">
-          Thêm phòng tập mới
-        </Typography>
+      {error && (
+        <Box className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </Box>
+      )}
 
+      <Paper className="p-6 max-w-lg mx-auto">
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Tên phòng tập"
-                name="name"
-                value={gymRoom.name}
+          <Box className="space-y-4">
+            <TextField
+              fullWidth
+              label="Tên phòng"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              required
+              sx={{ '& .MuiInputLabel-root': { color: '#1a237e' } }}
+            />
+
+            <FormControl fullWidth>
+              <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
+              <Select
+                name="status"
+                value={form.status}
                 onChange={handleChange}
-                required
-                margin="normal"
-              />
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Loại phòng</InputLabel>
-                <Select
-                  name="roomType"
-                  value={gymRoom.roomType}
-                  onChange={handleChange}
-                  label="Loại phòng"
-                  required
-                >
-                  <MenuItem value="cardio">Cardio</MenuItem>
-                  <MenuItem value="strength">Tập sức mạnh</MenuItem>
-                  <MenuItem value="yoga">Yoga</MenuItem>
-                  <MenuItem value="functional">Tập chức năng</MenuItem>
-                  <MenuItem value="group">Tập nhóm</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Trạng thái</InputLabel>
-                <Select
-                  name="status"
-                  value={gymRoom.status}
-                  onChange={handleChange}
-                  label="Trạng thái"
-                  required
-                >
-                  <MenuItem value="active">Hoạt động</MenuItem>
-                  <MenuItem value="maintenance">Bảo trì</MenuItem>
-                  <MenuItem value="inactive">Không hoạt động</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
+                label="Trạng thái"
+                sx={{ '& .MuiSelect-icon': { color: '#1a237e' } }}
+              >
+                <MenuItem value="active">Hoạt động</MenuItem>
+                <MenuItem value="maintenance">Bảo trì</MenuItem>
+                <MenuItem value="inactive">Không hoạt động</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel sx={{ color: '#1a237e' }}>Loại phòng</InputLabel>
+              <Select
+                name="roomType"
+                value={form.roomType}
+                onChange={handleChange}
+                label="Loại phòng"
+                sx={{ '& .MuiSelect-icon': { color: '#1a237e' } }}
+              >
+                <MenuItem value="cardio">Cardio</MenuItem>
+                <MenuItem value="strength">Tập sức mạnh</MenuItem>
+                <MenuItem value="yoga">Yoga</MenuItem>
+                <MenuItem value="functional">Tập chức năng</MenuItem>
+                <MenuItem value="group">Tập nhóm</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box className="flex gap-3 mt-6">
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading}
+              sx={{ 
+                backgroundColor: 'var(--admin-primary)',
+                '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+              }}
+            >
+              {loading ? <CircularProgress size={24} /> : 'Thêm phòng tập'}
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => navigate('/admin/gymrooms')}
+              sx={{ 
+                color: 'var(--admin-primary)', 
+                borderColor: 'var(--admin-primary)',
+                '&:hover': {
+                  borderColor: 'var(--admin-primary)',
+                  backgroundColor: 'rgba(26, 35, 126, 0.04)'
+                }
+              }}
+            >
+              Hủy
+            </Button>
+          </Box>
         </form>
       </Paper>
     </div>
   );
-} 
+};
+
+export default AddGymRoom; 
