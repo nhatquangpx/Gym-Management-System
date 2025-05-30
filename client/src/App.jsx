@@ -49,8 +49,7 @@ import EditProfile from './pages/admin/EditProfile';
 import AdminEquipment from './pages/admin/Equipment';
 import AdminFeedback from './pages/admin/Feedback';
 import AdminWorkouts from './pages/admin/Workouts';
-import ViewEquipment from './pages/admin/ViewEquipment';
-import EditEquipment from './pages/admin/EditEquipment';
+import AdminEditEquipment from './pages/admin/EditEquipment';
 import ViewFeedback from './pages/admin/ViewFeedback';
 import ViewWorkout from './pages/admin/ViewWorkout';
 import EditWorkout from './pages/admin/EditWorkout';
@@ -99,10 +98,12 @@ import StaffFeedback from './pages/staff/Feedback';
 import StaffAccount from './pages/staff/Account';
 import StaffAddMember from './pages/staff/AddMember';
 import StaffAddPackage from './pages/staff/AddPackage';
-import AddEquipment from './pages/staff/AddEquipment';
-import AddSchedule from './pages/staff/AddSchedule';
+import StaffAddEquipment from './pages/staff/AddEquipment';
+import StaffEditEquipment from './pages/staff/EditEquipment';
+import StaffViewEquipment from './pages/staff/ViewEquipment';
+import StaffAddSchedule from './pages/staff/AddSchedule';
 import StaffOrders from './pages/staff/Orders';
-import ServiceHistory from './pages/staff/ServiceHistory';
+import StaffServiceHistory from './pages/staff/ServiceHistory';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -158,6 +159,7 @@ function App() {
         <Route path="/packages" element={<PackageManagement />} />
 
         {/* Staff routes */}
+        <Route path="/staff" element={<Navigate to="/staff/dashboard" replace />} />
         <Route element={<PrivateRoute allowedRoles={["employee"]} />}>
           <Route path="/staff" element={<StaffLayout />}>
             <Route path="dashboard" element={<StaffDashboard />} />
@@ -166,9 +168,12 @@ function App() {
             <Route path="packages" element={<StaffPackages />} />
             <Route path="packages/add" element={<StaffAddPackage />} />
             <Route path="equipment" element={<StaffEquipment />} />
+            <Route path="equipment/add" element={<StaffAddEquipment />} />
+            <Route path="equipment/view/:id" element={<StaffViewEquipment />} />
+            <Route path="equipment/edit/:id" element={<StaffEditEquipment />} />
             <Route path="orders" element={<StaffOrders />} />
             <Route path="workouts" element={<StaffWorkouts />} />
-            <Route path="service-history" element={<ServiceHistory />} />
+            <Route path="service-history" element={<StaffServiceHistory />} />
             <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="account" element={<StaffAccount />} />
@@ -186,7 +191,6 @@ function App() {
             <Route path="members/edit/:id" element={<EditMember />} />            <Route path="employees" element={<AdminEmployees />} />
             <Route path="employees/add" element={<AddEmployee />} />
             <Route path="employees/view/:id" element={<ViewEmployee />} />
-            {/* <Route path="employees/edit/:id" element={<EditEmployee />} /> */}
             <Route path="packages" element={<AdminPackages />} />
             <Route path="packages/add" element={<AddPackage />} />
             <Route path="packages/view/:id" element={<ViewPackage />} />
@@ -195,9 +199,9 @@ function App() {
             <Route path="orders/view/:id" element={<ViewOrder />} />
             <Route path="orders/edit/:id" element={<EditOrder />} />
             <Route path="equipment" element={<EquipmentList />} />
-            <Route path="equipment/view/:id" element={<ViewEquipment />} />
-            <Route path="equipment/edit/:id" element={<EditEquipment />} />
-            <Route path="equipment/add" element={<EditEquipment />} />
+            <Route path="equipment/view/:id" element={<AdminEquipment />} />
+            <Route path="equipment/edit/:id" element={<AdminEditEquipment />} />
+            <Route path="equipment/add" element={<AdminEquipment />} />
             <Route path="gymrooms" element={<GymRoomList />} />
             <Route path="gymrooms/add" element={<AddGymRoom />} />
             <Route path="gymrooms/view/:id" element={<ViewGymRoom />} />

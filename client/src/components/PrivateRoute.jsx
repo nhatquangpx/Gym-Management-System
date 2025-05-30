@@ -32,7 +32,8 @@ const PrivateRoute = ({ allowedRoles }) => {
 
   // Redirect to home if role is not allowed
   if (allowedRoles && (!effectiveRole || !allowedRoles.includes(effectiveRole))) {
-    return <Navigate to="/" replace />;
+    console.log("Access denied - Role not allowed:", effectiveRole);
+    return <Navigate to="/auth/login" replace />;
   }
 
   // Allow access to the protected route
