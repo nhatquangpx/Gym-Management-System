@@ -36,37 +36,36 @@ import AdminStatistics from './pages/admin/Statistics';
 import AdminSettings from './pages/admin/Settings';
 import AdminProfile from './pages/admin/Profile';
 import AdminAccount from './pages/admin/Account';
-import ViewMember from './pages/admin/ViewMember';
-import EditMember from './pages/admin/EditMember';
-import ViewEmployee from './pages/admin/ViewEmployee';
-// import EditEmployee from './pages/admin/EditEmployee';
-import AddEmployee from './pages/admin/AddEmployee';
-import ViewPackage from './pages/admin/ViewPackage';
-import EditPackage from './pages/admin/EditPackage';
-import ViewOrder from './pages/admin/ViewOrder';
-import EditOrder from './pages/admin/EditOrder';
-import EditProfile from './pages/admin/EditProfile';
+import AdminViewMember from './pages/admin/ViewMember';
+import AdminEditMember from './pages/admin/EditMember';
+import AdminViewEmployee from './pages/admin/ViewEmployee';
+import AdminEditEmployee from './pages/admin/EditEmployee';
+import AdminAddEmployee from './pages/admin/AddEmployee';
+import AdminViewPackage from './pages/admin/ViewPackage';
+import AdminEditPackage from './pages/admin/EditPackage';
+import AdminViewOrder from './pages/admin/ViewOrder';
+import AdminEditOrder from './pages/admin/EditOrder';
+import AdminEditProfile from './pages/admin/EditProfile';
 import AdminEquipment from './pages/admin/Equipment';
 import AdminFeedback from './pages/admin/Feedback';
 import AdminWorkouts from './pages/admin/Workouts';
-import ViewEquipment from './pages/admin/ViewEquipment';
-import EditEquipment from './pages/admin/EditEquipment';
-import ViewFeedback from './pages/admin/ViewFeedback';
-import ViewWorkout from './pages/admin/ViewWorkout';
-import EditWorkout from './pages/admin/EditWorkout';
-import EquipmentList from './pages/admin/EquipmentList';
-import WorkoutList from './pages/admin/WorkoutList';
-import AddMember from './pages/admin/AddMember';
-import AddEmployee from './pages/admin/AddEmployee';
-import AddPackage from './pages/admin/AddPackage';
-import Promotions from './pages/admin/Promotions';
-import AddPromotion from './pages/admin/AddPromotion';
-import ViewPromotion from './pages/admin/ViewPromotion';
-import EditPromotion from './pages/admin/EditPromotion';
-import Trainers from './pages/admin/Trainers';
-import AddTrainer from './pages/admin/AddTrainer';
-import ViewTrainer from './pages/admin/ViewTrainer';
-import EditTrainer from './pages/admin/EditTrainer';
+import AdminViewEquipment from './pages/admin/ViewEquipment';
+import AdminEditEquipment from './pages/admin/EditEquipment';
+import AdminViewFeedback from './pages/admin/ViewFeedback';
+import AdminViewWorkout from './pages/admin/ViewWorkout';
+import AdminEditWorkout from './pages/admin/EditWorkout';
+import AdminEquipmentList from './pages/admin/EquipmentList';
+import AdminWorkoutList from './pages/admin/WorkoutList';
+import AdminAddMember from './pages/admin/AddMember';
+import AdminAddPackage from './pages/admin/AddPackage';
+import AdminPromotions from './pages/admin/Promotions';
+import AdminAddPromotion from './pages/admin/AddPromotion';
+import AdminViewPromotion from './pages/admin/ViewPromotion';
+import AdminEditPromotion from './pages/admin/EditPromotion';
+import AdminTrainers from './pages/admin/Trainers';
+import AdminAddTrainer from './pages/admin/AddTrainer';
+import AdminViewTrainer from './pages/admin/ViewTrainer';
+import AdminEditTrainer from './pages/admin/EditTrainer';
 
 // Placeholder components cho các trang khác
 const RegisterPage = () => <div>Register Page (Coming soon)</div>;
@@ -93,10 +92,10 @@ import StaffFeedback from './pages/staff/Feedback';
 import StaffAccount from './pages/staff/Account';
 import StaffAddMember from './pages/staff/AddMember';
 import StaffAddPackage from './pages/staff/AddPackage';
-import AddEquipment from './pages/staff/AddEquipment';
-import AddSchedule from './pages/staff/AddSchedule';
+import StaffAddEquipment from './pages/staff/AddEquipment';
+import StaffAddSchedule from './pages/staff/AddSchedule';
 import StaffOrders from './pages/staff/Orders';
-import ServiceHistory from './pages/staff/ServiceHistory';
+import StaffServiceHistory from './pages/staff/ServiceHistory';
 import StaffWorkoutLogPage from './pages/staff/WorkoutLogPage';
 
 // Trainer components
@@ -161,10 +160,12 @@ function App() {
             <Route path="packages" element={<StaffPackages />} />
             <Route path="packages/add" element={<StaffAddPackage />} />
             <Route path="equipment" element={<StaffEquipment />} />
+            <Route path="equipment/add" element={<StaffAddEquipment />} />
             <Route path="orders" element={<StaffOrders />} />
             <Route path="workouts" element={<StaffWorkouts />} />
-            <Route path="service-history" element={<ServiceHistory />} />
+            <Route path="service-history" element={<StaffServiceHistory />} />
             <Route path="schedules" element={<StaffSchedules />} />
+            <Route path="schedules/add" element={<StaffAddSchedule />} />
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="account" element={<StaffAccount />} />
             <Route path="workout-log" element={<StaffWorkoutLogPage />} />
@@ -177,42 +178,43 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="members" element={<AdminMembers />} />
-            <Route path="members/add" element={<AddMember />} />
-            <Route path="members/view/:id" element={<ViewMember />} />
-            <Route path="members/edit/:id" element={<EditMember />} />            <Route path="employees" element={<AdminEmployees />} />
-            <Route path="employees/add" element={<AddEmployee />} />
-            <Route path="employees/view/:id" element={<ViewEmployee />} />
-            <Route path="employees/edit/:id" element={<EditEmployee />} />
+            <Route path="members/add" element={<AdminAddMember />} />
+            <Route path="members/view/:id" element={<AdminViewMember />} />
+            <Route path="members/edit/:id" element={<AdminEditMember />} />
+            <Route path="employees" element={<AdminEmployees />} />
+            <Route path="employees/add" element={<AdminAddEmployee />} />
+            <Route path="employees/view/:id" element={<AdminViewEmployee />} />
+            <Route path="employees/edit/:id" element={<AdminEditEmployee />} />
             <Route path="packages" element={<AdminPackages />} />
-            <Route path="packages/add" element={<AddPackage />} />
-            <Route path="packages/view/:id" element={<ViewPackage />} />
-            <Route path="packages/edit/:id" element={<EditPackage />} />
+            <Route path="packages/add" element={<AdminAddPackage />} />
+            <Route path="packages/view/:id" element={<AdminViewPackage />} />
+            <Route path="packages/edit/:id" element={<AdminEditPackage />} />
             <Route path="orders" element={<AdminOrders />} />
-            <Route path="orders/view/:id" element={<ViewOrder />} />
-            <Route path="orders/edit/:id" element={<EditOrder />} />
-            <Route path="equipment" element={<EquipmentList />} />
-            <Route path="equipment/view/:id" element={<ViewEquipment />} />
-            <Route path="equipment/edit/:id" element={<EditEquipment />} />
-            <Route path="equipment/add" element={<EditEquipment />} />
-            <Route path="workouts" element={<WorkoutList />} />
-            <Route path="workouts/view/:id" element={<ViewWorkout />} />
-            <Route path="workouts/edit/:id" element={<EditWorkout />} />
-            <Route path="workouts/add" element={<EditWorkout />} />
+            <Route path="orders/view/:id" element={<AdminViewOrder />} />
+            <Route path="orders/edit/:id" element={<AdminEditOrder />} />
+            <Route path="equipment" element={<AdminEquipmentList />} />
+            <Route path="equipment/view/:id" element={<AdminViewEquipment />} />
+            <Route path="equipment/edit/:id" element={<AdminEditEquipment />} />
+            <Route path="equipment/add" element={<AdminEditEquipment />} />
+            <Route path="workouts" element={<AdminWorkoutList />} />
+            <Route path="workouts/view/:id" element={<AdminViewWorkout />} />
+            <Route path="workouts/edit/:id" element={<AdminEditWorkout />} />
+            <Route path="workouts/add" element={<AdminEditWorkout />} />
             <Route path="feedback" element={<AdminFeedback />} />
-            <Route path="feedback/view/:id" element={<ViewFeedback />} />
+            <Route path="feedback/view/:id" element={<AdminViewFeedback />} />
             <Route path="statistics" element={<AdminStatistics />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="profile" element={<AdminProfile />} />
-            <Route path="profile/edit" element={<EditProfile />} />
+            <Route path="profile/edit" element={<AdminEditProfile />} />
             <Route path="account" element={<AdminAccount />} />
-            <Route path="promotions" element={<Promotions />} />
-            <Route path="promotions/add" element={<AddPromotion />} />
-            <Route path="promotions/view/:id" element={<ViewPromotion />} />
-            <Route path="promotions/edit/:id" element={<EditPromotion />} />
-            <Route path="trainers" element={<Trainers />} />
-            <Route path="trainers/add" element={<AddTrainer />} />
-            <Route path="trainers/view/:id" element={<ViewTrainer />} />
-            <Route path="trainers/edit/:id" element={<EditTrainer />} />
+            <Route path="promotions" element={<AdminPromotions />} />
+            <Route path="promotions/add" element={<AdminAddPromotion />} />
+            <Route path="promotions/view/:id" element={<AdminViewPromotion />} />
+            <Route path="promotions/edit/:id" element={<AdminEditPromotion />} />
+            <Route path="trainers" element={<AdminTrainers />} />
+            <Route path="trainers/add" element={<AdminAddTrainer />} />
+            <Route path="trainers/view/:id" element={<AdminViewTrainer />} />
+            <Route path="trainers/edit/:id" element={<AdminEditTrainer />} />
           </Route>
         </Route>
 
