@@ -15,6 +15,7 @@ export default function StaffMembers() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({ name: '', phone: '' });
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchMembers();
@@ -24,10 +25,19 @@ export default function StaffMembers() {
     setLoading(true);
     try {
       const res = await fetch('/api/members');
+      if (res.status === 403) {
+        setMembers([]);
+        setError('Bạn không có quyền truy cập danh sách hội viên.');
+        setLoading(false);
+        return;
+      }
       const data = await res.json();
-      setMembers(data);
+      setMembers(Array.isArray(data) ? data : []);
+      setError(null);
     } catch (error) {
       console.error('Error fetching members:', error);
+      setMembers([]);
+      setError('Không thể tải danh sách hội viên. Vui lòng thử lại sau.');
     }
     setLoading(false);
   };
@@ -50,6 +60,11 @@ export default function StaffMembers() {
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
+      {error && (
+        <Box mb={2}>
+          <Typography color="error" variant="body1">{error}</Typography>
+        </Box>
+      )}
       <Box className="flex justify-between items-center mb-6">
         <Typography
           variant="h4"
