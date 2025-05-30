@@ -15,6 +15,7 @@ import styles from './StaffSidebar.module.css';
 const menu = [
   { name: "Dashboard", path: "/staff/dashboard", icon: <DashboardIcon /> },
   { name: "Hội viên", path: "/staff/members", icon: <GroupIcon /> },
+  { name: "Ghi nhận buổi tập", path: "/staff/workout-log", icon: <FitnessCenterIcon /> },
   { name: "Gói tập", path: "/staff/packages", icon: <FitnessCenterIcon /> },
   { name: "Thiết bị", path: "/staff/equipment", icon: <BuildIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/staff/orders", icon: <MonetizationOnIcon /> },

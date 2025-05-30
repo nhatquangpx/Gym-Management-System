@@ -97,6 +97,7 @@ import AddEquipment from './pages/staff/AddEquipment';
 import AddSchedule from './pages/staff/AddSchedule';
 import StaffOrders from './pages/staff/Orders';
 import ServiceHistory from './pages/staff/ServiceHistory';
+import StaffWorkoutLogPage from './pages/staff/WorkoutLogPage';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -166,6 +167,7 @@ function App() {
             <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="account" element={<StaffAccount />} />
+            <Route path="workout-log" element={<StaffWorkoutLogPage />} />
           </Route>
         </Route>
 
