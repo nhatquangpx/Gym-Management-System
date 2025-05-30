@@ -1,8 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Paper, Typography, Box, Button, Chip, Divider } from '@mui/material';
+import { 
+  Paper, Typography, Box, Button, Chip, Divider, ThemeProvider, createTheme,
+  Alert, CircularProgress
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4f8cff',
+    },
+  },
+});
 
 export default function ViewEquipment() {
   const { id } = useParams();
@@ -72,8 +83,8 @@ export default function ViewEquipment() {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <Typography>Đang tải...</Typography>
+      <div className="p-6 flex justify-center items-center">
+        <CircularProgress />
       </div>
     );
   }
@@ -81,9 +92,7 @@ export default function ViewEquipment() {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
+        <Alert severity="error">{error}</Alert>
       </div>
     );
   }
@@ -91,72 +100,93 @@ export default function ViewEquipment() {
   if (!equipment) {
     return (
       <div className="p-6">
-        <Typography>Không tìm thấy thiết bị.</Typography>
+        <Alert severity="info">Không tìm thấy thiết bị.</Alert>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto" style={{ background: '#232323' }}>
-        <Box className="flex justify-between items-center mb-6">
-          <Typography variant="h4" className="font-bold text-white">
-            Chi tiết thiết bị
-          </Typography>
-          <Chip 
-            label={getStatusLabel(equipment.status)} 
-            color={getStatusColor(equipment.status)} 
-          />
-        </Box>
-        
-        <Divider className="my-4" sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
-        
-        <Box className="space-y-4 text-white">
-          <Box>
-            <Typography variant="subtitle2" color="gray">Tên thiết bị</Typography>
-            <Typography variant="h6">{equipment.name}</Typography>
-          </Box>
-          
-          <Box>
-            <Typography variant="subtitle2" color="gray">Loại thiết bị</Typography>
-            <Typography variant="body1">{equipment.type}</Typography>
-          </Box>
-          
-          <Box>
-            <Typography variant="subtitle2" color="gray">Ngày bảo trì gần nhất</Typography>
-            <Typography variant="body1">
-              {equipment.maintenanceDate 
-                ? new Date(equipment.maintenanceDate).toLocaleDateString() 
-                : 'Chưa có thông tin'}
+    <ThemeProvider theme={theme}>
+      <div className="p-6">
+        <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto">
+          <Box className="flex justify-between items-center mb-6">
+            <Typography 
+              variant="h4" 
+              className="font-bold"
+              sx={{ 
+                color: '#4f8cff', 
+                fontWeight: 700, 
+                fontSize: '2.2em'
+              }}
+            >
+              Chi tiết thiết bị
             </Typography>
+            <Chip 
+              label={getStatusLabel(equipment.status)} 
+              color={getStatusColor(equipment.status)} 
+            />
           </Box>
           
-          <Box>
-            <Typography variant="subtitle2" color="gray">Ghi chú bảo trì</Typography>
-            <Typography variant="body1">
-              {equipment.maintenanceNotes || 'Không có ghi chú'}
-            </Typography>
+          <Divider className="my-4" />
+          
+          <Box className="space-y-4">
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Tên thiết bị</Typography>
+              <Typography variant="h6">{equipment.name}</Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Phòng tập</Typography>
+              <Typography variant="body1">
+                {equipment.roomId ? equipment.roomId.name : 'Không xác định'}
+              </Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Ngày mua</Typography>
+              <Typography variant="body1">
+                {equipment.purchaseDate 
+                  ? new Date(equipment.purchaseDate).toLocaleDateString() 
+                  : 'Chưa có thông tin'}
+              </Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Ngày hết hạn bảo hành</Typography>
+              <Typography variant="body1">
+                {equipment.warrantyDate 
+                  ? new Date(equipment.warrantyDate).toLocaleDateString() 
+                  : 'Chưa có thông tin'}
+              </Typography>
+            </Box>
+            
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">Mô tả</Typography>
+              <Typography variant="body1">
+                {equipment.description || 'Không có mô tả'}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        
-        <Box className="flex gap-4 mt-8">
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => navigate(`/staff/equipment/edit/${id}`)}
-          >
-            Chỉnh sửa
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/staff/equipment')}
-            sx={{ color: 'white', borderColor: 'white' }}
-          >
-            Quay lại
-          </Button>
-        </Box>
-      </Paper>
-    </div>
+          
+          <Box className="flex gap-4 mt-8">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<EditIcon />}
+              onClick={() => navigate(`/staff/equipment/edit/${id}`)}
+            >
+              Chỉnh sửa
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate('/staff/equipment')}
+            >
+              Quay lại
+            </Button>
+          </Box>
+        </Paper>
+      </div>
+    </ThemeProvider>
   );
 } 
