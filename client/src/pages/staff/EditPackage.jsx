@@ -14,6 +14,7 @@ import {
   Select,
   Alert,
   Chip,
+  TextareaAutosize,
 } from '@mui/material';
 import axios from 'axios';
 import ButtonComponent from "../../components/features/admin/Button/Button";
@@ -179,11 +180,22 @@ const EditPackage = () => {
 
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Tính năng (mỗi dòng là một tính năng)</label>
-          <textarea 
-            value={form.features.join('\n')} 
-            onChange={handleFeaturesChange} 
-            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
-            rows="4"
+          <TextareaAutosize
+            name="features"
+            value={form.features.join('\n')}
+            onChange={handleFeaturesChange}
+            minRows={4}
+            style={{
+              width: '100%',
+              padding: '8px',
+              borderRadius: '4px',
+              backgroundColor: 'var(--admin-header)',
+              color: 'var(--admin-text)',
+              border: '1px solid var(--admin-border)',
+              fontFamily: 'inherit',
+              fontSize: '1rem',
+              resize: 'vertical'
+            }}
             placeholder="Ví dụ:&#10;Sử dụng phòng tập&#10;Sử dụng phòng xông hơi&#10;Huấn luyện viên cá nhân"
           />
         </div>
