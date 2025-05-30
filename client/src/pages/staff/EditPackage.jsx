@@ -1,11 +1,27 @@
-import { useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
-import Button from "../../components/features/admin/Button/Button";
-import axios from '../../utils/axiosConfig';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Grid,
+  TextField,
+  Button,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Alert,
+  Chip,
+} from '@mui/material';
+import axios from 'axios';
+import ButtonComponent from "../../components/features/admin/Button/Button";
 
-export default function AddPackage() {
+const EditPackage = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
     name: '',
@@ -16,37 +32,71 @@ export default function AddPackage() {
     features: [],
     duration: 30
   });
-  
+
+  useEffect(() => {
+    const fetchPackage = async () => {
+      try {
+        const response = await axios.get(`/api/packages/${id}`);
+        setForm(response.data);
+      } catch (err) {
+        console.error('Error fetching package:', err);
+        setError(err.response?.data?.message || 'Không thể tải thông tin gói tập. Vui lòng thử lại sau.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackage();
+  }, [id]);
+
   const handleChange = e => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: name === 'price' || name === 'duration' ? Number(value) : value });
   };
-  
+
   const handleFeaturesChange = e => {
     const features = e.target.value.split('\n').filter(feature => feature.trim() !== '');
     setForm({ ...form, features });
   };
-  
+
   const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      await axios.post('/api/packages', form);
-      alert('Thêm gói tập thành công!');
+      await axios.put(`/api/packages/${id}`, form);
+      alert('Cập nhật gói tập thành công!');
       navigate('/staff/packages');
     } catch (err) {
-      console.error('Error creating package:', err);
-      setError(err.response?.data?.message || 'Không thể thêm gói tập. Vui lòng thử lại sau.');
+      console.error('Error updating package:', err);
+      setError(err.response?.data?.message || 'Không thể cập nhật gói tập. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
   };
-  
+
+  if (loading) {
+    return (
+      <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
+        <div className="text-center">Đang tải...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
-      <h1 className="text-2xl font-bold mb-6">Thêm gói tập mới</h1>
+      <h1 className="text-2xl font-bold mb-6">Chỉnh sửa gói tập</h1>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -139,12 +189,14 @@ export default function AddPackage() {
         </div>
 
         <div className="flex gap-3">
-          <Button type="submit" color="primary" disabled={loading}>
+          <ButtonComponent type="submit" color="primary" disabled={loading}>
             {loading ? 'Đang lưu...' : 'Lưu'}
-          </Button>
-          <Link to="/staff/packages"><Button type="button" color="secondary">Hủy</Button></Link>
+          </ButtonComponent>
+          <Link to="/staff/packages"><ButtonComponent type="button" color="secondary">Hủy</ButtonComponent></Link>
         </div>
       </form>
     </div>
   );
-} 
+};
+
+export default EditPackage; 
