@@ -1,25 +1,61 @@
-import { useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
-import Button from "../../components/features/admin/Button/Button";
-import axios from '../../utils/axiosConfig';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Grid,
+  TextField,
+  Button,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+  Alert,
+} from '@mui/material';
+import axios from 'axios';
+import ButtonComponent from "../../components/features/admin/Button/Button";
 
-export default function AddMember() {
+const EditMember = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({});
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    gender: '',
-    job: '',
-    status: 'Đang hoạt động',
-    isActive: true
-  });
+
+  useEffect(() => {
+    const fetchMember = async () => {
+      try {
+        const response = await axios.get(`/api/members/${id}`);
+        const member = response.data.data;
+        
+        setForm({
+          name: member.name || `${member.firstName || ''} ${member.lastName || ''}`,
+          email: member.email,
+          phone: member.phone || '',
+          address: member.memberInfo?.address || '',
+          gender: member.memberInfo?.gender || '',
+          job: member.memberInfo?.job || '',
+          status: member.isActive !== false ? 'Đang hoạt động' : 'Tạm dừng',
+          isActive: member.isActive !== false
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching member:", err);
+        setError("Không thể tải thông tin thành viên. Vui lòng thử lại sau.");
+        setLoading(false);
+      }
+    };
+
+    fetchMember();
+  }, [id]);
+
+  if (loading) return <div className="text-[var(--admin-text)] p-6">Đang tải...</div>;
+  if (error) return <div className="text-[var(--admin-text)] p-6">{error}</div>;
 
   const handleChange = e => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     if (name === "status") {
       setForm({ 
         ...form, 
@@ -31,11 +67,9 @@ export default function AddMember() {
     }
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
+    
     try {
       const memberData = {
         name: form.name,
@@ -46,79 +80,72 @@ export default function AddMember() {
         job: form.job,
         isActive: form.isActive
       };
-
-      await axios.post('/api/members', memberData);
-      alert('Thêm thành viên thành công!');
+      
+      setLoading(true);
+      
+      await axios.put(`/api/members/${id}`, memberData);
+      
+      setLoading(false);
+      alert('Đã cập nhật thành công!');
       navigate('/staff/members');
     } catch (err) {
-      console.error("Error adding member:", err);
-      setError(err.response?.data?.message || 'Không thể thêm thành viên. Vui lòng thử lại sau.');
-    } finally {
       setLoading(false);
+      console.error("Error updating member:", err);
+      alert(`Không thể cập nhật thành viên: ${err.response?.data?.message || 'Đã xảy ra lỗi'}`);
     }
   };
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
-      <h1 className="text-2xl font-bold mb-6">Thêm thành viên mới</h1>
-      
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
+      <h1 className="text-2xl font-bold mb-6">Chỉnh sửa thành viên</h1>
       <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Tên</label>
           <input 
             name="name" 
-            value={form.name} 
+            value={form.name || ''} 
             onChange={handleChange} 
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
-            required
+            required 
           />
         </div>
-
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Email</label>
           <input 
             name="email" 
             type="email"
-            value={form.email} 
+            value={form.email || ''} 
             onChange={handleChange} 
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
             required
           />
         </div>
-
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Số điện thoại</label>
           <input 
             name="phone" 
-            value={form.phone} 
-            onChange={handleChange} 
+            value={form.phone || ''} 
+            onChange={handleChange}
+            placeholder="Nhập số điện thoại"
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
-            required
           />
         </div>
-
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Địa chỉ</label>
           <input 
             name="address" 
-            value={form.address} 
+            value={form.address || ''} 
             onChange={handleChange}
             placeholder="Nhập địa chỉ"
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
           />
         </div>
-
+        
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Giới tính</label>
           <select 
             name="gender" 
-            value={form.gender} 
+            value={form.gender || ''} 
             onChange={handleChange} 
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
           >
@@ -133,7 +160,7 @@ export default function AddMember() {
           <label className="block mb-1 text-[var(--admin-text)]">Nghề nghiệp</label>
           <input 
             name="job" 
-            value={form.job} 
+            value={form.job || ''} 
             onChange={handleChange}
             placeholder="Nhập nghề nghiệp"
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
@@ -144,7 +171,7 @@ export default function AddMember() {
           <label className="block mb-1 text-[var(--admin-text)]">Trạng thái</label>
           <select 
             name="status" 
-            value={form.status} 
+            value={form.status || 'Đang hoạt động'} 
             onChange={handleChange} 
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
           >
@@ -152,14 +179,15 @@ export default function AddMember() {
             <option value="Tạm dừng">Tạm dừng</option>
           </select>
         </div>
-
         <div className="flex gap-3">
-          <Button type="submit" color="primary" disabled={loading}>
+          <ButtonComponent type="submit" color="primary" disabled={loading}>
             {loading ? 'Đang xử lý...' : 'Lưu'}
-          </Button>
-          <Link to="/staff/members"><Button type="button" color="secondary">Hủy</Button></Link>
+          </ButtonComponent>
+          <Link to="/staff/members"><ButtonComponent type="button" color="secondary">Hủy</ButtonComponent></Link>
         </div>
       </form>
     </div>
   );
-} 
+};
+
+export default EditMember; 

@@ -90,6 +90,8 @@ const SettingsPage = () => <div>Trang Cài đặt</div>;
 import StaffLayout from './components/layout/StaffLayout';
 import StaffDashboard from './pages/staff/Dashboard';
 import StaffMembers from './pages/staff/Members';
+import StaffViewMember from './pages/staff/ViewMember';
+import StaffEditMember from './pages/staff/EditMember';
 import StaffPackages from './pages/staff/Packages';
 import StaffEquipment from './pages/staff/Equipment';
 import StaffWorkouts from './pages/staff/Workouts';
@@ -98,12 +100,16 @@ import StaffFeedback from './pages/staff/Feedback';
 import StaffAccount from './pages/staff/Account';
 import StaffAddMember from './pages/staff/AddMember';
 import StaffAddPackage from './pages/staff/AddPackage';
+import StaffViewPackage from './pages/staff/ViewPackage';
+import StaffEditPackage from './pages/staff/EditPackage';
 import StaffAddEquipment from './pages/staff/AddEquipment';
 import StaffEditEquipment from './pages/staff/EditEquipment';
 import StaffViewEquipment from './pages/staff/ViewEquipment';
 import StaffAddSchedule from './pages/staff/AddSchedule';
 import StaffOrders from './pages/staff/Orders';
 import StaffServiceHistory from './pages/staff/ServiceHistory';
+import StaffViewOrder from './pages/staff/ViewOrder';
+import StaffEditOrder from './pages/staff/EditOrder';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -165,13 +171,19 @@ function App() {
             <Route path="dashboard" element={<StaffDashboard />} />
             <Route path="members" element={<StaffMembers />} />
             <Route path="members/add" element={<StaffAddMember />} />
+            <Route path="members/view/:id" element={<StaffViewMember />} />
+            <Route path="members/edit/:id" element={<StaffEditMember />} />
             <Route path="packages" element={<StaffPackages />} />
             <Route path="packages/add" element={<StaffAddPackage />} />
+            <Route path="packages/view/:id" element={<StaffViewPackage />} />
+            <Route path="packages/edit/:id" element={<StaffEditPackage />} />
             <Route path="equipment" element={<StaffEquipment />} />
             <Route path="equipment/add" element={<StaffAddEquipment />} />
             <Route path="equipment/view/:id" element={<StaffViewEquipment />} />
             <Route path="equipment/edit/:id" element={<StaffEditEquipment />} />
             <Route path="orders" element={<StaffOrders />} />
+            <Route path="orders/view/:id" element={<StaffViewOrder />} />
+            <Route path="orders/edit/:id" element={<StaffEditOrder />} />
             <Route path="workouts" element={<StaffWorkouts />} />
             <Route path="service-history" element={<StaffServiceHistory />} />
             <Route path="schedules" element={<StaffSchedules />} />
@@ -188,7 +200,8 @@ function App() {
             <Route path="members" element={<AdminMembers />} />
             <Route path="members/add" element={<AddMember />} />
             <Route path="members/view/:id" element={<ViewMember />} />
-            <Route path="members/edit/:id" element={<EditMember />} />            <Route path="employees" element={<AdminEmployees />} />
+            <Route path="members/edit/:id" element={<EditMember />} />     
+            <Route path="employees" element={<AdminEmployees />} />
             <Route path="employees/add" element={<AddEmployee />} />
             <Route path="employees/view/:id" element={<ViewEmployee />} />
             <Route path="packages" element={<AdminPackages />} />
