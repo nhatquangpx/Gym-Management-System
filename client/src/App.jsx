@@ -110,6 +110,10 @@ import StaffOrders from './pages/staff/Orders';
 import StaffServiceHistory from './pages/staff/ServiceHistory';
 import StaffViewOrder from './pages/staff/ViewOrder';
 import StaffEditOrder from './pages/staff/EditOrder';
+import StaffGymRoomList from './pages/staff/GymRoomList';
+import StaffAddGymRoom from './pages/staff/AddGymRoom';
+import StaffEditGymRoom from './pages/staff/EditGymRoom';
+import StaffViewGymRoom from './pages/staff/ViewGymRoom';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -177,6 +181,10 @@ function App() {
             <Route path="packages/add" element={<StaffAddPackage />} />
             <Route path="packages/view/:id" element={<StaffViewPackage />} />
             <Route path="packages/edit/:id" element={<StaffEditPackage />} />
+            <Route path="gymrooms" element={<StaffGymRoomList />} />
+            <Route path="gymrooms/add" element={<StaffAddGymRoom />} />
+            <Route path="gymrooms/view/:id" element={<StaffViewGymRoom />} />
+            <Route path="gymrooms/edit/:id" element={<StaffEditGymRoom />} />
             <Route path="equipment" element={<StaffEquipment />} />
             <Route path="equipment/add" element={<StaffAddEquipment />} />
             <Route path="equipment/view/:id" element={<StaffViewEquipment />} />

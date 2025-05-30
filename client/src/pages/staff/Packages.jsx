@@ -165,10 +165,10 @@ export default function Packages() {
           <table className="min-w-full rounded-2xl">
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
-                <th className="py-3 px-4 text-center">Tên gói tập</th>
-                <th className="py-3 px-4 text-center">Giá</th>
-                <th className="py-3 px-4 text-center">Loại gói</th>
-                <th className="py-3 px-4 text-center">Thời hạn</th>
+                <th className="py-3 px-4 text-left">Tên gói tập</th>
+                <th className="py-3 px-4 text-left">Giá</th>
+                <th className="py-3 px-4 text-left">Loại gói</th>
+                <th className="py-3 px-4 text-left">Thời hạn</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>            <tbody>
@@ -183,16 +183,16 @@ export default function Packages() {
                 <tr><td colSpan={5} className="text-center py-4">Không có gói tập nào</td></tr>
               ) : filteredPackages.map((p) => (
                 <tr key={p._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">
-                    <span className="flex items-center gap-2 justify-center">
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">
+                    <span className="flex items-center gap-2 justify-start">
                       <FitnessCenterIcon className="text-[var(--admin-primary)]" style={{ fontSize: 22 }} />
                       {p.name}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.formattedPrice}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.type}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.duration} ngày</td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-3 py-4 text-[var(--admin-text)] text-left">{p.formattedPrice}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{p.type}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{p.duration} ngày</td>
+                  <td className="px-6 py-4 text-left">
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/staff/packages/view/${p._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/staff/packages/edit/${p._id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
