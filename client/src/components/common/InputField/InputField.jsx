@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './InputField.module.css';
 
-// Thêm prop 'required'
+// Thêm prop 'disabled'
 const InputField = ({
   id,
   label,
@@ -10,7 +10,8 @@ const InputField = ({
   value,
   onChange,
   error,
-  required // Thêm prop này
+  required,
+  disabled // Thêm dòng này
 }) => {
   const [focused, setFocused] = useState(false);
 
@@ -18,12 +19,11 @@ const InputField = ({
     <div className={`${styles.formGroup} ${error ? styles.error : ''} ${focused ? styles.focused : ''}`}>
       <label htmlFor={id} className={styles.label}>
         {label}
-        {/* Hiển thị dấu sao nếu required là true */}
         {required && <span className={styles.required}>*</span>}
       </label>
       <input
         id={id}
-        name={id} // Đảm bảo có name để handleChange hoạt động đúng
+        name={id}
         type={type}
         className={styles.input}
         placeholder={placeholder}
@@ -31,7 +31,8 @@ const InputField = ({
         onChange={onChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        required={required} // Thêm thuộc tính required cho HTML validation (tùy chọn)
+        required={required}
+        readOnly={disabled} // Sử dụng readOnly thay cho disabled
       />
       {error && <div className={styles.errorMessage}>{error}</div>}
     </div>

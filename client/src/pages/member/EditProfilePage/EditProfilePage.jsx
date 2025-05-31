@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLogin } from '../../../redux/slices/authSlice';
 import styles from './EditProfilePage.module.css';
-import Navbar from '../../../components/layout/Navbar/Navbar'; // Sử dụng Navbar chung
-import Footer from '../../../components/layout/Footer/Footer'; // Sử dụng Footer chung
+import Navbar from '../../../components/layout/Navbar/Navbar';
+import Footer from '../../../components/layout/Footer/Footer';
 import InputField from '../../../components/common/InputField/InputField';
 import Button from '../../../components/common/Button/Button';
 
@@ -18,30 +18,48 @@ const EditProfilePage = () => {
     email: '',
     phone: '',
     gender: '',
-    birthDate: '',
+    dateOfBirth: '',
     address: '',
-    occupation: '',
-    avatar: '',
+    job: '',
   });
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
 
+  // Fetch profile khi tải trang
   useEffect(() => {
     if (!isLoggedIn) {
       navigate('/login');
-    } else if (user) {
-      setFormData({
-        fullName: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        gender: user.gender || '',
-        birthDate: user.birthDate ? new Date(user.birthDate).toISOString().split('T')[0] : '',
-        address: user.address || '',
-        occupation: user.occupation || '',
-        avatar: user.avatar || '',
-      });
+    } else {
+      const fetchProfile = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const memberId = user?._id || user?.id || JSON.parse(localStorage.getItem('user'))?._id;
+          if (!memberId) return;
+          const res = await fetch(`http://localhost:8001/api/members/info/${memberId}`, {
+            headers: {
+              'Authorization': 'Bearer ' + token
+            }
+          });
+          const data = await res.json();
+          if (data.success) {
+            setFormData({
+              fullName: data.data.name || '',
+              email: data.data.email || '',
+              phone: data.data.phone || '',
+              gender: data.data.memberInfo.gender || '',
+              dateOfBirth: data.data.memberInfo.dateOfBirth ? new Date(data.data.memberInfo.dateOfBirth).toISOString().split('T')[0] : '',
+              address: data.data.memberInfo.address || '',
+              job: data.data.memberInfo.job || '',
+            });
+          }
+        } catch (error) {
+          // Có thể show thông báo lỗi ở đây nếu muốn
+        }
+      };
+      fetchProfile();
     }
   }, [user, isLoggedIn, navigate]);
 
@@ -53,17 +71,6 @@ const EditProfilePage = () => {
     }
     if (successMessage) setSuccessMessage('');
   };
-  
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, avatar: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -72,7 +79,7 @@ const EditProfilePage = () => {
       newErrors.fullName = 'Họ và tên không được để trống';
       isValid = false;
     }
-    if (formData.phone && !/^[0-9]{10,11}$/.test(formData.phone)) { // Allow 10 or 11 digits
+    if (formData.phone && !/^[0-9]{10,11}$/.test(formData.phone)) {
       newErrors.phone = 'Số điện thoại không hợp lệ';
       isValid = false;
     }
@@ -80,35 +87,87 @@ const EditProfilePage = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isEditing) return;
     if (validateForm()) {
       setIsLoading(true);
-      setSuccessMessage('');
-      console.log('Đang cập nhật thông tin:', formData);
-      setTimeout(() => {
-        const updatedUser = { 
-          ...user, 
-          name: formData.fullName,
-          phone: formData.phone,
-          gender: formData.gender,
-          birthDate: formData.birthDate,
-          address: formData.address,
-          occupation: formData.occupation,
-          avatar: formData.avatar,
-        };
-        
-        // Update user info in Redux store
-        dispatch(setLogin({
-          user: updatedUser,
-          token: localStorage.getItem('token') || 'mock-token'
-        }));
-        
+      try {
+        const token = localStorage.getItem('token');
+        const memberId = user?._id || user?.id || JSON.parse(localStorage.getItem('user'))?._id;
+        const res = await fetch(`http://localhost:8001/api/members/info/update/${memberId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            name: formData.fullName,
+            phone: formData.phone,
+            gender: formData.gender,
+            dateOfBirth: formData.dateOfBirth,
+            address: formData.address,
+            job: formData.job,
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          dispatch(setLogin({
+            user: { ...user, ...data.data },
+            token: token
+          }));
+          setSuccessMessage('Cập nhật thông tin thành công!');
+          setIsEditing(false);
+        } else {
+          setErrors({ form: data.message || 'Cập nhật thất bại!' });
+        }
+      } catch (err) {
+        setErrors({ form: 'Lỗi khi cập nhật thông tin!' });
+      } finally {
         setIsLoading(false);
-        setSuccessMessage('Cập nhật thông tin thành công!');
-      }, 1500);
+      }
     }
   };
+
+  const handleCancelEdit = async () => {
+    setIsEditing(false);
+    try {
+      const token = localStorage.getItem('token');
+      const memberId = user?._id || user?.id || JSON.parse(localStorage.getItem('user'))?._id;
+      if (!memberId) return;
+      const res = await fetch(`http://localhost:8001/api/members/info/${memberId}`, {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormData({
+          fullName: data.data.name || '',
+          email: data.data.email || '',
+          phone: data.data.phone || '',
+          gender: data.data.memberInfo.gender || '',
+          dateOfBirth: data.data.memberInfo.dateOfBirth ? new Date(data.data.memberInfo.dateOfBirth).toISOString().split('T')[0] : '',
+          address: data.data.memberInfo.address || '',
+          job: data.data.memberInfo.job || '',
+        });
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    let timeoutId;
+    if (successMessage) {
+      timeoutId = setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [successMessage]);
 
   return (
     <div className={styles.pageWrapper}>
@@ -116,99 +175,170 @@ const EditProfilePage = () => {
       <main className={styles.mainContent}>
         <div className={styles.profileContainer}>
           <div className={styles.header}>
-            <h1>Chỉnh Sửa Thông Tin Cá Nhân</h1>
+            <h1>Thông Tin Cá Nhân</h1>
             <p>Cập nhật thông tin của bạn để chúng tôi phục vụ tốt hơn.</p>
           </div>
 
-          <form className={styles.profileForm} onSubmit={handleSubmit}>
-            <div className={styles.avatarSection}>
-              <img 
-                src={formData.avatar || 'https://i.pravatar.cc/150?img=68'} // Changed default avatar for variety
-                alt="Avatar" 
-                className={styles.avatarPreview}
-              />
-              <label htmlFor="avatarUpload" className={styles.avatarUploadButton}>
-                Thay đổi ảnh
-              </label>
-              <input 
-                type="file" 
-                id="avatarUpload" 
-                accept="image/*" 
-                onChange={handleAvatarChange}
-                style={{ display: 'none' }}
-              />
-            </div>
+          {/* Hiển thị thông báo ở đây, ngoài điều kiện isEditing */}
+          {errors.form && <p className={styles.errorMessage}>{errors.form}</p>}
+          {successMessage && (
+            <p className={styles.successMessage}>
+              {successMessage}
+            </p>
+          )}
 
-            <div className={styles.formGrid}>
-              <InputField
-                id="fullName" label="Họ và tên" type="text"
-                value={formData.fullName} onChange={handleChange}
-                error={errors.fullName} required
-              />
-              <InputField
-                id="email" 
-                label="Email (Thông tin này không thể chỉnh sửa)" 
-                type="email"
-                value={formData.email} 
-                disabled 
-              />
-              <InputField
-                id="phone" label="Số điện thoại" type="tel"
-                value={formData.phone} onChange={handleChange}
-                error={errors.phone}
-              />
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="gender" className={styles.label}>Giới tính</label>
-                <select 
-                  id="gender"
-                  name="gender" 
-                  value={formData.gender} 
-                  onChange={handleChange}
-                  className={styles.selectInput}
+          {!isEditing ? (
+            // Hiển thị thông tin và nút Thay đổi khi không ở chế độ chỉnh sửa
+            <>
+              <div className={styles.formGrid}>
+                <InputField
+                  id="fullName" label="Họ và tên" type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  disabled={true}
+                />
+                <InputField
+                  id="email"
+                  label="Email (Thông tin này không thể chỉnh sửa)"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  disabled
+                />
+                <InputField
+                  id="phone" label="Số điện thoại" type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  disabled={true}
+                />
+                <div className={styles.formGroup}>
+                  <label htmlFor="gender" className={styles.label}>Giới tính</label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender}
+                    className={styles.selectInput}
+                    disabled={true}
+                  >
+                    <option value="">Chọn giới tính</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+                <InputField
+                  id="dateOfBirth" label="Ngày sinh" type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  disabled={true}
+                />
+                <InputField
+                  id="address" label="Địa chỉ" type="text"
+                  name="address"
+                  value={formData.address}
+                  disabled={true}
+                />
+                <InputField
+                  id="job" label="Công việc" type="text"
+                  name="job"
+                  value={formData.job}
+                  disabled={true}
+                />
+              </div>
+              <div className={styles.buttonGroup}>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setIsEditing(true);
+                    setSuccessMessage(''); // Reset message khi bắt đầu chỉnh sửa
+                  }}
                 >
-                  <option value="">Chọn giới tính</option>
-                  <option value="Nam">Nam</option>
-                  <option value="Nữ">Nữ</option>
-                  <option value="Khác">Khác</option>
-                </select>
+                  Thay đổi thông tin
+                </Button>
+              </div>
+            </>
+          ) : (
+            // Form chỉnh sửa khi ở chế độ editing
+            <form className={styles.profileForm} onSubmit={handleSubmit}>
+              <div className={styles.formGrid}>
+                <InputField
+                  id="fullName" label="Họ và tên" type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  error={errors.fullName}
+                  required
+                />
+                <InputField
+                  id="email"
+                  label="Email (Thông tin này không thể chỉnh sửa)"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  disabled
+                />
+                <InputField
+                  id="phone" label="Số điện thoại" type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  error={errors.phone}
+                />
+                <div className={styles.formGroup}>
+                  <label htmlFor="gender" className={styles.label}>Giới tính</label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className={styles.selectInput}
+                  >
+                    <option value="">Chọn giới tính</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+                <InputField
+                  id="dateOfBirth" label="Ngày sinh" type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                />
+                <InputField
+                  id="address" label="Địa chỉ" type="text"
+                  name="address"
+                  placeholder="Ví dụ: 123 Đường ABC, Quận XYZ, TP. Hà Nội"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
+                <InputField
+                  id="job" label="Công việc" type="text"
+                  name="job"
+                  placeholder="Ví dụ: Sinh viên, Nhân viên văn phòng"
+                  value={formData.job}
+                  onChange={handleChange}
+                />
               </div>
 
-              <InputField
-                id="birthDate" label="Ngày sinh" type="date"
-                value={formData.birthDate} onChange={handleChange}
-              />
-              <InputField
-                id="address" label="Địa chỉ" type="text"
-                placeholder="Ví dụ: 123 Đường ABC, Quận XYZ, TP. Hà Nội"
-                value={formData.address} onChange={handleChange}
-              />
-              <InputField
-                id="occupation" label="Công việc" type="text"
-                placeholder="Ví dụ: Sinh viên, Nhân viên văn phòng"
-                value={formData.occupation} onChange={handleChange}
-              />
-            </div>
-            
-            {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
-            
-            <div className={styles.buttonGroup}>
-              <Button 
-                type="button" 
-                className={styles.backButton}
-                onClick={() => navigate(-1)}
-              >
-                Quay lại
-              </Button>
-              <Button 
-                type="submit" 
-                className={styles.submitButton}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Đang lưu...' : 'Lưu Thay Đổi'}
-              </Button>
-            </div>
-          </form>
+              <div className={styles.buttonGroup}>
+                <Button 
+                  type="submit" 
+                  className={styles.submitButton}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Đang lưu...' : 'Lưu Thay Đổi'}
+                </Button>
+                <Button 
+                  type="button" 
+                  className={styles.backButton}
+                  onClick={handleCancelEdit}
+                >
+                  Hủy
+                </Button>
+              </div>
+            </form>
+          )}
         </div>
       </main>
       <Footer />
