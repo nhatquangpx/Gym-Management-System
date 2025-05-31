@@ -61,6 +61,12 @@
   position: relative;
   cursor: pointer;
   transition: color 0.3s ease;
+  outline: none;
+}
+
+.navLink:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .navLink::after { /* Gạch chân khi hover */
@@ -104,6 +110,7 @@
 }
 
 .registerButton:hover {
+  color: white;
   background-color: #e0002d;
   transform: translateY(-2px);
 }
