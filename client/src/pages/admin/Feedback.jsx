@@ -29,7 +29,7 @@ export default function Feedback() {
 
   const fetchFeedback = async () => {
     try {
-      const response = await fetch('/api/feedback');
+      const response = await fetch('/api/feedbacks');
       const data = await response.json();
       setFeedback(data);
       setLoading(false);
@@ -46,7 +46,7 @@ export default function Feedback() {
 
   const handleDeleteConfirm = async () => {
     try {
-      await fetch(`/api/feedback/${itemToDelete}`, {
+      await fetch(`/api/feedbacks/${itemToDelete}`, {
         method: 'DELETE',
       });
       fetchFeedback();
@@ -71,23 +71,18 @@ export default function Feedback() {
   return (
     <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
-        <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', mb: 4 }}>
+        <Typography
+          variant="h4"
+          className="font-bold"
+          sx={{
+            color: '#4f8cff',
+            fontWeight: 700,
+            fontSize: '2.2em',
+            mb: 4
+          }}
+        >
           Danh sách phản hồi
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ 
-            backgroundColor: 'var(--admin-primary)',
-            '&:hover': {
-              backgroundColor: 'var(--admin-primary)',
-              opacity: 0.9
-            }
-          }}
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/admin/feedback/add')}
-        >
-          Thêm phản hồi
-        </Button>
       </Box>
 
       {/* Thanh tìm kiếm */}

@@ -12,6 +12,13 @@ router.post('/', [verifyToken, verifyRole(['member'])], feedbackController.creat
 // Lấy lịch sử feedback
 router.get('/history', [verifyToken, verifyRole(['member'])], feedbackController.getFeedbackHistory);
 
+// Route cho admin/staff xem tất cả feedback
+router.get('/', [verifyToken, verifyRole(['admin', 'employee'])], feedbackController.getAllFeedback);
+// Route cho admin/staff xem chi tiết feedback
+router.get('/:id', [verifyToken, verifyRole(['admin', 'employee'])], feedbackController.getFeedbackById);
+// Xóa feedback
+router.delete('/:id', [verifyToken, verifyRole(['admin', 'employee'])], feedbackController.deleteFeedback);
+
 router.use(verifyToken); // hoặc authenticateMember
 
 module.exports = router;

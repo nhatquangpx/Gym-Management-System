@@ -219,6 +219,14 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
             disabled={isDetail}
             rows={4}
           />
+          {isDetail && (
+            <div className={styles.checkinTime}>
+              <div className={styles.checkinTimeLabel}>Thời gian checkin</div>
+              <div className={styles.checkinTimeValue}>
+                {session?.checkinTime ? new Date(session.checkinTime).toLocaleString('vi-VN') : 'Chưa checkin'}
+              </div>
+            </div>
+          )}
           {/* Không hiển thị error khi chỉ xem chi tiết */}
           {!isDetail && error && <div style={{ color: '#ff1744', fontWeight: 500 }}>{error}</div>}
           <div className={styles.sessionModalFooter}>
@@ -472,6 +480,7 @@ const SchedulePage = () => {
                 const dateStr = d.toISOString().slice(0, 10);
                 const isToday = dateStr === todayStr;
                 const isSelected = dateStr === selectedDate;
+                const hasSessions = sessions.some(s => s.date === dateStr);
                 return (
                   <div
                     key={dateStr}
@@ -479,7 +488,8 @@ const SchedulePage = () => {
                       styles.dayItem +
                       (isSelected ? ' ' + styles.selected : '') +
                       (isToday ? ' ' + styles.today : '') +
-                      (isSelected && isToday ? ' ' + styles.selected + ' ' + styles.today : '')
+                      (isSelected && isToday ? ' ' + styles.selected + ' ' + styles.today : '') +
+                      (hasSessions ? ' ' + styles.hasSessions : '')
                     }
                     onClick={() => setSelectedDate(dateStr)}
                   >

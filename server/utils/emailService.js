@@ -57,14 +57,43 @@ const sendReceiptEmail = async (to, orderDetails) => {
 const sendMaintenanceNotificationEmail = async (equipmentName, issueDetails, recipientEmail) => {
   const subject = `Thông báo bảo trì thiết bị: ${equipmentName}`;
   const html = `
-    <p>Bộ phận bảo trì,</p>
-    <p>Xin vui lòng kiểm tra và xử lý sự cố đối với thiết bị sau:</p>
-    <h3>${equipmentName}</h3>
-    <p>Chi tiết sự cố:</p>
-    <p>${issueDetails}</p>
-    <p>Xin cảm ơn.</p>
-    <p>Trân trọng,</p>
-    <p>Hệ thống quản lý</p>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #4f8cff;">Thông báo bảo trì thiết bị</h2>
+      <p>Kính gửi Trung tâm bảo trì,</p>
+      <p>Chúng tôi cần sự hỗ trợ của quý trung tâm để bảo trì thiết bị sau:</p>
+      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        <h3 style="color: #333; margin-top: 0;">${equipmentName}</h3>
+        <p style="margin-bottom: 0;"><strong>Chi tiết sự cố:</strong></p>
+        <p style="margin-top: 5px;">${issueDetails}</p>
+      </div>
+      <p>Vui lòng sắp xếp thời gian đến kiểm tra và bảo trì thiết bị trong thời gian sớm nhất.</p>
+      <p>Trân trọng,</p>
+      <p>Phòng Quản lý Thiết bị</p>
+    </div>
+  `;
+  return sendEmail(recipientEmail, subject, html);
+};
+
+const sendBulkMaintenanceNotificationEmail = async (equipments, recipientEmail) => {
+  const subject = `Thông báo bảo trì nhiều thiết bị`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #4f8cff;">Thông báo bảo trì nhiều thiết bị</h2>
+      <p>Kính gửi Trung tâm bảo trì,</p>
+      <p>Chúng tôi cần sự hỗ trợ của quý trung tâm để bảo trì các thiết bị sau:</p>
+      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        ${equipments.map(eq => `
+          <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+            <h3 style="color: #333; margin-top: 0;">${eq.name}</h3>
+            <p style="margin-bottom: 5px;"><strong>Chi tiết sự cố:</strong></p>
+            <p style="margin-top: 5px;">${eq.issueDetails || 'Không có mô tả chi tiết'}</p>
+          </div>
+        `).join('')}
+      </div>
+      <p>Vui lòng sắp xếp thời gian đến kiểm tra và bảo trì các thiết bị trong thời gian sớm nhất.</p>
+      <p>Trân trọng,</p>
+      <p>Phòng Quản lý Thiết bị</p>
+    </div>
   `;
   return sendEmail(recipientEmail, subject, html);
 };
@@ -74,4 +103,5 @@ module.exports = {
   sendNewPasswordEmail,
   sendReceiptEmail,
   sendMaintenanceNotificationEmail,
+  sendBulkMaintenanceNotificationEmail,
 };

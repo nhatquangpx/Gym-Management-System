@@ -315,6 +315,26 @@
   position: relative;
   z-index: 1;
 }
+
+/* Thêm style cho ngày có lịch tập */
+.dayItem.hasSessions {
+  background: #3a3a42;
+  border: 1.5px solid #888;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+}
+
+.dayItem.hasSessions::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: var(--primary-red);
+  border-radius: 50%;
+}
+
 .dayItem.selected {
   background: var(--primary-red);
   color: #fff;
@@ -743,4 +763,23 @@
   font-style: italic;
   line-height: 1.5;
   letter-spacing: 0.1px;
+}
+
+/* Thêm style cho checkin time trong modal */
+.checkinTime {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #444;
+}
+
+.checkinTimeLabel {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.checkinTimeValue {
+  color: #fff;
+  font-size: 1em;
+  font-style: italic;
 }

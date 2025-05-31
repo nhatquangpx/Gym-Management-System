@@ -19,6 +19,7 @@ import EditProfilePage from './pages/member/EditProfilePage/EditProfilePage';
 import SchedulePage from './pages/member/SchedulePage/SchedulePage';
 import MyPackagesPage from './pages/member/MyPackagesPage/MyPackagesPage';
 import ComplaintsPage from './pages/member/ComplaintsPage/ComplaintsPage';
+import ChangePasswordPage from './pages/member/ChangePasswordPage/ChangePasswordPage';
 import HomePage from './pages/member/HomePage/HomePage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 
@@ -86,8 +87,6 @@ const PackageManagement = () => <div>Package Management Page</div>;
 
 // Các trang chức năng từ Navbar
 const NotificationPage = () => <div>Trang Thông báo</div>;
-// Trang chỉnh sửa thông tin, cài đặt
-const SettingsPage = () => <div>Trang Cài đặt</div>;
 
 // Staff
 import StaffLayout from './components/layout/StaffLayout';
@@ -100,6 +99,7 @@ import StaffEquipment from './pages/staff/Equipment';
 import StaffWorkouts from './pages/staff/Workouts';
 import StaffSchedules from './pages/staff/Schedules';
 import StaffFeedback from './pages/staff/Feedback';
+import StaffViewFeedback from './pages/staff/ViewFeedback';
 import StaffAccount from './pages/staff/Account';
 import StaffAddMember from './pages/staff/AddMember';
 import StaffAddPackage from './pages/staff/AddPackage';
@@ -163,7 +163,7 @@ function App() {
         <Route path="/notifications" element={<NotificationPage />} />
         <Route path="/complaints" element={<ComplaintsPage />} />
         <Route path="/profile/edit" element={<EditProfilePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
         
         {/* Other routes */}
         <Route path="/register" element={<RegisterPage />} />
@@ -200,6 +200,7 @@ function App() {
             <Route path="service-history" element={<StaffServiceHistory />} />
             <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
+            <Route path="feedback/view/:id" element={<StaffViewFeedback />} />
             <Route path="account" element={<StaffAccount />} />
             <Route path="attendance" element={<StaffAttendance />} />
           </Route>
