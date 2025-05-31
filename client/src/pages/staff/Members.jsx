@@ -130,7 +130,7 @@ export default function StaffMembers() {
         </Alert>
       )}
 
-      <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
+      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Tìm theo tên"
@@ -139,6 +139,10 @@ export default function StaffMembers() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
           <TextField
             label="Số điện thoại"
@@ -147,6 +151,10 @@ export default function StaffMembers() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
           <TextField
             label="Email"
@@ -155,70 +163,63 @@ export default function StaffMembers() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
         </Box>
       </Paper>
 
-      <TableContainer component={Paper} sx={{ background: 'var(--admin-sidebar)' }}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ background: 'var(--admin-header)' }}>
-              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Tên hội viên</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Số điện thoại</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Email</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Ngày đăng ký</TableCell>
-              <TableCell align="right" sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Hành động</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ color: 'var(--admin-text)' }}>
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : filteredMembers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ color: 'var(--admin-text)' }}>
-                  Không có hội viên nào
-                </TableCell>
-              </TableRow>
-            ) : filteredMembers.map(member => (
-              <TableRow key={member.id} className="hover:bg-[var(--admin-accent)]">
-                <TableCell sx={{ color: 'var(--admin-text)' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <GroupIcon sx={{ color: 'var(--admin-primary)' }} />
-                    {member.name}
-                  </Box>
-                </TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{member.phone}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{member.email}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{member.joinDate}</TableCell>
-                <TableCell align="right">
-                  <IconButton 
-                    onClick={() => navigate(`/staff/members/view/${member.id}`)} 
-                    sx={{ color: 'var(--admin-primary)' }}
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton 
-                    onClick={() => navigate(`/staff/members/edit/${member.id}`)} 
-                    sx={{ color: 'var(--admin-text)' }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton 
-                    color="error" 
-                    onClick={() => handleDelete(member.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full rounded-2xl">
+            <thead>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-left">Tên hội viên</th>
+                <th className="py-3 px-4 text-left">Số điện thoại</th>
+                <th className="py-3 px-4 text-left">Email</th>
+                <th className="py-3 px-4 text-left">Ngày đăng ký</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-4">Loading...</td>
+                </tr>
+              ) : filteredMembers.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-4">Không có hội viên nào</td>
+                </tr>
+              ) : filteredMembers.map(member => (
+                <tr key={member.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">
+                    <span className="flex items-center gap-2 justify-start">
+                      <GroupIcon className="text-[var(--admin-primary)]" style={{ fontSize: 22 }} />
+                      {member.name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{member.phone}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{member.email}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{member.joinDate}</td>
+                  <td className="px-6 py-4 text-center">
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/staff/members/view/${member.id}`)}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton sx={{ color: 'var(--admin-text)' }} onClick={() => navigate(`/staff/members/edit/${member.id}`)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton sx={{ color: '#d32f2f' }} onClick={() => handleDelete(member.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Paper>
 
       <Snackbar
         open={snackbar.open}

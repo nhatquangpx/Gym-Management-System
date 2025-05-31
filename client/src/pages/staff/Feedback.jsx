@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, Chip, Rating, FormControl, InputLabel, Select, MenuItem
+  IconButton, TextField, Chip, Rating
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,11 +12,7 @@ export default function StaffFeedback() {
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState({ 
-    member: '', 
-    type: '',
-    targetName: ''
-  });
+  const [filter, setFilter] = useState({ member: '', status: '' });
 
   useEffect(() => {
     fetchFeedback();
@@ -25,16 +21,11 @@ export default function StaffFeedback() {
   const fetchFeedback = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/feedbacks', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      const result = await res.json();
-      setFeedback(Array.isArray(result.data) ? result.data : []);
+      const response = await fetch('/api/feedback');
+      const data = await response.json();
+      setFeedback(data);
     } catch (error) {
       console.error('Error fetching feedback:', error);
-      setFeedback([]);
     }
     setLoading(false);
   };
@@ -42,24 +33,18 @@ export default function StaffFeedback() {
   const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa phản hồi này?')) {
       try {
-        await fetch(`/api/feedbacks/${id}`, { 
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        await fetch(`/api/feedback/${id}`, { method: 'DELETE' });
         fetchFeedback();
-        alert('Phản hồi đã được xóa thành công');
       } catch (error) {
         console.error('Error deleting feedback:', error);
-        alert('Lỗi khi xóa phản hồi');
       }
     }
   };
 
-  const filteredFeedback = Array.isArray(feedback) ? feedback.filter(fb =>
+  const filteredFeedback = feedback.filter(fb =>
     (filter.member === '' || (fb.memberName && fb.memberName.toLowerCase().includes(filter.member.toLowerCase()))) &&
-    (filter.type === '' || fb.type === filter.type) &&
-    (filter.targetName === '' || (fb.targetName && fb.targetName.toLowerCase().includes(filter.targetName.toLowerCase())))
-  ) : [];
+    (filter.status === '' || fb.status === filter.status)
+  );
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
@@ -76,8 +61,16 @@ export default function StaffFeedback() {
         >
           Danh sách phản hồi
         </Typography>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
+          startIcon={<AddIcon />}
+          onClick={() => navigate('/staff/feedback/add')}
+        >
+          Thêm phản hồi
+        </Button>
       </Box>
-      <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
+      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Hội viên"
@@ -86,66 +79,70 @@ export default function StaffFeedback() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
-          <FormControl size="small" style={{ minWidth: 150 }}>
-            <InputLabel>Loại phản hồi</InputLabel>
-            <Select
-              value={filter.type}
-              label="Loại phản hồi"
-              onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
-            >
-              <MenuItem value="">Tất cả</MenuItem>
-              <MenuItem value="Gói tập">Gói tập</MenuItem>
-              <MenuItem value="Huấn luyện viên">Huấn luyện viên</MenuItem>
-            </Select>
-          </FormControl>
           <TextField
-            label="Tên đối tượng"
-            value={filter.targetName}
-            onChange={e => setFilter(f => ({ ...f, targetName: e.target.value }))}
+            label="Trạng thái"
+            value={filter.status}
+            onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
         </Box>
       </Paper>
-      <TableContainer component={Paper} className="shadow-lg rounded-lg" sx={{ background: 'var(--admin-sidebar)' }}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ background: 'var(--admin-header)' }}>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Hội viên</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Loại phản hồi</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Tên đối tượng</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Đánh giá</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Ngày gửi</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Thao tác</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow><TableCell colSpan={6} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
-            ) : filteredFeedback.length === 0 ? (
-              <TableRow><TableCell colSpan={6} sx={{ color: 'var(--admin-text)' }}>Không có phản hồi nào</TableCell></TableRow>
-            ) : filteredFeedback.map(item => (
-              <TableRow key={item._id} className="hover:bg-[var(--admin-accent)]">
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{item.memberName}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{item.type}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{item.type === 'Gói tập' ? (item.packageName || item.targetName) : (item.trainerName || item.targetName)}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}><Rating value={item.star || item.rating} readOnly /></TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>
-                  <IconButton onClick={() => navigate(`/staff/feedback/view/${item._id}`)} sx={{ color: 'var(--admin-primary)' }}>
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(item._id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full rounded-2xl">
+            <thead>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-left">Hội viên</th>
+                <th className="py-3 px-4 text-left">Đánh giá</th>
+                <th className="py-3 px-4 text-left">Nội dung</th>
+                <th className="py-3 px-4 text-left">Ngày gửi</th>
+                <th className="py-3 px-4 text-left">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6} className="text-center py-4">Loading...</td></tr>
+              ) : filteredFeedback.length === 0 ? (
+                <tr><td colSpan={6} className="text-center py-4">Không có phản hồi nào</td></tr>
+              ) : filteredFeedback.map(item => (
+                <tr key={item._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.memberName}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left"><Rating value={item.rating} readOnly /></td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.content.substring(0, 50)}...</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">
+                    <Chip
+                      label={item.status}
+                      color={item.status === 'read' ? 'success' : 'warning'}
+                      size="small"
+                    />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <IconButton onClick={() => navigate(`/staff/feedback/${item._id}`)} sx={{ color: 'var(--admin-primary)' }}>
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton color="error" onClick={() => handleDelete(item._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Paper>
     </div>
   );
 } 

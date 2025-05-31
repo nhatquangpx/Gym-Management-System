@@ -129,31 +129,31 @@ export default function GymRoomList() {
           Thêm phòng tập
         </Button>
       </Box>
-      <Paper className="p-4 mb-4">
+      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Tìm theo tên"
             value={filter.name}
             onChange={e => setFilter(f => ({ ...f, name: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
             sx={{
-              '& .MuiInputLabel-root': { color: '#1a237e' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#1a237e' },
-                '&:hover fieldset': { borderColor: '#283593' }
-              }
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
             }}
           />
           <FormControl size="small" style={{ minWidth: 150 }}>
-            <InputLabel sx={{ color: '#1a237e' }}>Loại phòng</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Loại phòng</InputLabel>
             <Select
               value={filter.roomType}
               label="Loại phòng"
               onChange={e => setFilter(f => ({ ...f, roomType: e.target.value }))}
               sx={{
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
+                color: 'var(--admin-text)',
+                '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
+                '.MuiSvgIcon-root': { color: 'var(--admin-text)' }
               }}
             >
               <MenuItem value="">Tất cả</MenuItem>
@@ -165,15 +165,16 @@ export default function GymRoomList() {
             </Select>
           </FormControl>
           <FormControl size="small" style={{ minWidth: 120 }}>
-            <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
             <Select
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
               sx={{
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
+                color: 'var(--admin-text)',
+                '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
+                '.MuiSvgIcon-root': { color: 'var(--admin-text)' }
               }}
             >
               <MenuItem value="">Tất cả</MenuItem>

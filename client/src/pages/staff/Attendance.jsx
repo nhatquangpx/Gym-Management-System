@@ -51,8 +51,13 @@ export default function Attendance() {
           fullWidth
           sx={{ fontSize: '1.15rem', background: '#fff', borderRadius: 1 }}
         />
-        <Button variant="contained" size="large" sx={{ minWidth: 90, fontWeight: 600 }} startIcon={<SearchIcon />} onClick={handleSearch} disabled={loading}>
-          Tìm
+        <Button variant="contained" size="large" 
+          sx={{ minWidth: 140, fontWeight: 600, px: 2, py: 1, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+          startIcon={<SearchIcon />} 
+          onClick={handleSearch} 
+          disabled={loading}
+        >
+          Tìm kiếm
         </Button>
       </Paper>
       {loading && <CircularProgress />}
