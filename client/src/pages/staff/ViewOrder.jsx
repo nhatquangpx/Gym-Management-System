@@ -150,16 +150,6 @@ const ViewOrder = () => {
     }).format(date);
   };
 
-  const getPaymentMethodText = (type) => {
-    switch(type) {
-      case 'gym_package': return 'Gói tập';
-      case 'bank_transfer': return 'Chuyển khoản';
-      case 'vnpay': return 'VNPay';
-      case 'momo': return 'MoMo';
-      default: return type;
-    }
-  };
-
   const getStatusText = (status) => {
     switch(status) {
       case 'paid': return 'Đã thanh toán';
@@ -286,13 +276,6 @@ const ViewOrder = () => {
                 Ngày tạo
               </Typography>
               <Typography variant="body1">{formatDate(order.createdAt)}</Typography>
-            </Box>
-            
-            <Box className="mb-4">
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                Phương thức thanh toán
-              </Typography>
-              <Typography variant="body1">{getPaymentMethodText(order.orderType)}</Typography>
             </Box>
             
             <Box className="mb-4">

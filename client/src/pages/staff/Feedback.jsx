@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, Chip, Rating
+  IconButton, TextField, Chip, Rating, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,7 +12,11 @@ export default function StaffFeedback() {
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState({ member: '', status: '' });
+  const [filter, setFilter] = useState({ 
+    member: '', 
+    type: '',
+    targetName: ''
+  });
 
   useEffect(() => {
     fetchFeedback();
@@ -53,7 +57,8 @@ export default function StaffFeedback() {
 
   const filteredFeedback = Array.isArray(feedback) ? feedback.filter(fb =>
     (filter.member === '' || (fb.memberName && fb.memberName.toLowerCase().includes(filter.member.toLowerCase()))) &&
-    (filter.status === '' || fb.status === filter.status)
+    (filter.type === '' || fb.type === filter.type) &&
+    (filter.targetName === '' || (fb.targetName && fb.targetName.toLowerCase().includes(filter.targetName.toLowerCase())))
   ) : [];
 
   return (
@@ -82,12 +87,24 @@ export default function StaffFeedback() {
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
+          <FormControl size="small" style={{ minWidth: 150 }}>
+            <InputLabel>Loại phản hồi</InputLabel>
+            <Select
+              value={filter.type}
+              label="Loại phản hồi"
+              onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
+            >
+              <MenuItem value="">Tất cả</MenuItem>
+              <MenuItem value="Gói tập">Gói tập</MenuItem>
+              <MenuItem value="Huấn luyện viên">Huấn luyện viên</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
-            label="Trạng thái"
-            value={filter.status}
-            onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+            label="Tên đối tượng"
+            value={filter.targetName}
+            onChange={e => setFilter(f => ({ ...f, targetName: e.target.value }))}
             size="small"
-             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
         </Box>
