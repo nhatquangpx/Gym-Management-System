@@ -11,6 +11,10 @@ const feedbackSchema = new mongoose.Schema({
     enum: ['Gói tập', 'Huấn luyện viên'],
     required: true
   },
+  targetName: {
+    type: String,
+    required: true
+  },
   text: {
     type: String,
     default: ''
