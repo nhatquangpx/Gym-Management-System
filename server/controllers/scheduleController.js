@@ -4,7 +4,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 
 // @desc    Lấy lịch tập theo học viên
-// @route   GET /get-schedule-by-id/:memberId
+// @route   GET /get-schedule/:memberId
 // @access  Private (Trainer, Admin, Member)
 exports.getSchedulesByMember = async (req, res) => {
   try {
@@ -183,21 +183,31 @@ exports.memberAddSchedule = async (req, res) => {
 exports.updateSchedule = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("Updating schedule with ID:", id);
     const updateData = req.body;
-    console.log(updateData);
-
-    const schedule = await Schedule.findByIdAndUpdate(id, updateData, { new: true })
-      .select('-trainerId -createdAt -updatedAt')
-      .populate('memberId', 'name');
+    const userRole = req.user.role;
     
-    console.log(schedule);
-    if (!schedule) {
+    // Find schedule first to check permissions
+    const existingSchedule = await Schedule.findById(id);
+    
+    if (!existingSchedule) {
       return res.status(404).json({
         success: false,
         message: "Không tìm thấy lịch tập"
       });
     }
+
+    // Check permissions
+    if (userRole === 'member' && existingSchedule.trainerId) {
+      return res.status(403).json({
+        success: false,
+        message: "Bạn không có quyền sửa lịch tập do huấn luyện viên tạo"
+      });
+    }
+
+    // If all checks pass, update the schedule
+    const schedule = await Schedule.findByIdAndUpdate(id, updateData, { new: true })
+      .select('-createdAt -updatedAt')
+      .populate('memberId', 'name');
 
     res.status(200).json({
       success: true,
@@ -208,7 +218,7 @@ exports.updateSchedule = async (req, res) => {
     console.error('Lỗi cập nhật lịch tập:', error);
     res.status(500).json({
       success: false,
-      message: "Lỗi server",
+      message: "Lỗi server", 
       error: error.message
     });
   }
@@ -220,20 +230,34 @@ exports.updateSchedule = async (req, res) => {
 exports.deleteSchedule = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("Deleting schedule with ID:", id);
-    const result = await Schedule.findByIdAndDelete(id);
+    const userRole = req.user.role;
 
-    if (!result) {
+    // Find schedule first to check permissions
+    const existingSchedule = await Schedule.findById(id);
+    
+    if (!existingSchedule) {
       return res.status(404).json({
         success: false,
         message: "Không tìm thấy lịch tập"
       });
     }
 
+    // Check permissions
+    if (userRole === 'member' && existingSchedule.trainerId) {
+      return res.status(403).json({
+        success: false,
+        message: "Bạn không có quyền xóa lịch tập do huấn luyện viên tạo"
+      });
+    }
+
+    // If all checks pass, delete the schedule
+    const result = await Schedule.findByIdAndDelete(id);
+
     res.status(200).json({
       success: true,
       message: "Xóa lịch tập thành công"
     });
+
   } catch (error) {
     console.error('Lỗi xóa lịch tập:', error);
     res.status(500).json({
