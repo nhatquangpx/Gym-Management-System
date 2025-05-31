@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, Chip, Rating
+  IconButton, Chip, Rating, TextField, Tooltip
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -63,28 +63,31 @@ export default function StaffFeedback() {
           Danh sách phản hồi
         </Typography>
       </Box>
-      <Paper sx={{ p: 2, mb: 3, background: '#fff' }}>
+      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)' }}>
         <Box className="flex flex-wrap gap-4">
-          <input
-            type="text"
-            placeholder="Tìm kiếm hội viên"
-            className="p-2 rounded border border-gray-300 min-w-[200px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm hội viên"
             value={filter.member}
             onChange={e => setFilter(f => ({ ...f, member: e.target.value }))}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
-          <input
-            type="text"
-            placeholder="Tìm kiếm loại phản hồi"
-            className="p-2 rounded border border-gray-300 min-w-[160px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm loại phản hồi"
             value={filter.type}
             onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
-          <input
-            type="text"
-            placeholder="Tìm kiếm tên đối tượng"
-            className="p-2 rounded border border-gray-300 min-w-[160px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm tên đối tượng"
             value={filter.targetName}
             onChange={e => setFilter(f => ({ ...f, targetName: e.target.value }))}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
         </Box>
       </Paper>
@@ -93,11 +96,11 @@ export default function StaffFeedback() {
           <table className="min-w-full rounded-2xl">
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
-                <th className="py-3 px-4 text-left">Hội viên</th>
-                <th className="py-3 px-4 text-left">Loại phản hồi</th>
-                <th className="py-3 px-4 text-left">Tên đối tượng</th>
-                <th className="py-3 px-4 text-left">Đánh giá</th>
-                <th className="py-3 px-4 text-left">Ngày gửi</th>
+                <th className="py-3 px-4 text-center">Hội viên</th>
+                <th className="py-3 px-4 text-center">Loại phản hồi</th>
+                <th className="py-3 px-4 text-center">Tên đối tượng</th>
+                <th className="py-3 px-4 text-center">Đánh giá</th>
+                <th className="py-3 px-4 text-center">Ngày gửi</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
@@ -107,19 +110,17 @@ export default function StaffFeedback() {
               ) : filteredFeedback.length === 0 ? (
                 <tr><td colSpan={6} className="text-center py-4">Không có phản hồi nào</td></tr>
               ) : filteredFeedback.map(item => (
-                <tr key={item._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.memberName}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.type}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.targetName}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left"><Rating value={item.star} readOnly /></td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{new Date(item.createdAt).toLocaleDateString()}</td>
+                <tr key={item._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{item.memberName}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{item.type}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{item.targetName}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center"><Rating value={item.star} readOnly /></td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{new Date(item.createdAt).toLocaleDateString()}</td>
                   <td className="px-6 py-4 text-center">
-                    <IconButton onClick={() => navigate(`/admin/feedback/view/${item._id}`)} sx={{ color: 'var(--admin-primary)' }}>
-                      <VisibilityIcon />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(item._id)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <div className="flex gap-2 justify-center">
+                      <Tooltip title="Xem chi tiết"><IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/feedback/view/${item._id}`)}><VisibilityIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton sx={{ color: '#d32f2f' }} onClick={() => handleDelete(item._id)}><DeleteIcon /></IconButton></Tooltip>
+                    </div>
                   </td>
                 </tr>
               ))}
