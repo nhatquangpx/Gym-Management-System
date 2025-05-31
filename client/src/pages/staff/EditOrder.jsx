@@ -249,13 +249,6 @@ const EditOrder = () => {
               
               <Box className="mb-4">
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Phương thức thanh toán
-                </Typography>
-                <Typography variant="body1">{getPaymentMethodText(order.orderType)}</Typography>
-              </Box>
-              
-              <Box className="mb-4">
-                <Typography variant="body2" color="text.secondary" gutterBottom>
                   Tổng tiền
                 </Typography>
                 <Typography variant="body1">{formatCurrency(order.amount)}</Typography>

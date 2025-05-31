@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   Button, IconButton, Typography, Box, Chip, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent, DialogActions,
-  Tooltip, TextField, MenuItem, Select, InputLabel, FormControl
+  Tooltip, TextField, MenuItem, Select, InputLabel, FormControl, Checkbox
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EmailIcon from '@mui/icons-material/Email';
 
 const theme = createTheme({
   palette: {
@@ -25,6 +26,10 @@ export default function Equipment() {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [filter, setFilter] = useState({ name: '', description: '', status: '', roomId: '' });
   const [rooms, setRooms] = useState([]);
+  const [selectedEquipments, setSelectedEquipments] = useState([]);
+  const [openEmailDialog, setOpenEmailDialog] = useState(false);
+  const [emailDetails, setEmailDetails] = useState({});
+  const [isBulkEmail, setIsBulkEmail] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -129,6 +134,93 @@ export default function Equipment() {
     }
   };
 
+  const handleSendMaintenanceEmail = async (equipmentId, details) => {
+    try {
+      const response = await fetch('http://localhost:8001/api/equipments/maintenance-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          equipmentId,
+          issueDetails: details
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send maintenance email');
+      }
+
+      alert('Đã gửi email thông báo bảo trì thành công!');
+      setOpenEmailDialog(false);
+      setEmailDetails({});
+    } catch (error) {
+      console.error('Error sending maintenance email:', error);
+      alert('Lỗi khi gửi email thông báo bảo trì: ' + error.message);
+    }
+  };
+
+  const handleSendBulkMaintenanceEmail = async () => {
+    try {
+      const response = await fetch('http://localhost:8001/api/equipments/bulk-maintenance-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          equipmentIds: selectedEquipments,
+          issueDetails: emailDetails
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send bulk maintenance email');
+      }
+
+      alert('Đã gửi email thông báo bảo trì hàng loạt thành công!');
+      setOpenEmailDialog(false);
+      setEmailDetails({});
+      setSelectedEquipments([]);
+      setIsBulkEmail(false);
+    } catch (error) {
+      console.error('Error sending bulk maintenance email:', error);
+      alert('Lỗi khi gửi email thông báo bảo trì hàng loạt: ' + error.message);
+    }
+  };
+
+  const handleEmailClick = (equipment) => {
+    if (equipment.status === 'maintenance' || equipment.status === 'inactive') {
+      setEmailDetails({ [equipment._id]: '' });
+      setIsBulkEmail(false);
+      setOpenEmailDialog(true);
+    } else {
+      alert('Chỉ có thể gửi email thông báo bảo trì cho thiết bị đang bảo trì hoặc không hoạt động');
+    }
+  };
+
+  const handleBulkEmailClick = () => {
+    const maintenanceEquipments = equipment.filter(eq => 
+      (eq.status === 'maintenance' || eq.status === 'inactive') && 
+      selectedEquipments.includes(eq._id)
+    );
+
+    if (maintenanceEquipments.length === 0) {
+      alert('Vui lòng chọn ít nhất một thiết bị đang bảo trì hoặc không hoạt động');
+      return;
+    }
+
+    setEmailDetails(
+      maintenanceEquipments.reduce((acc, eq) => ({
+        ...acc,
+        [eq._id]: ''
+      }), {})
+    );
+    setIsBulkEmail(true);
+    setOpenEmailDialog(true);
+  };
+
   const filteredEquipment = equipment.filter(eq =>
     (filter.name === '' || eq.name.toLowerCase().includes(filter.name.toLowerCase())) &&
     (filter.description === '' || (eq.description && eq.description.toLowerCase().includes(filter.description.toLowerCase()))) &&
@@ -156,15 +248,27 @@ export default function Equipment() {
           >
             Danh sách thiết bị
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            component={Link}
-            to="/staff/equipment/add"
-          >
-            Thêm thiết bị
-          </Button>
+          <Box className="flex gap-2">
+            {selectedEquipments.length > 0 && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<EmailIcon />}
+                onClick={handleBulkEmailClick}
+              >
+                Gửi email bảo trì
+              </Button>
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              component={Link}
+              to="/staff/equipment/add"
+            >
+              Thêm thiết bị
+            </Button>
+          </Box>
         </Box>
 
         <Paper className="p-4 mb-4">
@@ -216,18 +320,48 @@ export default function Equipment() {
           <Table>
             <TableHead>
               <TableRow className="bg-gray-100">
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Tên thiết bị</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Phòng tập</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Mô tả</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Trạng thái</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Hành động</TableCell>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={selectedEquipments.length > 0 && selectedEquipments.length < equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').length}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedEquipments(equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').map(eq => eq._id));
+                      } else {
+                        setSelectedEquipments([]);
+                      }
+                    }}
+                    checked={
+                      equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').length > 0 &&
+                      selectedEquipments.length === equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').length
+                    }
+                  />
+                </TableCell>
+                <TableCell>Tên thiết bị</TableCell>
+                <TableCell>Phòng tập</TableCell>
+                <TableCell>Mô tả</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Hành động</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredEquipment.length === 0 ? (
-                <TableRow><TableCell colSpan={5} align="center">Không có thiết bị nào</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} align="center">Không có thiết bị nào</TableCell></TableRow>
               ) : filteredEquipment.map((item) => (
                 <TableRow key={item._id}>
+                  <TableCell padding="checkbox">
+                    {(item.status === 'maintenance' || item.status === 'inactive') ? (
+                      <Checkbox
+                        checked={selectedEquipments.includes(item._id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedEquipments([...selectedEquipments, item._id]);
+                          } else {
+                            setSelectedEquipments(selectedEquipments.filter(id => id !== item._id));
+                          }
+                        }}
+                      />
+                    ) : null}
+                  </TableCell>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>
                     {item.roomId && item.roomId.name ? (
@@ -263,10 +397,20 @@ export default function Equipment() {
                     <IconButton
                       component={Link}
                       to={`/staff/equipment/edit/${item._id}`}
-                      sx={{ color: 'var(--admin-text)	' }} 
+                      sx={{ color: 'var(--admin-text)' }} 
                     >
                       <EditIcon />
                     </IconButton>
+                    {(item.status === 'maintenance' || item.status === 'inactive') && (
+                      <Tooltip title="Gửi email bảo trì">
+                        <IconButton
+                          onClick={() => handleEmailClick(item)}
+                          sx={{ color: '#4f8cff' }}
+                        >
+                          <EmailIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     <IconButton
                       sx={{ color: '#d32f2f' }}
                       onClick={() => handleDelete(item._id)}
@@ -279,6 +423,62 @@ export default function Equipment() {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <Dialog open={openEmailDialog} onClose={() => setOpenEmailDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>
+            {isBulkEmail ? 'Gửi email thông báo bảo trì hàng loạt' : 'Gửi email thông báo bảo trì'}
+          </DialogTitle>
+          <DialogContent>
+            {isBulkEmail ? (
+              <Box className="mt-4">
+                {equipment
+                  .filter(eq => selectedEquipments.includes(eq._id))
+                  .map(eq => (
+                    <Box key={eq._id} className="mb-4">
+                      <Typography variant="subtitle1" className="mb-2">
+                        {eq.name}
+                      </Typography>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label="Chi tiết sự cố"
+                        value={emailDetails[eq._id] || ''}
+                        onChange={(e) => setEmailDetails({
+                          ...emailDetails,
+                          [eq._id]: e.target.value
+                        })}
+                      />
+                    </Box>
+                  ))
+                }
+              </Box>
+            ) : (
+              <Box className="mt-4">
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label="Chi tiết sự cố"
+                  value={Object.values(emailDetails)[0] || ''}
+                  onChange={(e) => setEmailDetails({
+                    [Object.keys(emailDetails)[0]]: e.target.value
+                  })}
+                />
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenEmailDialog(false)}>Hủy</Button>
+            <Button 
+              onClick={() => isBulkEmail ? handleSendBulkMaintenanceEmail() : handleSendMaintenanceEmail(Object.keys(emailDetails)[0], Object.values(emailDetails)[0])}
+              variant="contained" 
+              color="primary"
+            >
+              Gửi email
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
           <DialogTitle>Xác nhận xóa</DialogTitle>

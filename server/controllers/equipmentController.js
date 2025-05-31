@@ -1,4 +1,5 @@
 const Equipment = require('../models/Equipment');
+const { sendMaintenanceNotificationEmail, sendBulkMaintenanceNotificationEmail } = require('../utils/emailService');
 
 // Lấy danh sách thiết bị
 exports.getAllEquipments = async (req, res) => {
@@ -63,6 +64,70 @@ exports.deleteEquipment = async (req, res) => {
     const equipment = await Equipment.findByIdAndDelete(req.params.id);
     if (!equipment) return res.status(404).json({ error: 'Equipment not found' });
     res.json({ message: 'Equipment deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Gửi email thông báo bảo trì đơn lẻ
+exports.sendMaintenanceEmail = async (req, res) => {
+  try {
+    const { equipmentId, issueDetails } = req.body;
+    const equipment = await Equipment.findById(equipmentId);
+    
+    if (!equipment) {
+      return res.status(404).json({ error: 'Equipment not found' });
+    }
+
+    if (equipment.status !== 'maintenance' && equipment.status !== 'inactive') {
+      return res.status(400).json({ error: 'Equipment is not in maintenance or inactive status' });
+    }
+
+    const maintenanceEmail = process.env.MAINTENANCE_EMAIL;
+    const success = await sendMaintenanceNotificationEmail(
+      equipment.name,
+      issueDetails || 'Không có mô tả chi tiết',
+      maintenanceEmail
+    );
+
+    if (success) {
+      res.json({ message: 'Maintenance notification email sent successfully' });
+    } else {
+      res.status(500).json({ error: 'Failed to send maintenance notification email' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Gửi email thông báo bảo trì hàng loạt
+exports.sendBulkMaintenanceEmail = async (req, res) => {
+  try {
+    const { equipmentIds, issueDetails } = req.body;
+    
+    const equipments = await Equipment.find({
+      _id: { $in: equipmentIds },
+      status: { $in: ['maintenance', 'inactive'] }
+    });
+
+    if (equipments.length === 0) {
+      return res.status(404).json({ error: 'No equipment found in maintenance or inactive status' });
+    }
+
+    const maintenanceEmail = process.env.MAINTENANCE_EMAIL;
+    const success = await sendBulkMaintenanceNotificationEmail(
+      equipments.map(eq => ({
+        name: eq.name,
+        issueDetails: issueDetails[eq._id] || 'Không có mô tả chi tiết'
+      })),
+      maintenanceEmail
+    );
+
+    if (success) {
+      res.json({ message: 'Bulk maintenance notification email sent successfully' });
+    } else {
+      res.status(500).json({ error: 'Failed to send bulk maintenance notification email' });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
