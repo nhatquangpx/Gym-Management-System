@@ -13,180 +13,318 @@ import {
   InputLabel,
   Select,
   Alert,
+  Divider,
+  CircularProgress,
 } from '@mui/material';
-import axios from 'axios';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SaveIcon from '@mui/icons-material/Save';
 
 const EditOrder = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [order, setOrder] = useState({
-    user: '',
-    package: '',
-    amount: '',
-    status: 'pending',
-    paymentMethod: 'bank_transfer',
-  });
-  const [users, setUsers] = useState([]);
-  const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [order, setOrder] = useState(null);
+  const [form, setForm] = useState({
+    status: '',
+  });
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [orderRes, usersRes, packagesRes] = await Promise.all([
-          axios.get(`/api/orders/${id}`),
-          axios.get('/api/users'),
-          axios.get('/api/packages'),
-        ]);
-        setOrder(orderRes.data);
-        setUsers(usersRes.data);
-        setPackages(packagesRes.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch data');
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchOrder();
   }, [id]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setOrder((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchOrder = async () => {
     try {
-      await axios.put(`/api/orders/${id}`, order);
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/staff/orders');
-      }, 2000);
-    } catch (err) {
-      setError('Failed to update order');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        setTimeout(() => navigate('/auth/login'), 2000);
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:8001/api/orders/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể tải thông tin đơn hàng');
+      }
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Không thể tải thông tin đơn hàng');
+      }
+      
+      const orderData = data.data;
+      setOrder(orderData);
+      setForm({
+        status: orderData.status || '',
+      });
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      setError(error.message || 'Không thể tải thông tin đơn hàng');
+      
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => navigate('/auth/login'), 2000);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography color="error">{error}</Typography>;
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        setTimeout(() => navigate('/auth/login'), 2000);
+        return;
+      }
+      
+      // Update order status
+      const statusResponse = await fetch(`http://localhost:8001/api/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: form.status })
+      });
+      
+      if (!statusResponse.ok) {
+        const errorData = await statusResponse.json();
+        throw new Error(errorData.message || 'Failed to update order status');
+      }
+      
+      alert('Đã lưu thay đổi!');
+      navigate('/staff/orders');
+    } catch (error) {
+      console.error('Error updating order:', error);
+      setError('Lỗi khi cập nhật đơn hàng: ' + error.message);
+      
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => navigate('/auth/login'), 2000);
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const formatCurrency = (amount) => {
+    if (!amount) return '0 VND';
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  };
+  
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  const getPaymentMethodText = (type) => {
+    switch(type) {
+      case 'gym_package': return 'Gói tập';
+      case 'bank_transfer': return 'Chuyển khoản';
+      case 'vnpay': return 'VNPay';
+      case 'momo': return 'MoMo';
+      default: return type;
+    }
+  };
+
+  if (loading) return (
+    <Box className="flex justify-center items-center min-h-screen">
+      <CircularProgress />
+    </Box>
+  );
+  
+  if (error) return (
+    <Box className="p-6">
+      <Paper className="p-4 mb-4 bg-red-50 text-red-800">
+        <Typography>{error}</Typography>
+        <Button 
+          variant="outlined" 
+          color="primary" 
+          onClick={() => navigate('/staff/orders')}
+          startIcon={<ArrowBackIcon />}
+          className="mt-4"
+        >
+          Quay lại
+        </Button>
+      </Paper>
+    </Box>
+  );
+  
+  if (!order) return (
+    <Box className="p-6">
+      <Paper className="p-4 mb-4">
+        <Typography>Không tìm thấy đơn hàng</Typography>
+        <Button 
+          variant="outlined" 
+          color="primary" 
+          onClick={() => navigate('/staff/orders')}
+          startIcon={<ArrowBackIcon />}
+          className="mt-4"
+        >
+          Quay lại
+        </Button>
+      </Paper>
+    </Box>
+  );
+  
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Edit Order
+    <div className="p-6 bg-[var(--admin-bg)]">
+      <Box className="flex justify-between items-center mb-6">
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate('/staff/orders')}
+          sx={{ color: 'var(--admin-primary)', borderColor: 'var(--admin-primary)' }}
+        >
+          Quay lại
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SaveIcon />}
+          onClick={handleSubmit}
+          disabled={saving}
+          sx={{ 
+            bgcolor: 'var(--admin-primary)',
+            '&:hover': {
+              bgcolor: 'var(--admin-primary-dark)'
+            }
+          }}
+        >
+          {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+        </Button>
+      </Box>
+
+      <Paper className="p-6 shadow-lg rounded-lg mb-6" sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+        <Typography variant="h4" className="font-bold mb-6" sx={{ color: 'var(--admin-primary)' }}>
+          Chỉnh sửa đơn hàng
         </Typography>
-
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            Order updated successfully!
-          </Alert>
-        )}
-
+        
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
+          <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>User</InputLabel>
-                <Select
-                  name="user"
-                  value={order.user}
-                  onChange={handleChange}
-                  label="User"
-                  required
-                >
-                  {users.map((user) => (
-                    <MenuItem key={user._id} value={user._id}>
-                      {user.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
+                Thông tin đơn hàng
+              </Typography>
+              
+              <Box className="mb-4">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Mã đơn hàng
+                </Typography>
+                <Typography variant="body1">{order._id}</Typography>
+              </Box>
+              
+              <Box className="mb-4">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Ngày tạo
+                </Typography>
+                <Typography variant="body1">{formatDate(order.createdAt)}</Typography>
+              </Box>
+              
+              <Box className="mb-4">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Phương thức thanh toán
+                </Typography>
+                <Typography variant="body1">{getPaymentMethodText(order.orderType)}</Typography>
+              </Box>
+              
+              <Box className="mb-4">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Tổng tiền
+                </Typography>
+                <Typography variant="body1">{formatCurrency(order.amount)}</Typography>
+              </Box>
             </Grid>
+            
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Package</InputLabel>
-                <Select
-                  name="package"
-                  value={order.package}
-                  onChange={handleChange}
-                  label="Package"
-                  required
-                >
-                  {packages.map((pkg) => (
-                    <MenuItem key={pkg._id} value={pkg._id}>
-                      {pkg.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
+                Thông tin khách hàng
+              </Typography>
+              
+              <Box className="mb-4">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Khách hàng
+                </Typography>
+                <Typography variant="body1">{order.userId?.name || 'N/A'}</Typography>
+              </Box>
+              
+              <Box className="mb-4">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Email
+                </Typography>
+                <Typography variant="body1">{order.userId?.email || 'N/A'}</Typography>
+              </Box>
+              
+              <Box className="mb-4">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Số điện thoại
+                </Typography>
+                <Typography variant="body1">{order.userId?.phone || 'N/A'}</Typography>
+              </Box>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Amount"
-                name="amount"
-                type="number"
-                value={order.amount}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
+
+            <Grid item xs={12}>
+              <Divider className="my-4" sx={{ borderColor: 'var(--admin-border)' }} />
+              <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
+                Cập nhật trạng thái
+              </Typography>
+              
               <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+                <InputLabel>Trạng thái</InputLabel>
                 <Select
                   name="status"
-                  value={order.status}
+                  value={form.status}
                   onChange={handleChange}
-                  label="Status"
-                  required
+                  label="Trạng thái"
+                  sx={{ 
+                    color: 'var(--admin-text)',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--admin-border)'
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--admin-primary)'
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--admin-primary)'
+                    }
+                  }}
                 >
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="paid">Paid</MenuItem>
-                  <MenuItem value="failed">Failed</MenuItem>
+                  <MenuItem value="pending">Chờ thanh toán</MenuItem>
+                  <MenuItem value="paid">Đã thanh toán</MenuItem>
+                  <MenuItem value="failed">Đã hủy</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Payment Method</InputLabel>
-                <Select
-                  name="paymentMethod"
-                  value={order.paymentMethod}
-                  onChange={handleChange}
-                  label="Payment Method"
-                  required
-                >
-                  <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
-                  <MenuItem value="momo">Momo</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/staff/orders')}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" variant="contained" color="primary">
-                  Save Changes
-                </Button>
-              </Box>
             </Grid>
           </Grid>
         </form>
       </Paper>
-    </Container>
+    </div>
   );
 };
 
