@@ -211,7 +211,7 @@ export default function EquipmentList() {
                   <td className="py-4 px-6 text-center">
                     <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/equipment/view/${eq._id}`)}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/equipment/edit/${eq._id}`)}><EditIcon /></IconButton>
-                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(eq._id)}><DeleteIcon /></IconButton>
+                    <IconButton sx={{ color: 'red' }} onClick={() => handleDelete(eq._id)}><DeleteIcon /></IconButton>
                   </td>
                 </tr>
               ))}

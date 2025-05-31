@@ -46,10 +46,13 @@ import EditPackage from './pages/admin/EditPackage';
 import ViewOrder from './pages/admin/ViewOrder';
 import EditOrder from './pages/admin/EditOrder';
 import EditProfile from './pages/admin/EditProfile';
-import AdminEquipment from './pages/admin/Equipment';
+import AdminAddEquipment from './pages/admin/AddEquipment';
+import AdminEquipment from './pages/admin/EquipmentList';
+import AdminEditEquipment from './pages/admin/EditEquipment';
+import AdminViewEquipment from './pages/admin/ViewEquipment';
 import AdminFeedback from './pages/admin/Feedback';
 import AdminWorkouts from './pages/admin/Workouts';
-import AdminEditEquipment from './pages/admin/EditEquipment';
+
 import ViewFeedback from './pages/admin/ViewFeedback';
 import ViewWorkout from './pages/admin/ViewWorkout';
 import EditWorkout from './pages/admin/EditWorkout';
@@ -222,9 +225,9 @@ function App() {
             <Route path="orders/view/:id" element={<ViewOrder />} />
             <Route path="orders/edit/:id" element={<EditOrder />} />
             <Route path="equipment" element={<EquipmentList />} />
-            <Route path="equipment/view/:id" element={<AdminEquipment />} />
+            <Route path="equipment/view/:id" element={<AdminViewEquipment />} />
             <Route path="equipment/edit/:id" element={<AdminEditEquipment />} />
-            <Route path="equipment/add" element={<AdminEquipment />} />
+            <Route path="equipment/add" element={<AdminAddEquipment />} />
             <Route path="gymrooms" element={<GymRoomList />} />
             <Route path="gymrooms/add" element={<AddGymRoom />} />
             <Route path="gymrooms/view/:id" element={<ViewGymRoom />} />
