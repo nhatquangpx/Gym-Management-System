@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { setLogin } from '../../../../redux/slices/authSlice';
 import styles from './LoginForm.module.css';
 import InputField from '../../../common/InputField/InputField';
+import PasswordField from '../../../common/PasswordField/PasswordField';
 import Button from '../../../common/Button/Button';
 import Divider from '../../../common/Divider/Divider';
 import GoogleButton from '../../../common/GoogleButton/GoogleButton';
@@ -22,7 +23,6 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,10 +36,6 @@ const LoginForm = () => {
     if (loginError) {
       setLoginError('');
     }
-  };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
   };
 
   const validateForm = () => {
@@ -113,24 +109,6 @@ const LoginForm = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Giả lập đăng nhập Google
-    const mockGoogleUser = {
-      name: "Google User",
-      email: "google.user@gmail.com",
-      avatar: "https://i.pravatar.cc/150?img=4",
-      role: "member"  // Add a role for PrivateRoute
-    };
-    
-    // Dispatch action to Redux store
-    dispatch(setLogin({
-      user: mockGoogleUser,
-      token: "mock-google-token-for-testing"
-    }));
-    
-    navigate('/');
-  };
-
   return (
     <form className={styles.loginForm} onSubmit={handleSubmit} noValidate>
       {loginError && (
@@ -151,11 +129,10 @@ const LoginForm = () => {
         required={true}
       />
 
-      <InputField
+      <PasswordField
         id="password"
         name="password"
         label="Mật khẩu"
-        type="password"
         placeholder="Nhập mật khẩu"
         value={formData.password}
         onChange={handleChange}
@@ -164,15 +141,6 @@ const LoginForm = () => {
       />
 
       <div className={styles.formOptions}>
-        <label className={styles.rememberMe}>
-          <input
-            type="checkbox"
-            name="rememberMe"
-            checked={formData.rememberMe}
-            onChange={handleChange}
-          />
-          <span>Ghi nhớ đăng nhập</span>
-        </label>
         <Link to="/forgot-password" className={styles.forgotPassword}>
           Quên mật khẩu?
         </Link>
@@ -185,14 +153,6 @@ const LoginForm = () => {
       >
         {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
       </Button>
-
-      <Divider text="hoặc" />
-
-      <GoogleButton onClick={handleGoogleLogin} text="Đăng nhập với Google" />
-
-      <div className={styles.registerLink}>
-        Chưa có tài khoản? <Link to="/register/package">Đăng ký ngay</Link>
-      </div>
     </form>
   );
 };
