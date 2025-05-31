@@ -24,16 +24,6 @@ const HeroSection = () => {
         <p className={styles.heroSubtitle}>
           Tham gia GYMPRO ngay hôm nay để bắt đầu hành trình chinh phục mục tiêu sức khỏe và vóc dáng của bạn.
         </p>
-        <div className={styles.searchContainer}>
-          <input 
-            type="text" 
-            placeholder="Tìm kiếm dịch vụ, gói tập, HLV..." 
-            className={styles.searchInput}
-          />
-          <button className={styles.searchButton}>
-            <i className="material-icons">search</i>
-          </button>
-        </div>
         <button 
           className={styles.ctaButton}
           onClick={handleExploreClick}
