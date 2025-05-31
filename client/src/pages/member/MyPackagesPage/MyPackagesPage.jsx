@@ -17,7 +17,6 @@ const MyPackagesPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalAction, setModalAction] = useState('');
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const [expandedHistory, setExpandedHistory] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
@@ -276,33 +275,7 @@ const MyPackagesPage = () => {
                         <td>{pkg.name}</td>
                         <td>{pkg.start} - {pkg.end}</td>
                         <td>{pkg.status}</td>
-                        <td>
-                          <Button size="small" onClick={() => toggleHistory(pkg.id)}>
-                            {expandedHistory[pkg.id] ? 'Ẩn các buổi tập' : 'Xem các buổi tập'}
-                          </Button>
-                        </td>
                       </tr>
-                      {expandedHistory[pkg.id] && (
-                        <tr>
-                          <td colSpan={5} className={styles.usageDatesCell}>
-                            <div className={styles.usageDatesList}>
-                              <strong>Các buổi tập đã sử dụng:</strong>
-                              {pkg.sessions && pkg.sessions.length > 0 ? (
-                                <div className={styles.sessionsGrid}>
-                                  {pkg.sessions.map((s, idx) => (
-                                    <div key={idx} className={styles.sessionItem}>
-                                      <span className={styles.sessionDate}>{s.date || s.sessionDate}</span>
-                                      <span className={styles.sessionWorkout}>{s.workout || s.workoutName || 'Buổi tập'}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <p className={styles.noSessions}>Không có dữ liệu buổi tập</p>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      )}
                     </React.Fragment>
                   ))}
                 </tbody>
