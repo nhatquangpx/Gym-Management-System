@@ -296,12 +296,10 @@ const EditOrder = () => {
               </Typography>
               
               <FormControl fullWidth>
-                <InputLabel>Trạng thái</InputLabel>
                 <Select
                   name="status"
                   value={form.status}
                   onChange={handleChange}
-                  label="Trạng thái"
                   sx={{ 
                     color: 'var(--admin-text)',
                     '& .MuiOutlinedInput-notchedOutline': {

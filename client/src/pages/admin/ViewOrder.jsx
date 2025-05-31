@@ -1,21 +1,46 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { Paper, Typography, Box, Button, Chip, Grid, Divider, Card, CardContent } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import PendingIcon from '@mui/icons-material/Pending';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import PaymentIcon from '@mui/icons-material/Payment';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Grid,
+  Button,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Divider,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import {
+  Receipt as ReceiptIcon,
+  Person as PersonIcon,
+  AttachMoney as MoneyIcon,
+  CalendarToday as CalendarIcon,
+  LocalShipping as ShippingIcon,
+  ArrowBack as ArrowBackIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
+import axios from "axios";
+import { format } from "date-fns";
 
-export default function ViewOrder() {
+const ViewOrder = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -33,17 +58,21 @@ export default function ViewOrder() {
           }
         });
         
+        const data = await response.json();
+        
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch order');
+          throw new Error(data.message || 'Không thể tải thông tin đơn hàng');
         }
         
-        const data = await response.json();
-        setOrder(data.data || data);
+        if (!data.success) {
+          throw new Error(data.message || 'Không thể tải thông tin đơn hàng');
+        }
+        
+        setOrder(data.data);
         setError(null);
       } catch (error) {
         console.error('Error fetching order:', error);
-        setError('Không thể tải thông tin đơn hàng: ' + error.message);
+        setError(error.message || 'Không thể tải thông tin đơn hàng');
         
         if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
           localStorage.removeItem('token');
@@ -54,9 +83,82 @@ export default function ViewOrder() {
         setLoading(false);
       }
     };
-    
+
     fetchOrder();
   }, [id, navigate]);
+
+  const handleDelete = () => {
+    setOpenConfirm(true);
+  };
+  
+  const handleDeleteConfirm = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/auth/login');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:8001/api/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'failed' })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to cancel order');
+      }
+      
+      alert('Đã hủy đơn hàng thành công!');
+      navigate('/admin/orders');
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert('Lỗi khi hủy đơn hàng: ' + error.message);
+      
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/auth/login');
+      }
+    } finally {
+      setOpenConfirm(false);
+    }
+  };
+
+  const formatCurrency = (amount) => {
+    if (!amount) return '0 VND';
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  };
+  
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  const getPaymentMethodText = (type) => {
+    switch(type) {
+      case 'gym_package': return 'Gói tập';
+      case 'bank_transfer': return 'Chuyển khoản';
+      case 'vnpay': return 'VNPay';
+      case 'momo': return 'MoMo';
+      default: return type;
+    }
+  };
 
   const getStatusText = (status) => {
     switch(status) {
@@ -76,223 +178,202 @@ export default function ViewOrder() {
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'paid': return <CheckCircleIcon color="success" />;
-      case 'pending': return <PendingIcon color="warning" />;
-      case 'failed': return <CancelIcon color="error" />;
-      default: return null;
-    }
-  };
+  if (loading) return (
+    <Box className="flex justify-center items-center min-h-screen">
+      <CircularProgress />
+    </Box>
+  );
   
-  const getPaymentMethodText = (type) => {
-    switch(type) {
-      case 'gym_package': return 'Gói tập';
-      case 'bank_transfer': return 'Chuyển khoản';
-      case 'vnpay': return 'VNPay';
-      case 'momo': return 'MoMo';
-      default: return type;
-    }
-  };
-
-  const getPaymentMethodIcon = (type) => {
-    switch(type) {
-      case 'gym_package': return <PaymentIcon />;
-      case 'bank_transfer': return <AccountBalanceIcon />;
-      case 'vnpay': 
-      case 'momo': 
-        return <CreditCardIcon />;
-      default: return <PaymentIcon />;
-    }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-
-  const formatCurrency = (amount) => {
-    if (!amount) return '0 VND';
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(amount);
-  };
-
-  if (loading) return <div className="text-[var(--admin-text)] p-6">Đang tải...</div>;
-  if (error) return <div className="text-[var(--admin-text)] p-6 bg-red-100 border border-red-400 rounded">{error}</div>;
-  if (!order) return <div className="text-[var(--admin-text)] p-6">Không tìm thấy đơn hàng.</div>;
+  if (error) return (
+    <Box className="p-6">
+      <Paper className="p-4 mb-4 bg-red-50 text-red-800">
+        <Typography>{error}</Typography>
+        <Button 
+          variant="outlined" 
+          color="primary" 
+          onClick={() => navigate('/admin/orders')}
+          startIcon={<ArrowBackIcon />}
+          className="mt-4"
+        >
+          Quay lại
+        </Button>
+      </Paper>
+    </Box>
+  );
+  
+  if (!order) return (
+    <Box className="p-6">
+      <Paper className="p-4 mb-4">
+        <Typography>Không tìm thấy đơn hàng</Typography>
+        <Button 
+          variant="outlined" 
+          color="primary" 
+          onClick={() => navigate('/admin/orders')}
+          startIcon={<ArrowBackIcon />}
+          className="mt-4"
+        >
+          Quay lại
+        </Button>
+      </Paper>
+    </Box>
+  );
   
   return (
-    <div className="p-6">
+    <div className="p-6 bg-[var(--admin-bg)]">
       <Box className="flex justify-between items-center mb-6">
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate('/admin/orders')}
+          sx={{ color: 'var(--admin-primary)', borderColor: 'var(--admin-primary)' }}
         >
           Quay lại
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<EditIcon />}
-          onClick={() => navigate(`/admin/orders/edit/${id}`)}
-        >
-          Chỉnh sửa
-        </Button>
+        <Box className="flex gap-2">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<EditIcon />}
+            onClick={() => navigate(`/admin/orders/edit/${id}`)}
+            sx={{ 
+              bgcolor: 'var(--admin-primary)',
+              '&:hover': {
+                bgcolor: 'var(--admin-primary-dark)'
+              }
+            }}
+          >
+            Chỉnh sửa
+          </Button>
+          {order.status === 'pending' && (
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+            >
+              Hủy đơn hàng
+            </Button>
+          )}
+        </Box>
       </Box>
 
-      <Paper className="p-6 shadow-lg rounded-lg mb-6">
-        <Box className="flex justify-between items-center mb-4">
-          <Typography variant="h4" className="font-bold">
+      <Paper className="p-6 shadow-lg rounded-lg mb-6" sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+        <Box className="flex justify-between items-center mb-6">
+          <Typography variant="h4" className="font-bold" sx={{ color: 'var(--admin-primary)' }}>
             Chi tiết đơn hàng
           </Typography>
-          <Chip 
-            icon={getStatusIcon(order.status)}
+          <Chip
             label={getStatusText(order.status)}
             color={getStatusColor(order.status)}
           />
         </Box>
         
-        <Divider className="my-4" />
-
-        <Grid container spacing={3}>
+        <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
-            <Typography variant="h6" className="font-medium mb-4">
+            <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
               Thông tin đơn hàng
             </Typography>
             
-            <Box className="mb-2">
-              <Typography variant="subtitle2" color="text.secondary">Mã đơn hàng</Typography>
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Mã đơn hàng
+              </Typography>
               <Typography variant="body1">{order._id}</Typography>
             </Box>
             
-            <Box className="mb-2">
-              <Typography variant="subtitle2" color="text.secondary">Ngày tạo</Typography>
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Ngày tạo
+              </Typography>
               <Typography variant="body1">{formatDate(order.createdAt)}</Typography>
             </Box>
             
-            <Box className="mb-2">
-              <Typography variant="subtitle2" color="text.secondary">Phương thức thanh toán</Typography>
-              <Box className="flex items-center gap-2">
-                {getPaymentMethodIcon(order.orderType)}
-                <Typography variant="body1">{getPaymentMethodText(order.orderType)}</Typography>
-              </Box>
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Phương thức thanh toán
+              </Typography>
+              <Typography variant="body1">{getPaymentMethodText(order.orderType)}</Typography>
             </Box>
-
-            {order.receiptImage && (
-              <Box className="mb-2">
-                <Typography variant="subtitle2" color="text.secondary">Hóa đơn</Typography>
-                <a href={`http://localhost:8001${order.receiptImage}`} target="_blank" rel="noopener noreferrer">
-                  <img 
-                    src={`http://localhost:8001${order.receiptImage}`} 
-                    alt="Receipt" 
-                    className="mt-2 max-w-xs rounded border"
-                    style={{ maxHeight: '150px' }}
-                  />
-                </a>
-                <Typography variant="caption" display="block">
-                  Ngày tải lên: {formatDate(order.receiptUploadDate)}
-                </Typography>
-              </Box>
-            )}
+            
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Tổng tiền
+              </Typography>
+              <Typography variant="body1">{formatCurrency(order.amount)}</Typography>
+            </Box>
           </Grid>
           
           <Grid item xs={12} md={6}>
-            <Typography variant="h6" className="font-medium mb-4">
+            <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
               Thông tin khách hàng
             </Typography>
             
-            <Box className="mb-2">
-              <Typography variant="subtitle2" color="text.secondary">Khách hàng</Typography>
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Khách hàng
+              </Typography>
               <Typography variant="body1">{order.userId?.name || 'N/A'}</Typography>
             </Box>
             
-            <Box className="mb-2">
-              <Typography variant="subtitle2" color="text.secondary">Email</Typography>
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Email
+              </Typography>
               <Typography variant="body1">{order.userId?.email || 'N/A'}</Typography>
             </Box>
             
-            <Box className="mb-2">
-              <Typography variant="subtitle2" color="text.secondary">Số điện thoại</Typography>
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Số điện thoại
+              </Typography>
               <Typography variant="body1">{order.userId?.phone || 'N/A'}</Typography>
             </Box>
           </Grid>
-        </Grid>
 
-        <Divider className="my-4" />
-
-        <Typography variant="h6" className="font-medium mb-4">
-          Chi tiết gói tập
-        </Typography>
-        
-        <Card variant="outlined" className="mb-4">
-          <CardContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={8}>
-                <Typography variant="h6">{order.packageId?.name || 'N/A'}</Typography>
-                <Typography variant="body2" color="text.secondary" className="mb-2">
-                  {order.packageId?.description || 'Không có mô tả'}
-                </Typography>
-                {order.packageId?.duration && (
-                  <Typography variant="body2">
-                    Thời hạn: {order.packageId.duration} tháng
-                  </Typography>
-                )}
-              </Grid>
-              <Grid item xs={12} md={4} className="flex justify-end items-center">
-                <Typography variant="h5" color="primary">
-                  {formatCurrency(order.amount)}
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-
-        {(order.orderType === 'vnpay' && order.vnp_TransactionNo) && (
-          <>
-            <Divider className="my-4" />
-            <Typography variant="h6" className="font-medium mb-4">
-              Thông tin thanh toán VNPay
+          <Grid item xs={12}>
+            <Divider className="my-4" sx={{ borderColor: 'var(--admin-border)' }} />
+            <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
+              Thông tin gói tập
             </Typography>
             
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <Box className="mb-2">
-                  <Typography variant="subtitle2" color="text.secondary">Mã giao dịch</Typography>
-                  <Typography variant="body1">{order.vnp_TransactionNo || 'N/A'}</Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box className="mb-2">
-                  <Typography variant="subtitle2" color="text.secondary">Mã tham chiếu</Typography>
-                  <Typography variant="body1">{order.vnp_TxnRef || 'N/A'}</Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box className="mb-2">
-                  <Typography variant="subtitle2" color="text.secondary">Ngày thanh toán</Typography>
-                  <Typography variant="body1">{order.vnp_PayDate || 'N/A'}</Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box className="mb-2">
-                  <Typography variant="subtitle2" color="text.secondary">Nội dung</Typography>
-                  <Typography variant="body1">{order.vnp_OrderInfo || 'N/A'}</Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </>
-        )}
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Tên gói
+              </Typography>
+              <Typography variant="body1">{order.packageId?.name || 'N/A'}</Typography>
+            </Box>
+            
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Mô tả
+              </Typography>
+              <Typography variant="body1">{order.packageId?.description || 'N/A'}</Typography>
+            </Box>
+            
+            <Box className="mb-4">
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Thời hạn
+              </Typography>
+              <Typography variant="body1">{order.packageId?.duration || 'N/A'} tháng</Typography>
+            </Box>
+          </Grid>
+        </Grid>
       </Paper>
+
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận hủy đơn hàng</DialogTitle>
+        <DialogContent>
+          Bạn có chắc chắn muốn hủy đơn hàng này?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
-} 
+};
+
+export default ViewOrder; 

@@ -248,26 +248,60 @@ export default function Orders() {
               ) : filteredOrders.map((o) => (
                 <tr key={o._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
                   <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] justify-center text-center">
-                    <ShoppingCartIcon className="text-[var(--admin-primary)]" />
-                    <span>{o.userId?.name || 'N/A'}</span>
+                    <div>
+                      <div className="font-medium">{o.userId?.name || 'N/A'}</div>
+                      <div className="text-sm text-gray-500">{o.userId?.email || 'N/A'}</div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{o.packageId?.name || 'N/A'}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{formatCurrency(o.amount)}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{getPaymentMethodText(o.orderType)}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{formatDate(o.createdAt)}</td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {o.packageId?.name || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {formatCurrency(o.amount)}
+                  </td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {getPaymentMethodText(o.orderType)}
+                  </td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {formatDate(o.createdAt)}
+                  </td>
                   <td className="px-6 py-4 text-center">
-                    <Chip 
+                    <Chip
                       label={getStatusText(o.status)}
                       color={getStatusColor(o.status)}
                       size="small"
                     />
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/orders/view/${o._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/orders/edit/${o._id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      {o.status !== 'failed' && (
-                        <Tooltip title="Hủy đơn hàng"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(o._id)}><DeleteIcon /></IconButton></Tooltip>
+                    <div className="flex justify-center gap-2">
+                      <Tooltip title="Xem chi tiết">
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/admin/orders/view/${o._id}`)}
+                          sx={{ color: 'var(--admin-primary)' }}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Chỉnh sửa">
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/admin/orders/edit/${o._id}`)}
+                          sx={{ color: 'var(--admin-text)' }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                      {o.status === 'pending' && (
+                        <Tooltip title="Hủy đơn hàng">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDelete(o._id)}
+                            sx={{ color: '#d32f2f' }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
                       )}
                     </div>
                   </td>
@@ -277,12 +311,17 @@ export default function Orders() {
           </table>
         </div>
       </Paper>
+
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
         <DialogTitle>Xác nhận hủy đơn hàng</DialogTitle>
-        <DialogContent>Bạn có chắc chắn muốn hủy đơn hàng này?</DialogContent>
+        <DialogContent>
+          Bạn có chắc chắn muốn hủy đơn hàng này?
+        </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Không</Button>
-          <Button color="error" onClick={handleDeleteConfirm}>Có, hủy đơn hàng</Button>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Xác nhận
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

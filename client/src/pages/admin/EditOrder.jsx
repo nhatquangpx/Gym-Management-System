@@ -1,70 +1,99 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { 
-  Paper, Typography, Box, Button, Grid, FormControl,
-  InputLabel, Select, MenuItem, Divider, CircularProgress
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SaveIcon from '@mui/icons-material/Save';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Grid,
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider,
+} from "@mui/material";
+import {
+  ArrowBack as ArrowBackIcon,
+  Save as SaveIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
 
-export default function EditOrder() {
+const EditOrder = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [order, setOrder] = useState(null);
-  const [form, setForm] = useState({
-    status: ''
-  });
   const [error, setError] = useState(null);
-  
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [form, setForm] = useState({
+    status: '',
+  });
+
   useEffect(() => {
-    fetchOrder();
-  }, [id]);
-  
-  const fetchOrder = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
-        setTimeout(() => navigate('/auth/login'), 2000);
-        return;
-      }
-      
-      const response = await fetch(`http://localhost:8001/api/orders/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+    const fetchOrder = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+          setTimeout(() => navigate('/auth/login'), 2000);
+          return;
         }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch order');
+        
+        const response = await fetch(`http://localhost:8001/api/orders/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Không thể tải thông tin đơn hàng');
+        }
+        
+        if (!data.success) {
+          throw new Error(data.message || 'Không thể tải thông tin đơn hàng');
+        }
+        
+        const orderData = data.data;
+        setOrder(orderData);
+        setForm({
+          status: orderData.status || '',
+        });
+        setError(null);
+      } catch (error) {
+        console.error('Error fetching order:', error);
+        setError(error.message || 'Không thể tải thông tin đơn hàng');
+        
+        if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setTimeout(() => navigate('/auth/login'), 2000);
+        }
+      } finally {
+        setLoading(false);
       }
-      
-      const data = await response.json();
-      const orderData = data.data || data;
-      setOrder(orderData);
-      setForm({
-        status: orderData.status || ''
-      });
-      setError(null);
-    } catch (error) {
-      console.error('Error fetching order:', error);
-      setError('Không thể tải thông tin đơn hàng: ' + error.message);
-      
-      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setTimeout(() => navigate('/auth/login'), 2000);
-      }
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    fetchOrder();
+  }, [id, navigate]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
-  
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -76,34 +105,81 @@ export default function EditOrder() {
         return;
       }
       
-      // Update order status
-      const statusResponse = await fetch(`http://localhost:8001/api/orders/${id}/status`, {
+      const response = await fetch(`http://localhost:8001/api/orders/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ status: form.status })
+        body: JSON.stringify(form)
       });
       
-      if (!statusResponse.ok) {
-        const errorData = await statusResponse.json();
-        throw new Error(errorData.message || 'Failed to update order status');
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể cập nhật đơn hàng');
       }
       
-      alert('Đã lưu thay đổi!');
+      if (!data.success) {
+        throw new Error(data.message || 'Không thể cập nhật đơn hàng');
+      }
+      
+      alert('Cập nhật đơn hàng thành công!');
       navigate('/admin/orders');
     } catch (error) {
       console.error('Error updating order:', error);
-      setError('Lỗi khi cập nhật đơn hàng: ' + error.message);
+      alert('Lỗi khi cập nhật đơn hàng: ' + error.message);
       
       if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        setTimeout(() => navigate('/auth/login'), 2000);
+        navigate('/auth/login');
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = () => {
+    setOpenConfirm(true);
+  };
+  
+  const handleDeleteConfirm = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/auth/login');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:8001/api/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'failed' })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to cancel order');
+      }
+      
+      alert('Đã hủy đơn hàng thành công!');
+      navigate('/admin/orders');
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert('Lỗi khi hủy đơn hàng: ' + error.message);
+      
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/auth/login');
+      }
+    } finally {
+      setOpenConfirm(false);
     }
   };
 
@@ -178,12 +254,13 @@ export default function EditOrder() {
   );
   
   return (
-    <div className="p-6">
+    <div className="p-6 bg-[var(--admin-bg)]">
       <Box className="flex justify-between items-center mb-6">
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate('/admin/orders')}
+          sx={{ color: 'var(--admin-primary)', borderColor: 'var(--admin-primary)' }}
         >
           Quay lại
         </Button>
@@ -193,20 +270,26 @@ export default function EditOrder() {
           startIcon={<SaveIcon />}
           onClick={handleSubmit}
           disabled={saving}
+          sx={{ 
+            bgcolor: 'var(--admin-primary)',
+            '&:hover': {
+              bgcolor: 'var(--admin-primary-dark)'
+            }
+          }}
         >
           {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
         </Button>
       </Box>
 
-      <Paper className="p-6 shadow-lg rounded-lg mb-6">
-        <Typography variant="h4" className="font-bold mb-6">
+      <Paper className="p-6 shadow-lg rounded-lg mb-6" sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+        <Typography variant="h4" className="font-bold mb-6" sx={{ color: 'var(--admin-primary)' }}>
           Chỉnh sửa đơn hàng
         </Typography>
         
         <form onSubmit={handleSubmit}>
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" className="font-medium mb-4">
+              <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
                 Thông tin đơn hàng
               </Typography>
               
@@ -240,7 +323,7 @@ export default function EditOrder() {
             </Grid>
             
             <Grid item xs={12} md={6}>
-              <Typography variant="h6" className="font-medium mb-4">
+              <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
                 Thông tin khách hàng
               </Typography>
               
@@ -260,29 +343,35 @@ export default function EditOrder() {
               
               <Box className="mb-4">
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Gói tập
+                  Số điện thoại
                 </Typography>
-                <Typography variant="body1">{order.packageId?.name || 'N/A'}</Typography>
+                <Typography variant="body1">{order.userId?.phone || 'N/A'}</Typography>
               </Box>
             </Grid>
-          </Grid>
-          
-          <Divider className="my-6" />
-          
-          <Typography variant="h6" className="font-medium mb-4">
-            Cập nhật trạng thái đơn hàng
-          </Typography>
-          
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth margin="normal">
-                <InputLabel>Trạng thái</InputLabel>
+
+            <Grid item xs={12}>
+              <Divider className="my-4" sx={{ borderColor: 'var(--admin-border)' }} />
+              <Typography variant="h6" className="font-medium mb-4" sx={{ color: 'var(--admin-primary)' }}>
+                Cập nhật trạng thái
+              </Typography>
+              
+              <FormControl fullWidth>
                 <Select
                   name="status"
                   value={form.status}
                   onChange={handleChange}
-                  label="Trạng thái"
-                  required
+                  sx={{ 
+                    color: 'var(--admin-text)',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--admin-border)'
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--admin-primary)'
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--admin-primary)'
+                    }
+                  }}
                 >
                   <MenuItem value="pending">Chờ thanh toán</MenuItem>
                   <MenuItem value="paid">Đã thanh toán</MenuItem>
@@ -291,32 +380,23 @@ export default function EditOrder() {
               </FormControl>
             </Grid>
           </Grid>
-          
-          {order.receiptImage && (
-            <>
-              <Divider className="my-6" />
-              
-              <Typography variant="h6" className="font-medium mb-4">
-                Hóa đơn đã tải lên
-              </Typography>
-              
-              <Box className="mb-4">
-                <a href={`http://localhost:8001${order.receiptImage}`} target="_blank" rel="noopener noreferrer">
-                  <img 
-                    src={`http://localhost:8001${order.receiptImage}`} 
-                    alt="Receipt" 
-                    className="max-w-md rounded border"
-                    style={{ maxHeight: '300px' }}
-                  />
-                </a>
-                <Typography variant="caption" display="block" className="mt-2">
-                  Ngày tải lên: {formatDate(order.receiptUploadDate)}
-                </Typography>
-              </Box>
-            </>
-          )}
         </form>
       </Paper>
+
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận hủy đơn hàng</DialogTitle>
+        <DialogContent>
+          Bạn có chắc chắn muốn hủy đơn hàng này?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
-} 
+};
+
+export default EditOrder; 
