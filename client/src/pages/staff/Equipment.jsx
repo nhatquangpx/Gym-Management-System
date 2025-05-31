@@ -216,11 +216,11 @@ export default function Equipment() {
           <Table>
             <TableHead>
               <TableRow className="bg-gray-100">
-                <TableCell>Tên thiết bị</TableCell>
-                <TableCell>Phòng tập</TableCell>
-                <TableCell>Mô tả</TableCell>
-                <TableCell>Trạng thái</TableCell>
-                <TableCell>Hành động</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Tên thiết bị</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Phòng tập</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Mô tả</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Trạng thái</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Hành động</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
