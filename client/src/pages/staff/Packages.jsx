@@ -113,7 +113,7 @@ export default function Packages() {
       )}
 
       {/* Thanh tìm kiếm */}
-      <Paper sx={{ p: 2, mb: 3, background: '#fff', color: 'var(--admin-text)' }}>
+      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Tìm theo tên gói"
@@ -122,10 +122,7 @@ export default function Packages() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
-            }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             label="Giá"
@@ -134,10 +131,7 @@ export default function Packages() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
-            }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <TextField
             select
@@ -147,11 +141,7 @@ export default function Packages() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
-              minWidth: 150
-            }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, minWidth: 150 }}
           >
             <MenuItem value="">Tất cả loại gói</MenuItem>
             <MenuItem value="Tự tập">Tự tập</MenuItem>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, Chip, Rating
+  IconButton, Chip, Rating, TextField
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -63,28 +63,34 @@ export default function StaffFeedback() {
           Danh sách phản hồi
         </Typography>
       </Box>
-      <Paper sx={{ p: 2, mb: 3, background: '#fff' }}>
+      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
-          <input
-            type="text"
-            placeholder="Tìm kiếm hội viên"
-            className="p-2 rounded border border-gray-300 min-w-[200px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm hội viên"
             value={filter.member}
             onChange={e => setFilter(f => ({ ...f, member: e.target.value }))}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
-          <input
-            type="text"
-            placeholder="Tìm kiếm loại phản hồi"
-            className="p-2 rounded border border-gray-300 min-w-[160px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm loại phản hồi"
             value={filter.type}
             onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
-          <input
-            type="text"
-            placeholder="Tìm kiếm tên đối tượng"
-            className="p-2 rounded border border-gray-300 min-w-[160px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm tên đối tượng"
             value={filter.targetName}
             onChange={e => setFilter(f => ({ ...f, targetName: e.target.value }))}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
         </Box>
       </Paper>

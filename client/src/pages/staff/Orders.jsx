@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Chip, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Chip, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
@@ -170,21 +170,25 @@ export default function Orders() {
       )}
       
       {/* Thanh tìm kiếm */}
-      <Paper sx={{ p: 2, mb: 6, background: '#fff' }}>
+      <Paper sx={{ p: 2, mb: 6, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <div className="flex flex-wrap gap-4">
-          <input
-            type="text"
-            placeholder="Tìm kiếm khách hàng"
-            className="p-2 rounded border border-gray-300 min-w-[200px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm khách hàng"
             value={searchCustomer}
             onChange={e => setSearchCustomer(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
-          <input
-            type="text"
-            placeholder="Tìm kiếm gói tập"
-            className="p-2 rounded border border-gray-300 min-w-[120px] text-black bg-white placeholder:text-gray-500"
+          <TextField
+            label="Tìm kiếm gói tập"
             value={searchPackage}
             onChange={e => setSearchPackage(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
           />
           <FormControl size="small" style={{ minWidth: 150 }}>
             <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
@@ -192,7 +196,7 @@ export default function Orders() {
               value={searchStatus}
               label="Trạng thái"
               onChange={e => setSearchStatus(e.target.value)}
-              sx={{ color: 'var(--admin-text)' }}
+              sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="pending">Chờ thanh toán</MenuItem>
@@ -207,11 +211,11 @@ export default function Orders() {
           <table className="min-w-full rounded-2xl">
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
-                <th className="py-3 px-4 text-center">Khách hàng</th>
-                <th className="py-3 px-4 text-center">Gói tập</th>
-                <th className="py-3 px-4 text-center">Tổng tiền</th>
-                <th className="py-3 px-4 text-center">Ngày tạo</th>
-                <th className="py-3 px-4 text-center">Trạng thái</th>
+                <th className="py-3 px-4 text-left">Khách hàng</th>
+                <th className="py-3 px-4 text-left">Gói tập</th>
+                <th className="py-3 px-4 text-left">Tổng tiền</th>
+                <th className="py-3 px-4 text-left">Ngày tạo</th>
+                <th className="py-3 px-4 text-left">Trạng thái</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
@@ -222,22 +226,16 @@ export default function Orders() {
                 <tr><td colSpan={7} className="text-center py-4">Không có đơn hàng nào</td></tr>
               ) : filteredOrders.map((o) => (
                 <tr key={o._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
-                  <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] justify-center text-center">
+                  <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] text-left">
                     <div>
                       <div className="font-medium">{o.userId?.name || 'N/A'}</div>
                       <div className="text-sm text-gray-500">{o.userId?.email || 'N/A'}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
-                    {o.packageId?.name || 'N/A'}
-                  </td>
-                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
-                    {formatCurrency(o.amount)}
-                  </td>
-                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
-                    {formatDate(o.createdAt)}
-                  </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-6 py-4 text-left text-[var(--admin-text)]">{o.packageId?.name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-left text-[var(--admin-text)]">{formatCurrency(o.amount)}</td>
+                  <td className="px-6 py-4 text-left text-[var(--admin-text)]">{formatDate(o.createdAt)}</td>
+                  <td className="px-6 py-4 text-left">
                     <Chip
                       label={getStatusText(o.status)}
                       color={getStatusColor(o.status)}
