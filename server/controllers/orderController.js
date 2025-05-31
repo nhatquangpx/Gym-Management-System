@@ -81,9 +81,17 @@ exports.getAllOrders = async (req, res) => {
 // @access  Private (Admin or Order Owner)
 exports.getOrderById = async (req, res) => {
     try {
+        // Validate ObjectId
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: "ID đơn hàng không hợp lệ"
+            });
+        }
+
         const order = await Order.findById(req.params.id)
             .populate('userId', 'name email phone')
-            .populate('packageId', 'name price description');
+            .populate('packageId', 'name price description duration');
         
         if (!order) {
             return res.status(404).json({
@@ -93,7 +101,7 @@ exports.getOrderById = async (req, res) => {
         }
 
         // Check if request is from admin or order owner
-        if (req.user.role !== 'admin' && order.userId._id.toString() !== req.user._id.toString()) {
+        if (req.user.role !== 'admin' && req.user.role !== 'employee' && order.userId._id.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 success: false,
                 message: "Không có quyền truy cập đơn hàng này"
@@ -105,10 +113,10 @@ exports.getOrderById = async (req, res) => {
             data: order
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error in getOrderById:', error);
         res.status(500).json({
             success: false,
-            message: "Lỗi server"
+            message: "Lỗi server: " + error.message
         });
     }
 };

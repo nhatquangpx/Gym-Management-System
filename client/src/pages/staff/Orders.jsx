@@ -1,294 +1,327 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, MenuItem, Select, InputLabel, FormControl, Button, Dialog, DialogTitle, DialogContent, DialogActions
-} from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Link, useNavigate } from 'react-router-dom';
+import Paper from '@mui/material/Paper';
+import Tooltip from '@mui/material/Tooltip';
+import { useState, useEffect } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Chip, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
-// Fake data for demonstration
-const fakeOrders = [
-  {
-    _id: '1',
-    user: { name: 'Nguyễn Văn A', email: 'nguyenvana@gmail.com' },
-    package: { name: 'Gói 1 tháng', price: 500000 },
-    amount: 500000,
-    status: 'pending',
-    createdAt: '2024-06-01T10:00:00Z',
-    orderType: 'bank_transfer',
-  },
-  {
-    _id: '2',
-    user: { name: 'Trần Thị B', email: 'tranthib@gmail.com' },
-    package: { name: 'Gói 3 tháng', price: 1200000 },
-    amount: 1200000,
-    status: 'paid',
-    createdAt: '2024-06-02T14:30:00Z',
-    orderType: 'momo',
-  },
-  {
-    _id: '3',
-    user: { name: 'Lê Văn C', email: 'levanc@gmail.com' },
-    package: { name: 'Gói 6 tháng', price: 2000000 },
-    amount: 2000000,
-    status: 'failed',
-    createdAt: '2024-06-03T09:15:00Z',
-    orderType: 'bank_transfer',
-  },
-];
-
-const statusOptions = [
-  { value: '', label: 'Tất cả' },
-  { value: 'pending', label: 'Chờ thanh toán' },
-  { value: 'paid', label: 'Đã thanh toán' },
-  { value: 'failed', label: 'Thất bại' },
-];
-
-export default function StaffOrders() {
-  const navigate = useNavigate();
+export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState({ user: '', status: '', package: '' });
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [openDetail, setOpenDetail] = useState(false);
-  const [openEdit, setOpenEdit] = useState(false);
-
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [searchCustomer, setSearchCustomer] = useState("");
+  const [searchPackage, setSearchPackage] = useState("");
+  const [searchStatus, setSearchStatus] = useState("");
+  const [searchPaymentMethod, setSearchPaymentMethod] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  
   useEffect(() => {
-    // In real app, fetch from API
-    setOrders(fakeOrders);
-    setLoading(false);
+    fetchOrders();
   }, []);
-
-  const handleView = (order) => {
-    setSelectedOrder(order);
-    setOpenDetail(true);
-  };
-
-  const handleEdit = (order) => {
-    setSelectedOrder(order);
-    setOpenEdit(true);
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
-      setOrders(orders.filter(o => o._id !== id));
+  
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Bạn cần đăng nhập để xem danh sách đơn hàng.');
+        setLoading(false);
+        return;
+      }
+      
+      const response = await fetch('http://localhost:8001/api/orders', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch orders');
+      }
+      
+      const data = await response.json();
+      setOrders(data.data || data);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setError('Không thể tải danh sách đơn hàng: ' + error.message);
+      
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => navigate('/auth/login'), 2000);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleStatusChange = (e) => {
-    setSelectedOrder({ ...selectedOrder, status: e.target.value });
+  const handleDelete = (id) => {
+    setItemToDelete(id);
+    setOpenConfirm(true);
+  };
+  
+  const handleDeleteConfirm = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/auth/login');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:8001/api/orders/${itemToDelete}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'failed' })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to cancel order');
+      }
+      
+      fetchOrders();
+      alert('Đã hủy đơn hàng thành công!');
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert('Lỗi khi hủy đơn hàng: ' + error.message);
+      
+      if (error.message.includes('token') || error.message.includes('unauthorized') || error.message.includes('forbidden')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/auth/login');
+      }
+    } finally {
+      setOpenConfirm(false);
+      setItemToDelete(null);
+    }
+  };
+  
+  // Lọc danh sách đơn hàng theo khách hàng, gói tập, trạng thái, phương thức thanh toán
+  const filteredOrders = orders.filter(o => {
+    const customerName = o.userId?.name || '';
+    const packageName = o.packageId?.name || '';
+    const orderStatus = o.status || '';
+    const paymentMethod = o.orderType || '';
+    
+    return customerName.toLowerCase().includes(searchCustomer.toLowerCase()) &&
+      packageName.toLowerCase().includes(searchPackage.toLowerCase()) &&
+      orderStatus.toLowerCase().includes(searchStatus.toLowerCase()) &&
+      paymentMethod.toLowerCase().includes(searchPaymentMethod.toLowerCase());
+  });
+  
+  const getStatusText = (status) => {
+    switch(status) {
+      case 'paid': return 'Đã thanh toán';
+      case 'pending': return 'Chờ thanh toán';
+      case 'failed': return 'Đã hủy';
+      default: return status;
+    }
   };
 
-  const handleSaveStatus = () => {
-    setOrders(orders.map(o => o._id === selectedOrder._id ? { ...o, status: selectedOrder.status } : o));
-    setOpenEdit(false);
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'paid': return 'success';
+      case 'pending': return 'warning';
+      case 'failed': return 'error';
+      default: return 'default';
+    }
+  };
+  
+  const getPaymentMethodText = (type) => {
+    switch(type) {
+      case 'gym_package': return 'Gói tập';
+      case 'bank_transfer': return 'Chuyển khoản';
+      case 'vnpay': return 'VNPay';
+      case 'momo': return 'MoMo';
+      default: return type;
+    }
   };
 
-  const filteredOrders = orders.filter(o =>
-    (filter.user === '' || (o.user.name && o.user.name.toLowerCase().includes(filter.user.toLowerCase()))) &&
-    (filter.status === '' || o.status === filter.status) &&
-    (filter.package === '' || (o.package.name && o.package.name.toLowerCase().includes(filter.package.toLowerCase())))
-  );
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  };
+  
   return (
-    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
-      <Box className="flex justify-between items-center mb-6">
-        <Typography
-          variant="h4"
-          className="font-bold"
-          sx={{
-            color: '#4f8cff',
-            fontWeight: 700,
-            fontSize: '2.2em',
-            mb: 4
-          }}
-        >
-          Quản lý đăng ký gói tập
-        </Typography>
-        <Button
-          variant="contained"
-          sx={{ 
-            backgroundColor: 'var(--admin-primary)',
-            '&:hover': { backgroundColor: 'var(--admin-primary-dark)', color: '#fff' }
-          }}
-          startIcon={<AddIcon />}
-          onClick={() => alert('Chức năng này chỉ demo UI!')}
-        >
-          Tạo đơn hàng thủ công
-        </Button>
-      </Box>
-      <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
-        <Box className="flex flex-wrap gap-4">
-          <TextField
-            label="Khách hàng"
-            value={filter.user}
-            onChange={e => setFilter(f => ({ ...f, user: e.target.value }))}
-            size="small"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <TextField
-            label="Gói tập"
-            value={filter.package}
-            onChange={e => setFilter(f => ({ ...f, package: e.target.value }))}
-            size="small"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <FormControl size="small" style={{ minWidth: 140 }}>
-            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
-            <Select
-              value={filter.status}
-              label="Trạng thái"
-              onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
-              sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
-            >
-              {statusOptions.map(opt => (
-                <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
+          Danh sách đơn hàng
+        </h1>
+      </div>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+      
+      {/* Thanh tìm kiếm */}
+      <div className="flex flex-wrap gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Khách hàng"
+          className="p-2 rounded border border-gray-300 min-w-[200px]"
+          value={searchCustomer}
+          onChange={e => setSearchCustomer(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Gói tập"
+          className="p-2 rounded border border-gray-300 min-w-[120px]"
+          value={searchPackage}
+          onChange={e => setSearchPackage(e.target.value)}
+        />
+        <FormControl size="small" style={{ minWidth: 150 }}>
+          <InputLabel>Trạng thái</InputLabel>
+          <Select
+            value={searchStatus}
+            label="Trạng thái"
+            onChange={e => setSearchStatus(e.target.value)}
+          >
+            <MenuItem value="">Tất cả</MenuItem>
+            <MenuItem value="pending">Chờ thanh toán</MenuItem>
+            <MenuItem value="paid">Đã thanh toán</MenuItem>
+            <MenuItem value="failed">Đã hủy</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl size="small" style={{ minWidth: 150 }}>
+          <InputLabel>Phương thức thanh toán</InputLabel>
+          <Select
+            value={searchPaymentMethod}
+            label="Phương thức thanh toán"
+            onChange={e => setSearchPaymentMethod(e.target.value)}
+          >
+            <MenuItem value="">Tất cả</MenuItem>
+            <MenuItem value="gym_package">Gói tập</MenuItem>
+            <MenuItem value="bank_transfer">Chuyển khoản</MenuItem>
+            <MenuItem value="vnpay">VNPay</MenuItem>
+            <MenuItem value="momo">MoMo</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
+        <div className="overflow-x-auto">
+          <table className="min-w-full rounded-2xl">
+            <thead>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-center">Khách hàng</th>
+                <th className="py-3 px-4 text-center">Gói tập</th>
+                <th className="py-3 px-4 text-center">Tổng tiền</th>
+                <th className="py-3 px-4 text-center">Phương thức</th>
+                <th className="py-3 px-4 text-center">Ngày tạo</th>
+                <th className="py-3 px-4 text-center">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={7} className="text-center py-4">Đang tải...</td></tr>
+              ) : filteredOrders.length === 0 ? (
+                <tr><td colSpan={7} className="text-center py-4">Không có đơn hàng nào</td></tr>
+              ) : filteredOrders.map((o) => (
+                <tr key={o._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                  <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] justify-center text-center">
+                    <div>
+                      <div className="font-medium">{o.userId?.name || 'N/A'}</div>
+                      <div className="text-sm text-gray-500">{o.userId?.email || 'N/A'}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {o.packageId?.name || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {formatCurrency(o.amount)}
+                  </td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {getPaymentMethodText(o.orderType)}
+                  </td>
+                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
+                    {formatDate(o.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Chip
+                      label={getStatusText(o.status)}
+                      color={getStatusColor(o.status)}
+                      size="small"
+                    />
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center gap-2">
+                      <Tooltip title="Xem chi tiết">
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/staff/orders/view/${o._id}`)}
+                          sx={{ color: 'var(--admin-primary)' }}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Chỉnh sửa">
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/staff/orders/edit/${o._id}`)}
+                          sx={{ color: 'var(--admin-text)' }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                      {o.status === 'pending' && (
+                        <Tooltip title="Hủy đơn hàng">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDelete(o._id)}
+                            sx={{ color: '#d32f2f' }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </Select>
-          </FormControl>
-        </Box>
+            </tbody>
+          </table>
+        </div>
       </Paper>
-      <TableContainer component={Paper} sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: 'var(--admin-header)' }}>
-            <TableRow>
-              <TableCell sx={{ color: 'var(--admin-text)' }}>Khách hàng</TableCell>
-              <TableCell sx={{ color: 'var(--admin-text)' }}>Email</TableCell>
-              <TableCell sx={{ color: 'var(--admin-text)' }}>Gói tập</TableCell>
-              <TableCell sx={{ color: 'var(--admin-text)' }}>Giá</TableCell>
-              <TableCell sx={{ color: 'var(--admin-text)' }}>Trạng thái</TableCell>
-              <TableCell sx={{ color: 'var(--admin-text)' }}>Ngày tạo</TableCell>
-              <TableCell sx={{ color: 'var(--admin-text)' }}>Loại thanh toán</TableCell>
-              <TableCell align="right" sx={{ color: 'var(--admin-text)' }}>Hành động</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow><TableCell colSpan={8} sx={{ color: 'var(--admin-text)' }}>Loading...</TableCell></TableRow>
-            ) : filteredOrders.length === 0 ? (
-              <TableRow><TableCell colSpan={8} sx={{ color: 'var(--admin-text)' }}>Không có đơn hàng nào</TableCell></TableRow>
-            ) : filteredOrders.map(order => (
-              <TableRow key={order._id}>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.user.name}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.user.email}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.package.name}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{
-                  order.status === 'pending' ? 'Chờ thanh toán' :
-                  order.status === 'paid' ? 'Đã thanh toán' :
-                  'Thất bại'
-                }</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{new Date(order.createdAt).toLocaleString('vi-VN')}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{order.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => handleView(order)} sx={{ color: 'var(--admin-text)' }}><VisibilityIcon /></IconButton>
-                  <IconButton onClick={() => handleEdit(order)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(order._id)}><DeleteIcon /></IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
 
-      {/* Chi tiết đơn hàng */}
-      <Dialog 
-        open={openDetail} 
-        onClose={() => setOpenDetail(false)} 
-        PaperProps={{ 
-          sx: { 
-            backgroundColor: 'var(--admin-sidebar)', 
-            color: 'var(--admin-text)', 
-            minWidth: 380, 
-            maxWidth: 480, 
-            borderRadius: 3, 
-            p: 2 
-          } 
-        }}
-      >
-        <DialogTitle 
-          sx={{ 
-            color: 'var(--admin-text)', 
-            fontSize: '2rem', 
-            fontWeight: 700, 
-            textAlign: 'center', 
-            pb: 1 
-          }}
-        >
-          Chi tiết đơn hàng
-        </DialogTitle>
-        <DialogContent 
-          dividers 
-          sx={{ 
-            color: 'var(--admin-text)', 
-            borderColor: 'var(--admin-border)', 
-            px: 4, 
-            py: 2 
-          }}
-        >
-          {selectedOrder && (
-            <Box sx={{ fontSize: '1.15rem', lineHeight: 1.7 }}>
-              <Typography component="div" sx={{ mb: 1.2 }}>
-                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Khách hàng:</b> {selectedOrder.user.name}
-              </Typography>
-              <Typography component="div" sx={{ mb: 1.2 }}>
-                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Email:</b> {selectedOrder.user.email}
-              </Typography>
-              <Typography component="div" sx={{ mb: 1.2 }}>
-                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Gói tập:</b> {selectedOrder.package.name}
-              </Typography>
-              <Typography component="div" sx={{ mb: 1.2 }}>
-                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Giá:</b> {selectedOrder.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-              </Typography>
-              <Typography component="div" sx={{ mb: 1.2 }}>
-                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Trạng thái:</b> {selectedOrder.status === 'pending' ? 'Chờ thanh toán' : selectedOrder.status === 'paid' ? 'Đã thanh toán' : 'Thất bại'}
-              </Typography>
-              <Typography component="div" sx={{ mb: 1.2 }}>
-                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Ngày tạo:</b> {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}
-              </Typography>
-              <Typography component="div" sx={{ mb: 1.2 }}>
-                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Loại thanh toán:</b> {selectedOrder.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}
-              </Typography>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
-          <Button onClick={() => setOpenDetail(false)} sx={{ color: 'var(--admin-text)', fontSize: '1.1rem', fontWeight: 600, px: 3 }}>
-            ĐÓNG
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Cập nhật trạng thái đơn hàng */}
-      <Dialog open={openEdit} onClose={() => setOpenEdit(false)} PaperProps={{ sx: { backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' } }}>
-        <DialogTitle sx={{ color: 'var(--admin-text)' }}>Cập nhật trạng thái đơn hàng</DialogTitle>
-        <DialogContent dividers sx={{ color: 'var(--admin-text)', borderColor: 'var(--admin-border)' }}>
-          {selectedOrder && (
-            <FormControl fullWidth>
-              <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
-              <Select
-                value={selectedOrder.status}
-                label="Trạng thái"
-                onChange={handleStatusChange}
-                sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
-              >
-                {statusOptions.filter(opt => opt.value).map(opt => (
-                  <MenuItem key={opt.value} value={opt.value} sx={{ color: 'var(--admin-text)' }}>{opt.label}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận hủy đơn hàng</DialogTitle>
+        <DialogContent>
+          Bạn có chắc chắn muốn hủy đơn hàng này?
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenEdit(false)} sx={{ color: 'var(--admin-text)' }}>Hủy</Button>
-          <Button variant="contained" onClick={handleSaveStatus} sx={{ backgroundColor: 'var(--admin-primary)', color: 'var(--trainer-text)', '&:hover': { backgroundColor: 'var(--admin-accent)' } }}>Lưu</Button>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Xác nhận
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
