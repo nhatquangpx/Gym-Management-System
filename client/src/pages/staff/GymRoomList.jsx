@@ -109,7 +109,7 @@ export default function GymRoomList() {
           variant="h4"
           className="font-bold"
           sx={{
-            color: '#1a237e',
+            color: '#4f8cff',
             fontWeight: 700,
             fontSize: '2.2em',
             mb: 4
@@ -121,7 +121,7 @@ export default function GymRoomList() {
           variant="contained"
           sx={{ 
               backgroundColor: 'var(--admin-primary)',
-              '&:hover': { backgroundColor: 'var(--admin-primary)'}
+              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
             }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/staff/gymrooms/add')}
@@ -184,27 +184,27 @@ export default function GymRoomList() {
           </FormControl>
         </Box>
       </Paper>
-      <Paper sx={{ background: 'white', color: '#333', borderRadius: 4, boxShadow: 6 }}>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Tên phòng</th>
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Loại phòng</th>
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Trạng thái</th>
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Hành động</th>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-left">Tên phòng</th>
+                <th className="py-3 px-4 text-left">Loại phòng</th>
+                <th className="py-3 px-4 text-left">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={4} className="py-4 px-6 text-base text-center text-[#333]">Đang tải...</td></tr>
+                <tr><td colSpan={4} className="text-center py-4">Đang tải...</td></tr>
               ) : filteredGymRooms.length === 0 ? (
-                <tr><td colSpan={4} className="py-4 px-6 text-base text-center text-[#333]">Không có phòng tập nào</td></tr>
+                <tr><td colSpan={4} className="text-center py-4">Không có phòng tập nào</td></tr>
               ) : filteredGymRooms.map(room => (
-                <tr key={room._id}>
-                  <td className="py-4 px-6 text-[#333] text-base text-center">{room.name}</td>
-                  <td className="py-4 px-6 text-[#333] text-base text-center">{getRoomTypeLabel(room.roomType)}</td>
-                  <td className="py-4 px-6 text-[#333] text-base text-center">
+                <tr key={room._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{room.name}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{getRoomTypeLabel(room.roomType)}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">
                     <Chip
                       label={room.status === 'active' ? 'Hoạt động' : 
                              room.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
@@ -213,11 +213,11 @@ export default function GymRoomList() {
                       size="small"
                     />
                   </td>
-                  <td className="py-4 px-6 text-center">
+                  <td className="px-6 py-4 text-center">
                     <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/staff/gymrooms/view/${room._id}`)}>
                       <VisibilityIcon />
                     </IconButton>
-                    <IconButton sx={{ color: '#1a237e' }} onClick={() => navigate(`/staff/gymrooms/edit/${room._id}`)}>
+                    <IconButton sx={{ color: 'var(--admin-text)' }} onClick={() => navigate(`/staff/gymrooms/edit/${room._id}`)}>
                       <EditIcon />
                     </IconButton>
                     <IconButton sx={{ color: '#d32f2f' }} onClick={() => handleDelete(room._id)}>
