@@ -247,6 +247,10 @@ function App() {
             <Route path="promotions/add" element={<AddPromotion />} />
             <Route path="promotions/view/:id" element={<ViewPromotion />} />
             <Route path="promotions/edit/:id" element={<EditPromotion />} />
+            <Route path="trainers" element={<Trainers />} />
+            <Route path="trainers/add" element={<AddTrainer />} />
+            <Route path="trainers/view/:id" element={<ViewTrainer />} />
+            <Route path="trainers/edit/:id" element={<EditTrainer />} />
           </Route>
         </Route>
 

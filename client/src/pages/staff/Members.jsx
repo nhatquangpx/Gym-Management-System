@@ -163,11 +163,11 @@ export default function StaffMembers() {
         <Table>
           <TableHead>
             <TableRow sx={{ background: 'var(--admin-header)' }}>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Tên hội viên</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Số điện thoại</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Email</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Ngày đăng ký</TableCell>
-              <TableCell align="right" sx={{ color: 'var(--admin-primary)' }}>Hành động</TableCell>
+              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Tên hội viên</TableCell>
+              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Số điện thoại</TableCell>
+              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Email</TableCell>
+              <TableCell sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Ngày đăng ký</TableCell>
+              <TableCell align="right" sx={{ color: 'var(--admin-primary)', fontWeight: 700 }}>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
