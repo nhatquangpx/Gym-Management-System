@@ -41,7 +41,7 @@ export default function Attendance() {
 
   return (
     <Box sx={{ p: 3, minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
-      <Typography variant="h4" fontWeight={700} mb={3} color="primary" sx={{ alignSelf: 'flex-start' }}>Ghi nhận buổi tập</Typography>
+      <Typography variant="h4" fontWeight={700} mb={3} sx={{ color: 'var(--admin-primary)', alignSelf: 'flex-start' }}>Ghi nhận buổi tập</Typography>
       <Paper sx={{ p: 3, mb: 4, display: 'flex', gap: 2, alignItems: 'center', maxWidth: 650, width: '100%', boxShadow: 4 }}>
         <TextField
           label="Tìm kiếm tên hội viên"
@@ -67,22 +67,37 @@ export default function Attendance() {
           </List>
         </Paper>
       )}
-      <Dialog open={!!selected} onClose={() => setSelected(null)}>
-        <DialogTitle>Thông tin hội viên</DialogTitle>
-        <DialogContent>
+      <Dialog 
+        open={!!selected} 
+        onClose={() => setSelected(null)}
+        PaperProps={{
+          sx: {
+            minWidth: 370,
+            maxWidth: 440,
+            borderRadius: 3,
+            p: 2,
+            background: 'var(--admin-sidebar)',
+            color: 'var(--admin-text)'
+          }
+        }}
+      >
+        <DialogTitle sx={{ fontSize: '1.7rem', fontWeight: 700, textAlign: 'center', color: 'var(--admin-primary)', pb: 1 }}>
+          Thông tin hội viên
+        </DialogTitle>
+        <DialogContent sx={{ pb: 2 }}>
           {selected && (
             <Box>
-              <Typography><b>ID hội viên:</b> {selected.id}</Typography>
-              <Typography><b>Tên hội viên:</b> {selected.name}</Typography>
-              <Typography><b>ID gói tập:</b> {selected.packageId}</Typography>
-              <Typography><b>Tên gói tập:</b> {selected.packageName}</Typography>
+              <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>ID hội viên:</b> {selected.id}</Typography>
+              <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>Tên hội viên:</b> {selected.name}</Typography>
+              <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>ID gói tập:</b> {selected.packageId}</Typography>
+              <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>Tên gói tập:</b> {selected.packageName}</Typography>
               {success && <Typography color="success.main" mt={2}>Xác nhận tham gia thành công!</Typography>}
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSelected(null)} disabled={confirming}>Đóng</Button>
-          {!success && <Button variant="contained" onClick={handleConfirm} disabled={confirming}>{confirming ? <CircularProgress size={20} /> : 'Xác nhận tham gia'}</Button>}
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button onClick={() => setSelected(null)} disabled={confirming} sx={{ minWidth: 100 }}>Đóng</Button>
+          {!success && <Button variant="contained" onClick={handleConfirm} disabled={confirming} sx={{ minWidth: 180, fontWeight: 600 }}>{confirming ? <CircularProgress size={20} /> : 'Xác nhận tham gia'}</Button>}
         </DialogActions>
       </Dialog>
     </Box>

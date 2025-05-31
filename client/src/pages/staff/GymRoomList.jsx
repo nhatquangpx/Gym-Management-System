@@ -121,7 +121,7 @@ export default function GymRoomList() {
           variant="contained"
           sx={{ 
               backgroundColor: 'var(--admin-primary)',
-              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+              '&:hover': { backgroundColor: 'var(--admin-primary)'}
             }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/staff/gymrooms/add')}
