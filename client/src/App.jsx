@@ -19,6 +19,7 @@ import EditProfilePage from './pages/member/EditProfilePage/EditProfilePage';
 import SchedulePage from './pages/member/SchedulePage/SchedulePage';
 import MyPackagesPage from './pages/member/MyPackagesPage/MyPackagesPage';
 import ComplaintsPage from './pages/member/ComplaintsPage/ComplaintsPage';
+import ChangePasswordPage from './pages/member/ChangePasswordPage/ChangePasswordPage';
 import HomePage from './pages/member/HomePage/HomePage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 
@@ -86,8 +87,6 @@ const PackageManagement = () => <div>Package Management Page</div>;
 
 // Các trang chức năng từ Navbar
 const NotificationPage = () => <div>Trang Thông báo</div>;
-// Trang chỉnh sửa thông tin, cài đặt
-const SettingsPage = () => <div>Trang Cài đặt</div>;
 
 // Staff
 import StaffLayout from './components/layout/StaffLayout';
@@ -163,7 +162,7 @@ function App() {
         <Route path="/notifications" element={<NotificationPage />} />
         <Route path="/complaints" element={<ComplaintsPage />} />
         <Route path="/profile/edit" element={<EditProfilePage />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
         
         {/* Other routes */}
         <Route path="/register" element={<RegisterPage />} />

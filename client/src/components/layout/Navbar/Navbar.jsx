@@ -200,9 +200,9 @@ const Navbar = () => {
                         <i className="material-icons">person</i>
                         Chỉnh sửa thông tin
                       </Link>
-                      <Link to="/settings" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
-                        <i className="material-icons">settings</i>
-                        Cài đặt
+                      <Link to="/change-password" className={styles.dropdownItem} onClick={() => setShowDropdown(false)}>
+                        <i className="material-icons">lock</i>
+                        Đổi mật khẩu
                       </Link>
                       <button onClick={handleLogout} className={styles.dropdownItem}>
                         <i className="material-icons">logout</i>
