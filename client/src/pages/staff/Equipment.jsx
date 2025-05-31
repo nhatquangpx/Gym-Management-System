@@ -167,26 +167,44 @@ export default function Equipment() {
           </Button>
         </Box>
 
-        <Paper className="p-4 mb-4">
+        <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
           <Box className="flex flex-wrap gap-4">
             <TextField
               label="Tìm theo tên"
               value={filter.name}
               onChange={e => setFilter(f => ({ ...f, name: e.target.value }))}
               size="small"
+              InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+              InputProps={{ style: { color: 'var(--admin-text)' } }}
+              sx={{
+                '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+              }}
             />
             <TextField
               label="Tìm theo mô tả"
               value={filter.description}
               onChange={e => setFilter(f => ({ ...f, description: e.target.value }))}
               size="small"
+              InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+              InputProps={{ style: { color: 'var(--admin-text)' } }}
+              sx={{
+                '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+              }}
             />
             <FormControl size="small" style={{ minWidth: 120 }}>
-              <InputLabel>Trạng thái</InputLabel>
+              <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
               <Select
                 value={filter.status}
                 label="Trạng thái"
                 onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+                sx={{
+                  color: 'var(--admin-text)',
+                  '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
+                  '.MuiSvgIcon-root': { color: 'var(--admin-text)' }
+                }}
               >
                 <MenuItem value="">Tất cả</MenuItem>
                 <MenuItem value="active">Hoạt động</MenuItem>
@@ -195,11 +213,17 @@ export default function Equipment() {
               </Select>
             </FormControl>
             <FormControl size="small" style={{ minWidth: 150 }}>
-              <InputLabel>Phòng tập</InputLabel>
+              <InputLabel sx={{ color: 'var(--admin-text)' }}>Phòng tập</InputLabel>
               <Select
                 value={filter.roomId}
                 label="Phòng tập"
                 onChange={e => setFilter(f => ({ ...f, roomId: e.target.value }))}
+                sx={{
+                  color: 'var(--admin-text)',
+                  '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
+                  '.MuiSvgIcon-root': { color: 'var(--admin-text)' }
+                }}
               >
                 <MenuItem value="">Tất cả</MenuItem>
                 {rooms.map(room => (
@@ -212,73 +236,62 @@ export default function Equipment() {
           </Box>
         </Paper>
 
-        <TableContainer component={Paper} className="shadow-lg rounded-lg">
-          <Table>
-            <TableHead>
-              <TableRow className="bg-gray-100">
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Tên thiết bị</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Phòng tập</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Mô tả</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Trạng thái</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#4f8cff' }}>Hành động</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredEquipment.length === 0 ? (
-                <TableRow><TableCell colSpan={5} align="center">Không có thiết bị nào</TableCell></TableRow>
-              ) : filteredEquipment.map((item) => (
-                <TableRow key={item._id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>
-                    {item.roomId && item.roomId.name ? (
-                      <Tooltip title={`Loại phòng: ${item.roomId.roomType || 'Không xác định'}`}>
-                        <span>{item.roomId.name}</span>
+        <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
+          <div className="overflow-x-auto">
+            <table className="min-w-full rounded-2xl">
+              <thead>
+                <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                  <th className="py-3 px-4 text-left">Tên thiết bị</th>
+                  <th className="py-3 px-4 text-left">Phòng tập</th>
+                  <th className="py-3 px-4 text-left">Mô tả</th>
+                  <th className="py-3 px-4 text-left">Trạng thái</th>
+                  <th className="py-3 px-4 text-center">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEquipment.length === 0 ? (
+                  <tr><td colSpan={5} className="text-center py-4">Không có thiết bị nào</td></tr>
+                ) : filteredEquipment.map((item) => (
+                  <tr key={item._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.name}</td>
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-left">
+                      {item.roomId && item.roomId.name ? (
+                        <Tooltip title={`Loại phòng: ${item.roomId.roomType || 'Không xác định'}`}> <span>{item.roomId.name}</span> </Tooltip>
+                      ) : (
+                        'Không xác định'
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-left">
+                      <Tooltip title={item.description || ''}>
+                        <span>{item.description ? (item.description.length > 30 ? item.description.substring(0, 30) + '...' : item.description) : ''}</span>
                       </Tooltip>
-                    ) : (
-                      'Không xác định'
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip title={item.description || ''}>
-                      <span>{item.description ? (item.description.length > 30 ? item.description.substring(0, 30) + '...' : item.description) : ''}</span>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={item.status === 'active' ? 'Hoạt động' : 
-                             item.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
-                      color={item.status === 'active' ? 'success' : 
-                             item.status === 'maintenance' ? 'warning' : 'error'}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      component={Link}
-                      to={`/staff/equipment/view/${item._id}`}
-                      sx={{ color: 'var(--admin-primary)' }} 
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-                    <IconButton
-                      component={Link}
-                      to={`/staff/equipment/edit/${item._id}`}
-                      sx={{ color: 'var(--admin-text)	' }} 
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      sx={{ color: '#d32f2f' }}
-                      onClick={() => handleDelete(item._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                    </td>
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-left">
+                      <Chip
+                        label={item.status === 'active' ? 'Hoạt động' : 
+                               item.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
+                        color={item.status === 'active' ? 'success' : 
+                               item.status === 'maintenance' ? 'warning' : 'error'}
+                        size="small"
+                      />
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <IconButton component={Link} to={`/staff/equipment/view/${item._id}`} sx={{ color: 'var(--admin-primary)' }}>
+                        <VisibilityIcon />
+                      </IconButton>
+                      <IconButton component={Link} to={`/staff/equipment/edit/${item._id}`} sx={{ color: 'var(--admin-text)' }}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton sx={{ color: '#d32f2f' }} onClick={() => handleDelete(item._id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Paper>
 
         <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
           <DialogTitle>Xác nhận xóa</DialogTitle>

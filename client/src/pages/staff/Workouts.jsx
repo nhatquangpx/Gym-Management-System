@@ -95,7 +95,7 @@ export default function StaffWorkouts() {
           Thêm buổi tập
         </Button>
       </Box>
-      <Paper className="p-4 mb-4" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Hội viên"
@@ -104,7 +104,10 @@ export default function StaffWorkouts() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
           <TextField
             label="Huấn luyện viên"
@@ -113,7 +116,10 @@ export default function StaffWorkouts() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
           <FormControl size="small" style={{ minWidth: 120 }}>
             <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
@@ -121,7 +127,12 @@ export default function StaffWorkouts() {
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
-              sx={{ color: 'var(--admin-text)', '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }, '.MuiSvgIcon-root': { color: 'var(--admin-text)' } }}
+              sx={{
+                color: 'var(--admin-text)',
+                '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
+                '.MuiSvgIcon-root': { color: 'var(--admin-text)' }
+              }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="scheduled">Đã lên lịch</MenuItem>
@@ -141,7 +152,10 @@ export default function StaffWorkouts() {
               style: { color: 'var(--admin-text)' }
             }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
+            sx={{
+              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
+              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
+            }}
           />
         </Box>
       </Paper>

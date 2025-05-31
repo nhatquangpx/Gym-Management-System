@@ -183,49 +183,53 @@ export default function Orders() {
       )}
       
       {/* Thanh tìm kiếm */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Khách hàng"
-          className="p-2 rounded border border-gray-300 min-w-[200px]"
-          value={searchCustomer}
-          onChange={e => setSearchCustomer(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Gói tập"
-          className="p-2 rounded border border-gray-300 min-w-[120px]"
-          value={searchPackage}
-          onChange={e => setSearchPackage(e.target.value)}
-        />
-        <FormControl size="small" style={{ minWidth: 150 }}>
-          <InputLabel>Trạng thái</InputLabel>
-          <Select
-            value={searchStatus}
-            label="Trạng thái"
-            onChange={e => setSearchStatus(e.target.value)}
-          >
-            <MenuItem value="">Tất cả</MenuItem>
-            <MenuItem value="pending">Chờ thanh toán</MenuItem>
-            <MenuItem value="paid">Đã thanh toán</MenuItem>
-            <MenuItem value="failed">Đã hủy</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl size="small" style={{ minWidth: 150 }}>
-          <InputLabel>Phương thức thanh toán</InputLabel>
-          <Select
-            value={searchPaymentMethod}
-            label="Phương thức thanh toán"
-            onChange={e => setSearchPaymentMethod(e.target.value)}
-          >
-            <MenuItem value="">Tất cả</MenuItem>
-            <MenuItem value="gym_package">Gói tập</MenuItem>
-            <MenuItem value="bank_transfer">Chuyển khoản</MenuItem>
-            <MenuItem value="vnpay">VNPay</MenuItem>
-            <MenuItem value="momo">MoMo</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
+      <Paper sx={{ p: 2, mb: 6, background: '#fff' }}>
+        <div className="flex flex-wrap gap-4">
+          <input
+            type="text"
+            placeholder="Tìm kiếm khách hàng"
+            className="p-2 rounded border border-gray-300 min-w-[200px] text-[var(--admin-text)] placeholder:text-[var(--admin-text)]"
+            value={searchCustomer}
+            onChange={e => setSearchCustomer(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Tìm kiếm gói tập"
+            className="p-2 rounded border border-gray-300 min-w-[120px] text-[var(--admin-text)] placeholder:text-[var(--admin-text)]"
+            value={searchPackage}
+            onChange={e => setSearchPackage(e.target.value)}
+          />
+          <FormControl size="small" style={{ minWidth: 150 }}>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
+            <Select
+              value={searchStatus}
+              label="Trạng thái"
+              onChange={e => setSearchStatus(e.target.value)}
+              sx={{ color: 'var(--admin-text)' }}
+            >
+              <MenuItem value="">Tất cả</MenuItem>
+              <MenuItem value="pending">Chờ thanh toán</MenuItem>
+              <MenuItem value="paid">Đã thanh toán</MenuItem>
+              <MenuItem value="failed">Đã hủy</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" style={{ minWidth: 150 }}>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Phương thức thanh toán</InputLabel>
+            <Select
+              value={searchPaymentMethod}
+              label="Phương thức thanh toán"
+              onChange={e => setSearchPaymentMethod(e.target.value)}
+              sx={{ color: 'var(--admin-text)' }}
+            >
+              <MenuItem value="">Tất cả</MenuItem>
+              <MenuItem value="gym_package">Gói tập</MenuItem>
+              <MenuItem value="bank_transfer">Chuyển khoản</MenuItem>
+              <MenuItem value="vnpay">VNPay</MenuItem>
+              <MenuItem value="momo">MoMo</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">

@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress, TextField, MenuItem } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress, TextField, MenuItem, Box } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../utils/axiosConfig';
@@ -113,8 +113,8 @@ export default function Packages() {
       )}
 
       {/* Thanh tìm kiếm */}
-      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
-        <div className="flex flex-wrap gap-4">
+      <Paper sx={{ p: 2, mb: 3, background: '#fff', color: 'var(--admin-text)' }}>
+        <Box className="flex flex-wrap gap-4">
           <TextField
             label="Tìm theo tên gói"
             value={searchName}
@@ -122,7 +122,7 @@ export default function Packages() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ 
+            sx={{
               '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
               '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
             }}
@@ -134,7 +134,7 @@ export default function Packages() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ 
+            sx={{
               '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
               '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
             }}
@@ -147,7 +147,7 @@ export default function Packages() {
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ 
+            sx={{
               '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
               '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
               minWidth: 150
@@ -157,7 +157,7 @@ export default function Packages() {
             <MenuItem value="Tự tập">Tự tập</MenuItem>
             <MenuItem value="Tập với PT">Tập với PT</MenuItem>
           </TextField>
-        </div>
+        </Box>
       </Paper>
 
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
