@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 
@@ -137,31 +137,39 @@ export default function Packages() {
         </div>
       )}
       {/* Thanh tìm kiếm */}
-      <div className="flex gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Tìm theo tên gói"
-          className="p-2 rounded border border-gray-300 min-w-[200px]"
-          value={searchName}
-          onChange={e => setSearchName(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Giá"
-          className="p-2 rounded border border-gray-300 min-w-[120px]"
-          value={searchPrice}
-          onChange={e => setSearchPrice(e.target.value)}
-        />
-        <select
-          className="p-2 rounded border border-gray-300 min-w-[150px]"
-          value={searchType}
-          onChange={e => setSearchType(e.target.value)}
-        >
-          <option value="">Tất cả loại gói</option>
-          <option value="Tự tập">Tự tập</option>
-          <option value="Tập với PT">Tập với PT</option>
-        </select>
-      </div>
+      <Paper className="p-4 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>
+        <div className="flex flex-wrap gap-4">
+          <TextField
+            label="Tìm theo tên gói"
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+          <TextField
+            label="Giá"
+            value={searchPrice}
+            onChange={e => setSearchPrice(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+          <FormControl size="small" style={{ minWidth: 150 }}>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Loại gói</InputLabel>
+            <Select
+              value={searchType}
+              label="Loại gói"
+              onChange={e => setSearchType(e.target.value)}
+              sx={{ color: 'var(--admin-text)' }}
+            >
+              <MenuItem value="">Tất cả loại gói</MenuItem>
+              <MenuItem value="Tự tập">Tự tập</MenuItem>
+              <MenuItem value="Tập với PT">Tập với PT</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">

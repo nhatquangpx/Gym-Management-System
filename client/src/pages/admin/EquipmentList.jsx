@@ -271,26 +271,31 @@ export default function Equipment() {
           </Box>
         </Box>
 
-        <Paper className="p-4 mb-4">
+        <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
           <Box className="flex flex-wrap gap-4">
             <TextField
               label="Tìm theo tên"
               value={filter.name}
               onChange={e => setFilter(f => ({ ...f, name: e.target.value }))}
               size="small"
+              InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+              InputProps={{ style: { color: 'var(--admin-text)' } }}
             />
             <TextField
               label="Tìm theo mô tả"
               value={filter.description}
               onChange={e => setFilter(f => ({ ...f, description: e.target.value }))}
               size="small"
+              InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+              InputProps={{ style: { color: 'var(--admin-text)' } }}
             />
             <FormControl size="small" style={{ minWidth: 120 }}>
-              <InputLabel>Trạng thái</InputLabel>
+              <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
               <Select
                 value={filter.status}
                 label="Trạng thái"
                 onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+                sx={{ color: 'var(--admin-text)' }}
               >
                 <MenuItem value="">Tất cả</MenuItem>
                 <MenuItem value="active">Hoạt động</MenuItem>
@@ -299,11 +304,12 @@ export default function Equipment() {
               </Select>
             </FormControl>
             <FormControl size="small" style={{ minWidth: 150 }}>
-              <InputLabel>Phòng tập</InputLabel>
+              <InputLabel sx={{ color: 'var(--admin-text)' }}>Phòng tập</InputLabel>
               <Select
                 value={filter.roomId}
                 label="Phòng tập"
                 onChange={e => setFilter(f => ({ ...f, roomId: e.target.value }))}
+                sx={{ color: 'var(--admin-text)' }}
               >
                 <MenuItem value="">Tất cả</MenuItem>
                 {rooms.map(room => (
@@ -316,113 +322,98 @@ export default function Equipment() {
           </Box>
         </Paper>
 
-        <TableContainer component={Paper} className="shadow-lg rounded-lg">
-          <Table>
-            <TableHead>
-              <TableRow className="bg-gray-100">
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={selectedEquipments.length > 0 && selectedEquipments.length < equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').length}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedEquipments(equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').map(eq => eq._id));
-                      } else {
-                        setSelectedEquipments([]);
-                      }
-                    }}
-                    checked={
-                      equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').length > 0 &&
-                      selectedEquipments.length === equipment.filter(eq => eq.status === 'maintenance' || eq.status === 'inactive').length
-                    }
-                  />
-                </TableCell>
-                <TableCell>Tên thiết bị</TableCell>
-                <TableCell>Phòng tập</TableCell>
-                <TableCell>Mô tả</TableCell>
-                <TableCell>Trạng thái</TableCell>
-                <TableCell>Hành động</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredEquipment.length === 0 ? (
-                <TableRow><TableCell colSpan={6} align="center">Không có thiết bị nào</TableCell></TableRow>
-              ) : filteredEquipment.map((item) => (
-                <TableRow key={item._id}>
-                  <TableCell padding="checkbox">
-                    {(item.status === 'maintenance' || item.status === 'inactive') ? (
-                      <Checkbox
-                        checked={selectedEquipments.includes(item._id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedEquipments([...selectedEquipments, item._id]);
-                          } else {
-                            setSelectedEquipments(selectedEquipments.filter(id => id !== item._id));
-                          }
-                        }}
+        <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
+          <div className="overflow-x-auto">
+            <table className="min-w-full rounded-2xl">
+              <thead>
+                <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                  <th className="py-3 px-4 text-center">Tên thiết bị</th>
+                  <th className="py-3 px-4 text-center">Phòng tập</th>
+                  <th className="py-3 px-4 text-center">Mô tả</th>
+                  <th className="py-3 px-4 text-center">Trạng thái</th>
+                  <th className="py-3 px-4 text-center"></th>
+                  <th className="py-3 px-4 text-center">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEquipment.length === 0 ? (
+                  <tr><td colSpan={6} className="text-center py-4">Không có thiết bị nào</td></tr>
+                ) : filteredEquipment.map((item) => (
+                  <tr key={item._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-center">{item.name}</td>
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-center">
+                      {item.roomId && item.roomId.name ? (
+                        <Tooltip title={`Loại phòng: ${item.roomId.roomType || 'Không xác định'}`}> <span>{item.roomId.name}</span> </Tooltip>
+                      ) : 'Không xác định'}
+                    </td>
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-center">
+                      <Tooltip title={item.description || ''}>
+                        <span>{item.description ? (item.description.length > 30 ? item.description.substring(0, 30) + '...' : item.description) : ''}</span>
+                      </Tooltip>
+                    </td>
+                    <td className="px-6 py-4 text-[var(--admin-text)] text-center">
+                      <Chip
+                        label={item.status === 'active' ? 'Hoạt động' : 
+                               item.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
+                        color={item.status === 'active' ? 'success' : 
+                               item.status === 'maintenance' ? 'warning' : 'error'}
+                        size="small"
                       />
-                    ) : null}
-                  </TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>
-                    {item.roomId && item.roomId.name ? (
-                      <Tooltip title={`Loại phòng: ${item.roomId.roomType || 'Không xác định'}`}>
-                        <span>{item.roomId.name}</span>
-                      </Tooltip>
-                    ) : (
-                      'Không xác định'
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip title={item.description || ''}>
-                      <span>{item.description ? (item.description.length > 30 ? item.description.substring(0, 30) + '...' : item.description) : ''}</span>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={item.status === 'active' ? 'Hoạt động' : 
-                             item.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
-                      color={item.status === 'active' ? 'success' : 
-                             item.status === 'maintenance' ? 'warning' : 'error'}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      component={Link}
-                      to={`/admin/equipment/view/${item._id}`}
-                      sx={{ color: 'var(--admin-primary)' }} 
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-                    <IconButton
-                      component={Link}
-                      to={`/admin/equipment/edit/${item._id}`}
-                      sx={{ color: 'var(--admin-text)' }} 
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    {(item.status === 'maintenance' || item.status === 'inactive') && (
-                      <Tooltip title="Gửi email bảo trì">
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      {(item.status === 'maintenance' || item.status === 'inactive') ? (
+                        <Checkbox
+                          checked={selectedEquipments.includes(item._id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedEquipments([...selectedEquipments, item._id]);
+                            } else {
+                              setSelectedEquipments(selectedEquipments.filter(id => id !== item._id));
+                            }
+                          }}
+                        />
+                      ) : null}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex gap-2 justify-center">
                         <IconButton
-                          onClick={() => handleEmailClick(item)}
-                          sx={{ color: '#4f8cff' }}
+                          component={Link}
+                          to={`/admin/equipment/view/${item._id}`}
+                          sx={{ color: 'var(--admin-primary)' }} 
                         >
-                          <EmailIcon />
+                          <VisibilityIcon />
                         </IconButton>
-                      </Tooltip>
-                    )}
-                    <IconButton
-                      sx={{ color: '#d32f2f' }}
-                      onClick={() => handleDelete(item._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                        <IconButton
+                          component={Link}
+                          to={`/admin/equipment/edit/${item._id}`}
+                          sx={{ color: 'var(--admin-text)' }} 
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        {(item.status === 'maintenance' || item.status === 'inactive') && (
+                          <Tooltip title="Gửi email bảo trì">
+                            <IconButton
+                              onClick={() => handleEmailClick(item)}
+                              sx={{ color: 'var(--admin-primary)' }}
+                            >
+                              <EmailIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        <IconButton
+                          sx={{ color: '#d32f2f' }}
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Paper>
 
         <Dialog open={openEmailDialog} onClose={() => setOpenEmailDialog(false)} maxWidth="sm" fullWidth>
           <DialogTitle>

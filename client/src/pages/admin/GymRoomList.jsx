@@ -109,7 +109,7 @@ export default function GymRoomList() {
           variant="h4"
           className="font-bold"
           sx={{
-            color: '#1a237e',
+            color: 'var(--admin-primary)',
             fontWeight: 700,
             fontSize: '2.2em',
             mb: 4
@@ -121,7 +121,8 @@ export default function GymRoomList() {
           variant="contained"
           sx={{ 
               backgroundColor: 'var(--admin-primary)',
-              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
+              color: 'white',
+              '&:hover': { backgroundColor: 'var(--admin-primary-dark)', opacity: 0.9 }
             }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/admin/gymrooms/add')}
@@ -129,32 +130,23 @@ export default function GymRoomList() {
           Thêm phòng tập
         </Button>
       </Box>
-      <Paper className="p-4 mb-4">
+      <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Tìm theo tên"
             value={filter.name}
             onChange={e => setFilter(f => ({ ...f, name: e.target.value }))}
             size="small"
-            sx={{
-              '& .MuiInputLabel-root': { color: '#1a237e' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#1a237e' },
-                '&:hover fieldset': { borderColor: '#283593' }
-              }
-            }}
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
           <FormControl size="small" style={{ minWidth: 150 }}>
-            <InputLabel sx={{ color: '#1a237e' }}>Loại phòng</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Loại phòng</InputLabel>
             <Select
               value={filter.roomType}
               label="Loại phòng"
               onChange={e => setFilter(f => ({ ...f, roomType: e.target.value }))}
-              sx={{
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
-              }}
+              sx={{ color: 'var(--admin-text)' }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="cardio">Cardio</MenuItem>
@@ -165,16 +157,12 @@ export default function GymRoomList() {
             </Select>
           </FormControl>
           <FormControl size="small" style={{ minWidth: 120 }}>
-            <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
             <Select
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
-              sx={{
-                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
-              }}
+              sx={{ color: 'var(--admin-text)' }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="active">Hoạt động</MenuItem>
@@ -184,27 +172,27 @@ export default function GymRoomList() {
           </FormControl>
         </Box>
       </Paper>
-      <Paper sx={{ background: 'white', color: '#333', borderRadius: 4, boxShadow: 6 }}>
+      <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Tên phòng</th>
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Loại phòng</th>
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Trạng thái</th>
-                <th className="py-4 px-6 text-center text-[#1a237e] font-bold text-base">Hành động</th>
+              <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
+                <th className="py-3 px-4 text-center">Tên phòng</th>
+                <th className="py-3 px-4 text-center">Loại phòng</th>
+                <th className="py-3 px-4 text-center">Trạng thái</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={4} className="py-4 px-6 text-base text-center text-[#333]">Đang tải...</td></tr>
+                <tr><td colSpan={4} className="py-4 px-6 text-base text-center text-[var(--admin-text)]">Đang tải...</td></tr>
               ) : filteredGymRooms.length === 0 ? (
-                <tr><td colSpan={4} className="py-4 px-6 text-base text-center text-[#333]">Không có phòng tập nào</td></tr>
+                <tr><td colSpan={4} className="py-4 px-6 text-base text-center text-[var(--admin-text)]">Không có phòng tập nào</td></tr>
               ) : filteredGymRooms.map(room => (
-                <tr key={room._id}>
-                  <td className="py-4 px-6 text-[#333] text-base text-center">{room.name}</td>
-                  <td className="py-4 px-6 text-[#333] text-base text-center">{getRoomTypeLabel(room.roomType)}</td>
-                  <td className="py-4 px-6 text-[#333] text-base text-center">
+                <tr key={room._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{room.name}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{getRoomTypeLabel(room.roomType)}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">
                     <Chip
                       label={room.status === 'active' ? 'Hoạt động' : 
                              room.status === 'maintenance' ? 'Bảo trì' : 'Không hoạt động'}
@@ -213,16 +201,18 @@ export default function GymRoomList() {
                       size="small"
                     />
                   </td>
-                  <td className="py-4 px-6 text-center">
-                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/gymrooms/view/${room._id}`)}>
-                      <VisibilityIcon />
-                    </IconButton>
-                    <IconButton sx={{ color: '#1a237e' }} onClick={() => navigate(`/admin/gymrooms/edit/${room._id}`)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(room._id)}>
-                      <DeleteIcon />
-                    </IconButton>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex gap-2 justify-center">
+                      <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/gymrooms/view/${room._id}`)}>
+                        <VisibilityIcon />
+                      </IconButton>
+                      <IconButton sx={{ color: 'var(--admin-text)' }} onClick={() => navigate(`/admin/gymrooms/edit/${room._id}`)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(room._id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -231,11 +221,11 @@ export default function GymRoomList() {
         </div>
       </Paper>
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle sx={{ color: '#1a237e' }}>Xác nhận xóa</DialogTitle>
-        <DialogContent sx={{ color: '#333' }}>Bạn có chắc chắn muốn xóa phòng tập này?</DialogContent>
+        <DialogTitle sx={{ color: 'var(--admin-primary)' }}>Xác nhận xóa</DialogTitle>
+        <DialogContent sx={{ color: 'var(--admin-text)' }}>Bạn có chắc chắn muốn xóa phòng tập này?</DialogContent>
         <DialogActions>
           <Button variant="outlined" onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button variant="contained" onClick={handleDeleteConfirm}>Xóa</Button>
+          <Button variant="contained" color="error" onClick={handleDeleteConfirm}>Xóa</Button>
         </DialogActions>
       </Dialog>
     </div>

@@ -11,6 +11,7 @@
   height: 100vh;
   z-index: 100;
   box-shadow: 1px 0 0 var(--admin-border);
+  overflow-y: auto;
 }
 
 .logoBox {
