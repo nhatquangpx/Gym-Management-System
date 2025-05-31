@@ -15,7 +15,7 @@ const ForgotPasswordPage = () => {
     if (error) setError(''); // Xóa lỗi khi người dùng nhập
   };
 
-  const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim()) {
       setError('Vui lòng nhập email của bạn.');
@@ -27,13 +27,25 @@ const ForgotPasswordPage = () => {
     }
 
     setIsLoading(true);
-    // Giả lập gọi API
-    console.log('Gửi yêu cầu reset mật khẩu cho email:', email);
-    setTimeout(() => {
+    try {
+      const res = await fetch('http://localhost:8001/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
       setIsLoading(false);
-      // Chuyển hướng đến trang thông báo, truyền email qua state
-      navigate('/reset-password-sent', { state: { emailSentTo: email } }); 
-    }, 1500);
+      if (data.success) {
+        navigate('/reset-password-sent', { state: { emailSentTo: email } });
+      } else {
+        setError(data.message || 'Có lỗi xảy ra, vui lòng thử lại!');
+      }
+    } catch (err) {
+      setIsLoading(false);
+      setError('Không thể kết nối đến máy chủ!');
+    }
   };
 
   return (

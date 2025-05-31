@@ -6,7 +6,7 @@ const { registerValidation, validate } = require("../validations/registerValidat
 
 router.post("/register", registerValidation, validate, register);
 router.post("/login", redirectIfAuthenticated, login);
-router.get("/forgotpassword", forgotPassword);
-router.post("/resetpassword", verifyToken, resetPassword);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", verifyToken, resetPassword);
 
 module.exports = router;

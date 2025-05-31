@@ -79,7 +79,7 @@ exports.forgotPassword = async (req, res) => {
       return res.status(404).json({ message: 'Email không tồn tại.' });
     }
 
-    const newPassword = crypto.randomBytes(10).toString('base64').slice(0, 12);
+    const newPassword = crypto.randomBytes(20).toString('base64').replace(/[^a-zA-Z0-9]/g, '').slice(0, 10);
     const salt = await bcrypt.genSalt();
     const hashNewPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashNewPassword;
@@ -87,7 +87,10 @@ exports.forgotPassword = async (req, res) => {
 
     await sendNewPasswordEmail(email, newPassword);
 
-    res.status(200).json({ message: 'Đã gửi mật khẩu mới.' });
+    res.status(200).json({
+      success: true,
+      message: 'Đã gửi mật khẩu mới.'
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi khi xử lý yêu cầu đặt lại mật khẩu.' });
