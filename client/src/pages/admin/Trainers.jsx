@@ -112,7 +112,7 @@ export default function Trainers() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/trainers/view/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/admin/trainers/edit/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(e.id)}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#d32f2f' }} onClick={() => handleDelete(e.id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -126,7 +126,7 @@ export default function Trainers() {
         <DialogContent>Bạn có chắc chắn muốn xóa huấn luyện viên này?</DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+          <Button sx={{ color: '#d32f2f' }} onClick={handleDeleteConfirm}>Xóa</Button>
         </DialogActions>
       </Dialog>
     </div>

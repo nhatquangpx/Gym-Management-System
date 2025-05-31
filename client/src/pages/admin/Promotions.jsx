@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, TextField } from '@mui/material';
+import { Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, TextField, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,10 +19,18 @@ export default function Promotions() {
   const [searchPercent, setSearchPercent] = useState("");
   const [searchStart, setSearchStart] = useState("");
   const [searchEnd, setSearchEnd] = useState("");
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [selectedPromotionId, setSelectedPromotionId] = useState(null);
 
   const handleDelete = (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa ưu đãi này?')) {
-      setPromotions(promotions.filter(p => p.id !== id));
+    setSelectedPromotionId(id);
+    setOpenConfirm(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedPromotionId) {
+      setPromotions(promotions.filter(p => p.id !== selectedPromotionId));
+      setOpenConfirm(false);
     }
   };
 
@@ -122,7 +130,7 @@ export default function Promotions() {
                   <td className="px-6 py-4 text-center">
                     <IconButton onClick={() => navigate(`/admin/promotions/view/${p.id}`)} sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/promotions/edit/${p.id}`)} sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton>
-                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(p.id)}><DeleteIcon /></IconButton>
+                    <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#d32f2f' }} onClick={() => handleDelete(p.id)}><DeleteIcon /></IconButton></Tooltip>
                   </td>
                 </tr>
               ))}
@@ -130,6 +138,14 @@ export default function Promotions() {
           </table>
         </div>
       </Paper>
+      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa ưu đãi này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button sx={{ color: '#d32f2f' }} onClick={handleDeleteConfirm}>Xóa</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 } 

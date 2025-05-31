@@ -23,6 +23,13 @@ export default function EditPromotion() {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Hiển thị popup xác nhận
+    const confirmSave = window.confirm('Bạn có chắc chắn muốn lưu các thay đổi này?');
+    if (!confirmSave) {
+      return; // Nếu không xác nhận, giữ nguyên trang edit
+    }
+    
     // TODO: Gửi dữ liệu lên server
     alert('Đã lưu thay đổi!');
     navigate('/admin/promotions');

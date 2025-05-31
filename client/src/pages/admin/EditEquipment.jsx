@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Paper, Typography, Box, Grid, TextField, Button,
-  MenuItem, FormControl, InputLabel, Select
+  MenuItem, FormControl, InputLabel, Select,
+  Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
@@ -20,6 +21,7 @@ export default function EditEquipment() {
   });
   const [loading, setLoading] = useState(true);
   const [rooms, setRooms] = useState([]);
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   useEffect(() => {
     fetchRooms();
@@ -109,6 +111,11 @@ export default function EditEquipment() {
     e.preventDefault();
     if (!equipment.roomId) {
       alert('Vui lòng chọn phòng tập cho thiết bị');
+      return;
+    }
+
+    // Hiển thị popup xác nhận
+    if (!window.confirm('Bạn có chắc chắn muốn lưu các thay đổi này?')) {
       return;
     }
     

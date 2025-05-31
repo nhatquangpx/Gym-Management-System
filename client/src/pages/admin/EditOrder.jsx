@@ -96,6 +96,13 @@ const EditOrder = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Hiển thị popup xác nhận
+    const confirmSave = window.confirm('Bạn có chắc chắn muốn lưu các thay đổi này?');
+    if (!confirmSave) {
+      return; // Nếu không xác nhận, giữ nguyên trang edit
+    }
+    
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
