@@ -74,7 +74,7 @@ export default function EditProfile() {
         body: JSON.stringify(form)
       });
       if (res.ok) {
-        navigate('/admin/account');
+        navigate('/staff/account');
       } else {
         console.log('Lỗi khi cập nhật thông tin');
       }
@@ -148,7 +148,7 @@ export default function EditProfile() {
               variant="outlined"
               startIcon={<ArrowBack />}
               sx={{ color: 'var(--admin-primary)', borderColor: 'var(--admin-primary)', '&:hover': { borderColor: 'var(--admin-primary-dark)', background: 'rgba(var(--admin-primary-rgb), 0.1)' } }}
-              onClick={() => navigate('/admin/account')}
+              onClick={() => navigate('/staff/account')}
               disabled={saving}
             >
               Hủy

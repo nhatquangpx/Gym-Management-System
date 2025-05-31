@@ -101,6 +101,7 @@ import StaffSchedules from './pages/staff/Schedules';
 import StaffFeedback from './pages/staff/Feedback';
 import StaffViewFeedback from './pages/staff/ViewFeedback';
 import StaffAccount from './pages/staff/Account';
+import StaffEditProfile from './pages/staff/EditProfile';
 import StaffAddMember from './pages/staff/AddMember';
 import StaffAddPackage from './pages/staff/AddPackage';
 import StaffViewPackage from './pages/staff/ViewPackage';
@@ -202,6 +203,7 @@ function App() {
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="feedback/view/:id" element={<StaffViewFeedback />} />
             <Route path="account" element={<StaffAccount />} />
+            <Route path="profile/edit" element={<StaffEditProfile />} />
             <Route path="attendance" element={<StaffAttendance />} />
           </Route>
         </Route>

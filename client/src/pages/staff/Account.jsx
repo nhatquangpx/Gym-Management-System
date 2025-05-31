@@ -1,135 +1,72 @@
-import { useState } from 'react';
-import { Paper, Typography, Box, TextField, Button, Avatar } from '@mui/material';
+import { useEffect, useState } from 'react';
+import Avatar from '@mui/material/Avatar';
+import EditIcon from '@mui/icons-material/Edit';
+import { Button, Paper, Typography, Box, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-export default function StaffAccount() {
-  // Giả lập thông tin cá nhân, sau này lấy từ context hoặc API
-  const [info, setInfo] = useState({
-    name: 'Quản lý Gym',
-    email: 'manager@gympro.vn',
-    phone: '0901234567',
-    avatar: 'https://i.pravatar.cc/150?img=12',
-  });
-  const [password, setPassword] = useState({ old: '', new: '', confirm: '' });
+export default function Account() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setInfo({ ...info, [e.target.name]: e.target.value });
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const userId = JSON.parse(localStorage.getItem('user')).id;
+        const token = localStorage.getItem('token');
+        const res = await fetch(`/api/admin/get-user/${userId}`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        setUser(null);
+      }
+      setLoading(false);
+    };
+    fetchUser();
+  }, []);
+
+  const handleEdit = () => {
+    navigate('/staff/profile/edit');
   };
-  const handlePasswordChange = (e) => {
-    setPassword({ ...password, [e.target.name]: e.target.value });
-  };
-  const handleUpdate = (e) => {
-    e.preventDefault();
-    // TODO: Gọi API cập nhật thông tin
-    alert('Cập nhật thông tin thành công!');
-  };
-  const handleChangePassword = (e) => {
-    e.preventDefault();
-    // TODO: Gọi API đổi mật khẩu
-    if (password.new !== password.confirm) {
-      alert('Mật khẩu mới không khớp!');
-      return;
-    }
-    alert('Đổi mật khẩu thành công!');
-  };
+
+  if (loading) return <Box sx={{ p: 3 }}><CircularProgress /></Box>;
+  if (!user) return <Box sx={{ p: 3 }}>Không tìm thấy thông tin nhân viên</Box>;
 
   return (
-    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
-      <Typography
-        variant="h4"
-        className="font-bold"
-        sx={{
-          color: '#4f8cff',
-          fontWeight: 700,
-          fontSize: '2.2em',
-          mb: 4
-        }}
-      >
-        Tài khoản cá nhân
+    <Box sx={{ p: 3, backgroundColor: 'var(--admin-bg)', minHeight: '100vh', color: 'var(--admin-text)' }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', mb: 4 }}>
+        Tài khoản nhân viên
       </Typography>
-      <Paper className="p-6 shadow-lg rounded-lg mb-8" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
-        <Box className="flex items-center gap-6 mb-6">
-          <Avatar src={info.avatar} alt={info.name} sx={{ width: 64, height: 64 }} />
-          <Typography variant="h5" className="font-bold" sx={{ color: 'var(--admin-text)' }}>{info.name}</Typography>
+      <Paper sx={{ p: 4, backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)', maxWidth: 400, mx: 'auto', borderRadius: 4, boxShadow: 6 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Avatar src={user.avatar} alt={user.name} sx={{ width: 120, height: 120, mb: 2, border: '4px solid var(--admin-primary)', boxShadow: '0 4px 24px rgba(var(--admin-primary-rgb), 0.2)' }} />
+          <Typography variant="h5" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>{user.name}</Typography>
+          <Typography variant="body1" sx={{ color: 'var(--admin-primary)', fontWeight: 600 }} gutterBottom >{user.employeeInfo.position}</Typography>
+          <Typography variant="body2" sx={{ color: 'var(--admin-text)' }}>Email: {user.email}</Typography>
+          <Typography variant="body2" sx={{ color: 'var(--admin-text)' }}>SĐT: {user.phone}</Typography>
+          <Button
+            variant="outlined"
+            startIcon={<EditIcon sx={{ color: 'var(--admin-primary)' }} />}
+            sx={{
+              mt: 3,
+              color: 'var(--admin-primary)',
+              borderColor: 'var(--admin-primary)',
+              '&:hover': {
+                borderColor: 'var(--admin-primary-dark)',
+                color: 'var(--admin-primary-dark)',
+                backgroundColor: 'rgba(var(--admin-primary-rgb), 0.1)'
+              }
+            }}
+            onClick={handleEdit}
+          >
+            Chỉnh sửa thông tin
+          </Button>
         </Box>
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <TextField
-            label="Họ tên"
-            name="name"
-            value={info.name}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <TextField
-            label="Email"
-            name="email"
-            value={info.email}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <TextField
-            label="Số điện thoại"
-            name="phone"
-            value={info.phone}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <Button type="submit" variant="contained" sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}>Cập nhật thông tin</Button>
-        </form>
       </Paper>
-      <Paper className="p-6 shadow-lg rounded-lg" sx={{ backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
-        <Typography variant="h6" className="font-bold mb-4" sx={{ color: 'var(--admin-text)' }}>Đổi mật khẩu</Typography>
-        <form onSubmit={handleChangePassword} className="space-y-4">
-          <TextField
-            label="Mật khẩu cũ"
-            name="old"
-            type="password"
-            value={password.old}
-            onChange={handlePasswordChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <TextField
-            label="Mật khẩu mới"
-            name="new"
-            type="password"
-            value={password.new}
-            onChange={handlePasswordChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <TextField
-            label="Xác nhận mật khẩu mới"
-            name="confirm"
-            type="password"
-            value={password.confirm}
-            onChange={handlePasswordChange}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{ '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' } }}
-          />
-          <Button type="submit" variant="contained" sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}>Đổi mật khẩu</Button>
-        </form>
-      </Paper>
-    </div>
+    </Box>
   );
 } 
