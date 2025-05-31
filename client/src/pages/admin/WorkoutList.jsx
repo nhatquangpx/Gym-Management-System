@@ -82,26 +82,31 @@ export default function WorkoutList() {
           Thêm buổi tập
         </Button>
       </Box>
-      <Paper className="p-4 mb-4">
+      <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
             label="Hội viên"
             value={filter.member}
             onChange={e => setFilter(f => ({ ...f, member: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
           <TextField
             label="Huấn luyện viên"
             value={filter.trainer}
             onChange={e => setFilter(f => ({ ...f, trainer: e.target.value }))}
             size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
           <FormControl size="small" style={{ minWidth: 120 }}>
-            <InputLabel>Trạng thái</InputLabel>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
             <Select
               value={filter.status}
               label="Trạng thái"
               onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+              sx={{ color: 'var(--admin-text)' }}
             >
               <MenuItem value="">Tất cả</MenuItem>
               <MenuItem value="scheduled">Đã lên lịch</MenuItem>
@@ -116,7 +121,8 @@ export default function WorkoutList() {
             value={filter.date}
             onChange={e => setFilter(f => ({ ...f, date: e.target.value }))}
             size="small"
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{ shrink: true, style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
         </Box>
       </Paper>

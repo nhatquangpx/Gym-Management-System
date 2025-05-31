@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -62,36 +62,42 @@ export default function Promotions() {
         </Button>
       </Box>
       {/* Thanh tìm kiếm */}
-      <div className="flex gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Mô tả ưu đãi"
-          className="p-2 rounded border border-gray-300 min-w-[200px]"
-          value={searchDesc}
-          onChange={e => setSearchDesc(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="% Ưu đãi"
-          className="p-2 rounded border border-gray-300 min-w-[100px]"
-          value={searchPercent}
-          onChange={e => setSearchPercent(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Ngày bắt đầu (yyyy-mm-dd)"
-          className="p-2 rounded border border-gray-300 min-w-[150px]"
-          value={searchStart}
-          onChange={e => setSearchStart(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Ngày kết thúc (yyyy-mm-dd)"
-          className="p-2 rounded border border-gray-300 min-w-[150px]"
-          value={searchEnd}
-          onChange={e => setSearchEnd(e.target.value)}
-        />
-      </div>
+      <Paper className="p-4 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>
+        <div className="flex flex-wrap gap-4">
+          <TextField
+            label="Mô tả ưu đãi"
+            value={searchDesc}
+            onChange={e => setSearchDesc(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+          <TextField
+            label="% Ưu đãi"
+            value={searchPercent}
+            onChange={e => setSearchPercent(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+          <TextField
+            label="Ngày bắt đầu (yyyy-mm-dd)"
+            value={searchStart}
+            onChange={e => setSearchStart(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+          <TextField
+            label="Ngày kết thúc (yyyy-mm-dd)"
+            value={searchEnd}
+            onChange={e => setSearchEnd(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+        </div>
+      </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">

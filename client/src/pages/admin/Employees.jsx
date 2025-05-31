@@ -10,7 +10,7 @@ import Tooltip from '@mui/material/Tooltip';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
 import AddButton from '../../components/AddButton';
 import { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, CircularProgress, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import GroupIcon from '@mui/icons-material/Group';
@@ -144,29 +144,34 @@ export default function Employees() {
         </div>
       </div>
       {/* Thanh tìm kiếm */}
-      <div className="flex gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Tìm theo tên"
-          className="p-2 rounded border border-gray-300 min-w-[200px]"
-          value={searchName}
-          onChange={e => setSearchName(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Số điện thoại"
-          className="p-2 rounded border border-gray-300 min-w-[200px]"
-          value={searchPhone}
-          onChange={e => setSearchPhone(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Chức vụ"
-          className="p-2 rounded border border-gray-300 min-w-[200px]"
-          value={searchRole}
-          onChange={e => setSearchRole(e.target.value)}
-        />
-      </div>
+      <Paper className="p-4 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>
+        <div className="flex flex-wrap gap-4">
+          <TextField
+            label="Tìm theo tên"
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+          <TextField
+            label="Số điện thoại"
+            value={searchPhone}
+            onChange={e => setSearchPhone(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+          <TextField
+            label="Chức vụ"
+            value={searchRole}
+            onChange={e => setSearchRole(e.target.value)}
+            size="small"
+            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+            InputProps={{ style: { color: 'var(--admin-text)' } }}
+          />
+        </div>
+      </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
