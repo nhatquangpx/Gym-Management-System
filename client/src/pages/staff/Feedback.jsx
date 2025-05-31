@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, Chip, Rating
+  Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  IconButton, Chip, Rating
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
 
 export default function StaffFeedback() {
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState({ member: '', status: '' });
+  const [filter, setFilter] = useState({ member: '', type: '', targetName: '' });
 
   useEffect(() => {
     fetchFeedback();
@@ -21,9 +20,14 @@ export default function StaffFeedback() {
   const fetchFeedback = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/feedback');
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/feedbacks', {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const data = await response.json();
-      setFeedback(data);
+      const arr = Array.isArray(data) ? data : (data.data || data.feedbacks || []);
+      setFeedback(arr);
     } catch (error) {
       console.error('Error fetching feedback:', error);
     }
@@ -33,7 +37,8 @@ export default function StaffFeedback() {
   const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa phản hồi này?')) {
       try {
-        await fetch(`/api/feedback/${id}`, { method: 'DELETE' });
+        const token = localStorage.getItem('token');
+        await fetch(`/api/feedback/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
         fetchFeedback();
       } catch (error) {
         console.error('Error deleting feedback:', error);
@@ -43,7 +48,8 @@ export default function StaffFeedback() {
 
   const filteredFeedback = feedback.filter(fb =>
     (filter.member === '' || (fb.memberName && fb.memberName.toLowerCase().includes(filter.member.toLowerCase()))) &&
-    (filter.status === '' || fb.status === filter.status)
+    (filter.type === '' || (fb.type && fb.type.toLowerCase().includes(filter.type.toLowerCase()))) &&
+    (filter.targetName === '' || (fb.targetName && fb.targetName.toLowerCase().includes(filter.targetName.toLowerCase())))
   );
 
   return (
@@ -52,49 +58,33 @@ export default function StaffFeedback() {
         <Typography
           variant="h4"
           className="font-bold"
-          sx={{
-            color: '#4f8cff',
-            fontWeight: 700,
-            fontSize: '2.2em',
-            mb: 4
-          }}
+          sx={{ color: '#4f8cff', fontWeight: 700, fontSize: '2.2em', mb: 4 }}
         >
           Danh sách phản hồi
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/staff/feedback/add')}
-        >
-          Thêm phản hồi
-        </Button>
       </Box>
-      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+      <Paper sx={{ p: 2, mb: 3, background: '#fff' }}>
         <Box className="flex flex-wrap gap-4">
-          <TextField
-            label="Hội viên"
+          <input
+            type="text"
+            placeholder="Tìm kiếm hội viên"
+            className="p-2 rounded border border-gray-300 min-w-[200px] text-black bg-white placeholder:text-gray-500"
             value={filter.member}
             onChange={e => setFilter(f => ({ ...f, member: e.target.value }))}
-            size="small"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
-            }}
           />
-          <TextField
-            label="Trạng thái"
-            value={filter.status}
-            onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
-            size="small"
-            InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
-            InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
-            }}
+          <input
+            type="text"
+            placeholder="Tìm kiếm loại phản hồi"
+            className="p-2 rounded border border-gray-300 min-w-[160px] text-black bg-white placeholder:text-gray-500"
+            value={filter.type}
+            onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
+          />
+          <input
+            type="text"
+            placeholder="Tìm kiếm tên đối tượng"
+            className="p-2 rounded border border-gray-300 min-w-[160px] text-black bg-white placeholder:text-gray-500"
+            value={filter.targetName}
+            onChange={e => setFilter(f => ({ ...f, targetName: e.target.value }))}
           />
         </Box>
       </Paper>
@@ -104,11 +94,11 @@ export default function StaffFeedback() {
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-left">Hội viên</th>
+                <th className="py-3 px-4 text-left">Loại phản hồi</th>
+                <th className="py-3 px-4 text-left">Tên đối tượng</th>
                 <th className="py-3 px-4 text-left">Đánh giá</th>
-                <th className="py-3 px-4 text-left">Nội dung</th>
                 <th className="py-3 px-4 text-left">Ngày gửi</th>
-                <th className="py-3 px-4 text-left">Trạng thái</th>
-                <th className="py-3 px-4 text-center">Thao tác</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -119,18 +109,12 @@ export default function StaffFeedback() {
               ) : filteredFeedback.map(item => (
                 <tr key={item._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
                   <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.memberName}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left"><Rating value={item.rating} readOnly /></td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.content.substring(0, 50)}...</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.type}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{item.targetName}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-left"><Rating value={item.star} readOnly /></td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-left">{new Date(item.createdAt).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">
-                    <Chip
-                      label={item.status}
-                      color={item.status === 'read' ? 'success' : 'warning'}
-                      size="small"
-                    />
-                  </td>
                   <td className="px-6 py-4 text-center">
-                    <IconButton onClick={() => navigate(`/staff/feedback/${item._id}`)} sx={{ color: 'var(--admin-primary)' }}>
+                    <IconButton onClick={() => navigate(`/staff/feedback/view/${item._id}`)} sx={{ color: 'var(--admin-primary)' }}>
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton color="error" onClick={() => handleDelete(item._id)}>

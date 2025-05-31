@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Paper, Typography, Chip, CircularProgress, Button, Rating } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -12,12 +12,12 @@ export default function ViewFeedback() {
   useEffect(() => {
     const fetchFeedback = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`/api/feedbacks/${id}`, {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          },
-          type: 'application/json'
+            Authorization: `Bearer ${token}`
+          }
         });
         const result = await response.json();
         setFeedback(result.data);
