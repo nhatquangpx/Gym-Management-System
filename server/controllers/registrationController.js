@@ -264,12 +264,7 @@ exports.activateAfterPayment = async (req, res) => {
         orderId: order._id,
         startDate: membershipStartDate,
         endDate: membershipExpiryDate,
-        isActive: true,
-        isRenewal: isRenewal,
         renewalType: renewalType,
-        sessionsTotal: gymPackage.sessions || 0,
-        sessionsUsed: 0,
-        price: gymPackage.price
       });
       
       await membershipHistory.save({ session });
