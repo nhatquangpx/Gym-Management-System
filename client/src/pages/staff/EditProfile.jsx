@@ -37,7 +37,7 @@ export default function EditProfile() {
       try {
         const userId = JSON.parse(localStorage.getItem('user')).id;
         const token = localStorage.getItem('token');
-        const res = await fetch(`/api/admin/get-user/${userId}`, {
+        const res = await fetch(`/api/users/${userId}`, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -65,8 +65,8 @@ export default function EditProfile() {
     try {
       const userId = JSON.parse(localStorage.getItem('user')).id;
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/admin/update-user/${userId}`, {
-        method: 'PATCH',
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

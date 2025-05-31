@@ -15,7 +15,7 @@ export default function Account() {
       try {
         const userId = JSON.parse(localStorage.getItem('user')).id;
         const token = localStorage.getItem('token');
-        const res = await fetch(`/api/admin/get-user/${userId}`, {
+        const res = await fetch(`/api/users/${userId}`, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${token}` }
         });
