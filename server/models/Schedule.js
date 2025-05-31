@@ -28,7 +28,8 @@ const ScheduleSchema = new Schema(
             type: String,
             enum: ['Chưa tập', 'Đã tập', 'Vắng mặt'],
             default: 'Chưa tập'
-        }
+        },
+        checkinTime: String,
     },
     { timestamps: true }
 );

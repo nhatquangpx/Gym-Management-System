@@ -3,6 +3,16 @@ const router = express.Router();
 const { verifyToken, verifyRole } = require("../middleware/authMiddleware");
 const employeeController = require("../controllers/employeeController");
 
+// @route   GET /api/employees/members
+// @desc    Get all members
+// @access  Private (Employee)
+router.get("/members", [verifyToken, verifyRole(["employee"])], employeeController.getAllMembers);
+
+// @route   GET /api/employees/schedule/:memberId
+// @desc    Get schedule for a member
+// @access  Private (Employee)
+router.post('/checkin/:memberId', [verifyToken, verifyRole(["employee"])], employeeController.checkInMember);
+
 // @route   POST /api/employees
 // @desc    Create a new employee
 // @access  Private (Admin)
@@ -32,5 +42,6 @@ router.get("/:id", [verifyToken, verifyRole(["admin"])], employeeController.getE
 // @desc    Delete employee
 // @access  Private (Admin)
 router.delete("/:id", [verifyToken, verifyRole(["admin"])], employeeController.deleteEmployee);
+
 
 module.exports = router;

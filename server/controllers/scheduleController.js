@@ -1,5 +1,4 @@
-const User = require("../models/User");
-const Order = require("../models/Order");
+const MembershipHistory = require("../models/MembershipHistory");
 const Schedule = require("../models/Schedule");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
@@ -45,13 +44,13 @@ exports.trainerAddSchedule = async (req, res) => {
     }
 
     // Check if student exists and is assigned to this trainer
-    const order = await Order.findOne({ 
+    const memberships = await MembershipHistory.findOne({
       trainerId,
       userId: memberId,
       // status: 'active'
     });
 
-    if (!order) {
+    if (!memberships) {
       return res.status(400).json({
         success: false,
         message: "Học viên không tồn tại hoặc không được gán cho huấn luyện viên này"
@@ -184,6 +183,7 @@ exports.memberAddSchedule = async (req, res) => {
 exports.updateSchedule = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("Updating schedule with ID:", id);
     const updateData = req.body;
     console.log(updateData);
 
