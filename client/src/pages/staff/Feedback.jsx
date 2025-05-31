@@ -21,11 +21,16 @@ export default function StaffFeedback() {
   const fetchFeedback = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/feedback');
-      const data = await response.json();
-      setFeedback(data);
+      const res = await fetch('/api/feedbacks', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const result = await res.json();
+      setFeedback(Array.isArray(result.data) ? result.data : []);
     } catch (error) {
       console.error('Error fetching feedback:', error);
+      setFeedback([]);
     }
     setLoading(false);
   };
@@ -33,18 +38,23 @@ export default function StaffFeedback() {
   const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa phản hồi này?')) {
       try {
-        await fetch(`/api/feedback/${id}`, { method: 'DELETE' });
+        await fetch(`/api/feedbacks/${id}`, { 
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
         fetchFeedback();
+        alert('Phản hồi đã được xóa thành công');
       } catch (error) {
         console.error('Error deleting feedback:', error);
+        alert('Lỗi khi xóa phản hồi');
       }
     }
   };
 
-  const filteredFeedback = feedback.filter(fb =>
+  const filteredFeedback = Array.isArray(feedback) ? feedback.filter(fb =>
     (filter.member === '' || (fb.memberName && fb.memberName.toLowerCase().includes(filter.member.toLowerCase()))) &&
     (filter.status === '' || fb.status === filter.status)
-  );
+  ) : [];
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
@@ -61,14 +71,6 @@ export default function StaffFeedback() {
         >
           Danh sách phản hồi
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/staff/feedback/add')}
-        >
-          Thêm phản hồi
-        </Button>
       </Box>
       <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
         <Box className="flex flex-wrap gap-4">
@@ -95,10 +97,10 @@ export default function StaffFeedback() {
           <TableHead>
             <TableRow sx={{ background: 'var(--admin-header)' }}>
               <TableCell sx={{ color: 'var(--admin-primary)' }}>Hội viên</TableCell>
+              <TableCell sx={{ color: 'var(--admin-primary)' }}>Loại phản hồi</TableCell>
+              <TableCell sx={{ color: 'var(--admin-primary)' }}>Tên đối tượng</TableCell>
               <TableCell sx={{ color: 'var(--admin-primary)' }}>Đánh giá</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Nội dung</TableCell>
               <TableCell sx={{ color: 'var(--admin-primary)' }}>Ngày gửi</TableCell>
-              <TableCell sx={{ color: 'var(--admin-primary)' }}>Trạng thái</TableCell>
               <TableCell sx={{ color: 'var(--admin-primary)' }}>Thao tác</TableCell>
             </TableRow>
           </TableHead>
@@ -110,20 +112,12 @@ export default function StaffFeedback() {
             ) : filteredFeedback.map(item => (
               <TableRow key={item._id} className="hover:bg-[var(--admin-accent)]">
                 <TableCell sx={{ color: 'var(--admin-text)' }}>{item.memberName}</TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>
-                  <Rating value={item.rating} readOnly />
-                </TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>{item.content.substring(0, 50)}...</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{item.type}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}>{item.type === 'Gói tập' ? (item.packageName || item.targetName) : (item.trainerName || item.targetName)}</TableCell>
+                <TableCell sx={{ color: 'var(--admin-text)' }}><Rating value={item.star || item.rating} readOnly /></TableCell>
                 <TableCell sx={{ color: 'var(--admin-text)' }}>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell sx={{ color: 'var(--admin-text)' }}>
-                  <Chip
-                    label={item.status}
-                    color={item.status === 'read' ? 'success' : 'warning'}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell sx={{ color: 'var(--admin-text)' }}>
-                  <IconButton onClick={() => navigate(`/staff/feedback/${item._id}`)} sx={{ color: 'var(--admin-primary)' }}>
+                  <IconButton onClick={() => navigate(`/staff/feedback/view/${item._id}`)} sx={{ color: 'var(--admin-primary)' }}>
                     <VisibilityIcon />
                   </IconButton>
                   <IconButton color="error" onClick={() => handleDelete(item._id)}>
