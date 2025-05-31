@@ -282,11 +282,7 @@ exports.checkInMember = async (req, res) => {
     // Get today's date
     const today = new Date();
     const todayStr = today.toISOString().slice(0, 10);
-    const currentTime = today.toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+    const currentTime = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')}`;
 
     // Find schedule for today
     let schedule = await Schedule.findOne({
@@ -308,13 +304,13 @@ exports.checkInMember = async (req, res) => {
         timeStart: '',
         timeEnd: '',
         status: 'Đã tập',
-        checkinTime: new Date(),
+        checkinTime: currentTime, // Use formatted time instead of Date object
         exercises: ''
       });
     } else {
       // Update existing schedule
       schedule.status = 'Đã tập';
-      schedule.checkinTime = new Date();
+      schedule.checkinTime = currentTime; // Use formatted time instead of Date object
     }
 
     await schedule.save();

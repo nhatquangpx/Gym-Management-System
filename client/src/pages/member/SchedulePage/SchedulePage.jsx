@@ -19,29 +19,6 @@ function getWeekDays(baseDate) {
   return week;
 }
 
-// Dữ liệu mẫu cho member
-const initialSessions = [
-  {
-    date: '2025-05-20',
-    sessions: [
-      { id: 1, startTime: '08:00', endTime: '09:00', detail: 'Tập ngực, vai, tay' },
-      { id: 2, startTime: '09:30', endTime: '10:30', detail: 'Yoga cơ bản' },
-    ]
-  },
-  {
-    date: '2025-05-21',
-    sessions: [
-      { id: 3, startTime: '15:00', endTime: '16:00', detail: 'Cardio + HIIT' },
-    ]
-  },
-  {
-    date: '2025-05-22',
-    sessions: [
-      { id: 4, startTime: '08:00', endTime: '09:00', detail: 'Tập lưng, xô' },
-    ]
-  },
-];
-
 const hours = Array.from({ length: 24 }, (_, i) => (i < 10 ? '0' : '') + i);
 const minutes = Array.from({ length: 12 }, (_, i) => (i * 5 < 10 ? '0' : '') + i * 5);
 
@@ -306,7 +283,6 @@ const SchedulePage = () => {
       }
     };
     const memberId = JSON.parse(localStorage.getItem('user'))?._id || JSON.parse(localStorage.getItem('user'))?.id;
-    console.log('Member ID:', memberId);
     if (memberId) {
       fetchMemberSchedules(memberId);
     } 
