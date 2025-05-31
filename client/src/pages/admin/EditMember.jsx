@@ -55,6 +55,12 @@ export default function EditMember() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Hiển thị popup xác nhận
+    const confirmSave = window.confirm('Bạn có chắc chắn muốn lưu các thay đổi này?');
+    if (!confirmSave) {
+      return; // Nếu không xác nhận, giữ nguyên trang edit
+    }
+    
     try {
       // Chuẩn bị dữ liệu gửi đến API
       const memberData = {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper, Typography, Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  IconButton, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogActions
+  IconButton, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -158,7 +158,7 @@ export default function WorkoutList() {
                   <td className="px-6 py-4 text-center">
                     <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/workouts/view/${wk._id}`)}><VisibilityIcon /></IconButton>
                     <IconButton onClick={() => navigate(`/admin/workouts/edit/${wk._id}`)}><EditIcon /></IconButton>
-                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton>
+                    <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#d32f2f' }} onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}><DeleteIcon /></IconButton></Tooltip>
                   </td>
                 </tr>
               ))}
@@ -171,7 +171,7 @@ export default function WorkoutList() {
         <DialogContent>Bạn có chắc chắn muốn xóa buổi tập này?</DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button color="error" onClick={async () => { await handleDelete(itemToDelete); setOpenConfirm(false); setItemToDelete(null); }}>Xóa</Button>
+          <Button sx={{ color: '#d32f2f' }} onClick={async () => { await handleDelete(itemToDelete); setOpenConfirm(false); setItemToDelete(null); }}>Xóa</Button>
         </DialogActions>
       </Dialog>
     </div>

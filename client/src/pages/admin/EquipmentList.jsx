@@ -232,6 +232,21 @@ export default function Equipment() {
     return <div>Đang tải...</div>;
   }
 
+  // Custom style để loại bỏ hiệu ứng hover cho nút thêm thiết bị
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .no-hover-btn,
+    .no-hover-btn:hover,
+    .no-hover-btn:focus {
+      background-color: var(--admin-primary) !important;
+      color: white !important;
+      box-shadow: none !important;
+      opacity: 1 !important;
+      transition: none !important;
+    }
+  `;
+  document.head.appendChild(style);
+
   return (
     <ThemeProvider theme={theme}>
       <div className="p-6">
@@ -261,10 +276,11 @@ export default function Equipment() {
             )}
             <Button
               variant="contained"
-              color="primary"
               startIcon={<AddIcon />}
               component={Link}
               to="/admin/equipment/add"
+              className="no-hover-btn"
+              sx={{ backgroundColor: 'var(--admin-primary)', color: 'white', boxShadow: 'none', transition: 'none', '&:hover': { backgroundColor: 'var(--admin-primary)', boxShadow: 'none', opacity: 1 } }}
             >
               Thêm thiết bị
             </Button>
@@ -476,7 +492,7 @@ export default function Equipment() {
           <DialogContent>Bạn có chắc chắn muốn xóa thiết bị này?</DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-            <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+            <Button sx={{ color: '#d32f2f' }} onClick={handleDeleteConfirm}>Xóa</Button>
           </DialogActions>
         </Dialog>
       </div>

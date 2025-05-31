@@ -38,6 +38,8 @@ export default function EditGymRoom() {
   const [equipment, setEquipment] = useState([]);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [equipmentToDelete, setEquipmentToDelete] = useState(null);
+  const [openSaveConfirm, setOpenSaveConfirm] = useState(false);
+  const [pendingSubmit, setPendingSubmit] = useState(false);
 
   useEffect(() => {
     fetchGymRoom();
@@ -92,11 +94,14 @@ export default function EditGymRoom() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSaveClick = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setOpenSaveConfirm(true);
+  };
 
+  const handleSubmit = async () => {
+    setPendingSubmit(true);
+    setError('');
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -104,7 +109,6 @@ export default function EditGymRoom() {
         navigate('/auth/login');
         return;
       }
-
       const response = await fetch(`http://localhost:8001/api/gymrooms/${id}`, {
         method: 'PUT',
         headers: {
@@ -113,19 +117,18 @@ export default function EditGymRoom() {
         },
         body: JSON.stringify(formData)
       });
-
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.message || 'Failed to update gym room');
       }
-
       alert('Cập nhật phòng tập thành công!');
       navigate('/admin/gymrooms');
     } catch (error) {
       console.error('Error updating gym room:', error);
       setError(error.message || 'Lỗi khi cập nhật phòng tập');
     } finally {
-      setLoading(false);
+      setPendingSubmit(false);
+      setOpenSaveConfirm(false);
     }
   };
 
@@ -198,180 +201,81 @@ export default function EditGymRoom() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress sx={{ color: '#1a237e' }} />
+        <CircularProgress sx={{ color: 'var(--admin-primary)' }} />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3, color: 'var(--admin-text)' }}>
+        <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <div className="p-6">
-      <Box className="flex justify-between items-center mb-6">
-        <Typography
-          variant="h4"
-          className="font-bold"
-          sx={{
-            color: '#1a237e',
-            fontWeight: 700,
-            fontSize: '2.2em',
-            mb: 4
-          }}
-        >
+    <Box sx={{ p: 3, backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)' }}>
+      <Paper sx={{ p: 3, backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+        <Typography variant="h4" sx={{ color: 'var(--admin-primary)', mb: 3 }}>
           Chỉnh sửa phòng tập
         </Typography>
-      </Box>
-
-      <Paper sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <Box className="space-y-4">
-            <TextField
-              fullWidth
-              label="Tên phòng"
-              name="name"
-              value={formData.name}
+        <form onSubmit={handleSaveClick}>
+          <TextField
+            fullWidth
+            label="Tên phòng"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            sx={{ mb: 2, '& .MuiInputLabel-root': { color: 'var(--admin-text)' }, '& .MuiOutlinedInput-root': { color: 'var(--admin-text)', '& fieldset': { borderColor: 'var(--admin-border)' } } }}
+          />
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Loại phòng</InputLabel>
+            <Select
+              name="roomType"
+              value={formData.roomType}
               onChange={handleChange}
               required
-              sx={{
-                '& .MuiInputLabel-root': { color: '#1a237e' },
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: '#1a237e' },
-                  '&:hover fieldset': { borderColor: '#283593' }
-                }
-              }}
-            />
-
-            <FormControl fullWidth>
-              <InputLabel sx={{ color: '#1a237e' }}>Loại phòng</InputLabel>
-              <Select
-                name="roomType"
-                value={formData.roomType}
-                onChange={handleChange}
-                required
-                label="Loại phòng"
-                sx={{
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
-                }}
-              >
-                <MenuItem value="cardio">Cardio</MenuItem>
-                <MenuItem value="strength">Tập sức mạnh</MenuItem>
-                <MenuItem value="yoga">Yoga</MenuItem>
-                <MenuItem value="functional">Tập chức năng</MenuItem>
-                <MenuItem value="group">Tập nhóm</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
-              <Select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                required
-                label="Trạng thái"
-                sx={{
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
-                }}
-              >
-                <MenuItem value="active">Hoạt động</MenuItem>
-                <MenuItem value="maintenance">Bảo trì</MenuItem>
-                <MenuItem value="inactive">Không hoạt động</MenuItem>
-              </Select>
-            </FormControl>
-
-            <div>
-              <Typography variant="h6" className="font-semibold mb-2" sx={{ color: '#1a237e' }}>
-                Thiết bị trong phòng
-              </Typography>
-              {equipment.length === 0 ? (
-                <Typography sx={{ color: '#333' }}>Chưa có thiết bị nào</Typography>
-              ) : (
-                <List>
-                  {equipment.map((item, index) => (
-                    <React.Fragment key={item._id}>
-                      <ListItem
-                        secondaryAction={
-                          <IconButton 
-                            edge="end" 
-                            aria-label="delete"
-                            onClick={() => handleDeleteEquipment(item._id)}
-                            sx={{ color: '#d32f2f' }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        }
-                      >
-                        <ListItemText
-                          primary={
-                            <Typography sx={{ color: '#333' }}>
-                              {item.name}
-                            </Typography>
-                          }
-                          secondary={
-                            <Box className="mt-1">
-                              <Chip
-                                label={getStatusLabel(item.status)}
-                                color={item.status === 'active' ? 'success' : 
-                                       item.status === 'maintenance' ? 'warning' : 'error'}
-                                size="small"
-                                className="mr-2"
-                              />
-                              <Typography variant="body2" sx={{ color: '#666', display: 'inline' }}>
-                                {item.description}
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                      </ListItem>
-                      {index < equipment.length - 1 && <Divider />}
-                    </React.Fragment>
-                  ))}
-                </List>
-              )}
-            </div>
-          </Box>
-
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 4 }}>
-            <Button
-              variant="outlined"
-              onClick={() => navigate('/admin/gymrooms')}
-              sx={{
-                color: '#1a237e',
-                borderColor: '#1a237e',
-                '&:hover': {
-                  borderColor: '#283593',
-                  backgroundColor: 'rgba(26, 35, 126, 0.04)'
-                }
-              }}
+              label="Loại phòng"
+              sx={{ color: 'var(--admin-text)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' } }}
             >
-              Hủy
+              <MenuItem value="cardio">Cardio</MenuItem>
+              <MenuItem value="strength">Tập sức mạnh</MenuItem>
+              <MenuItem value="yoga">Yoga</MenuItem>
+              <MenuItem value="functional">Tập chức năng</MenuItem>
+              <MenuItem value="group">Tập nhóm</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
+            <Select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              required
+              label="Trạng thái"
+              sx={{ color: 'var(--admin-text)', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' } }}
+            >
+              <MenuItem value="active">Hoạt động</MenuItem>
+              <MenuItem value="maintenance">Bảo trì</MenuItem>
+              <MenuItem value="inactive">Không hoạt động</MenuItem>
+            </Select>
+          </FormControl>
+          <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+            <Button type="submit" variant="contained" sx={{ bgcolor: 'var(--admin-primary)', '&:hover': { bgcolor: 'var(--admin-primary-dark)' } }} disabled={pendingSubmit}>
+              Lưu
             </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={loading}
-              sx={{
-                backgroundColor: '#1a237e',
-                '&:hover': { backgroundColor: '#283593' }
-              }}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Cập nhật'}
+            <Button variant="outlined" onClick={() => navigate('/admin/gymrooms')} sx={{ color: 'var(--admin-text)', borderColor: 'var(--admin-border)', '&:hover': { borderColor: 'var(--admin-primary)', color: 'var(--admin-primary)' } }}>
+              Hủy
             </Button>
           </Box>
         </form>
       </Paper>
 
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle sx={{ color: '#1a237e' }}>Xác nhận xóa</DialogTitle>
-        <DialogContent sx={{ color: '#333' }}>
+        <DialogTitle sx={{ color: 'var(--admin-primary)' }}>Xác nhận xóa</DialogTitle>
+        <DialogContent sx={{ color: 'var(--admin-text)' }}>
           Bạn có chắc chắn muốn xóa thiết bị này khỏi phòng tập?
         </DialogContent>
         <DialogActions>
@@ -379,10 +283,10 @@ export default function EditGymRoom() {
             variant="outlined"
             onClick={() => setOpenConfirm(false)}
             sx={{
-              color: '#1a237e',
-              borderColor: '#1a237e',
+              color: 'var(--admin-primary)',
+              borderColor: 'var(--admin-border)',
               '&:hover': {
-                borderColor: '#283593',
+                borderColor: 'var(--admin-primary)',
                 backgroundColor: 'rgba(26, 35, 126, 0.04)'
               }
             }}
@@ -393,14 +297,23 @@ export default function EditGymRoom() {
             variant="contained"
             onClick={handleDeleteEquipmentConfirm}
             sx={{
-              backgroundColor: '#1a237e',
-              '&:hover': { backgroundColor: '#283593' }
+              backgroundColor: 'var(--admin-primary)',
+              '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
             }}
           >
             Xóa
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+
+      <Dialog open={openSaveConfirm} onClose={() => setOpenSaveConfirm(false)}>
+        <DialogTitle>Xác nhận lưu thay đổi</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn lưu các thay đổi này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenSaveConfirm(false)} color="inherit">Hủy</Button>
+          <Button onClick={handleSubmit} color="primary" variant="contained" disabled={pendingSubmit}>Đồng ý</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 } 

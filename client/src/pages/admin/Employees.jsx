@@ -137,7 +137,9 @@ export default function Employees() {
         <div className="flex justify-end">
           <Link
             to="/admin/employees/add"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+            style={{ backgroundColor: 'var(--admin-primary)', color: 'white', padding: '8px 16px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', fontWeight: 500 }}
+            onMouseOver={e => { e.currentTarget.style.backgroundColor = 'var(--admin-primary)'; }}
+            onMouseOut={e => { e.currentTarget.style.backgroundColor = 'var(--admin-primary)'; }}
           >
             <FaPlus /> Thêm nhân viên
           </Link>
@@ -209,7 +211,7 @@ export default function Employees() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/employees/view/${employee._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/admin/employees/edit/${employee._id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(employee._id)}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#d32f2f' }} onClick={() => handleDelete(employee._id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -223,7 +225,7 @@ export default function Employees() {
         <DialogContent>Bạn có chắc chắn muốn xóa nhân viên này?</DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+          <Button sx={{ color: '#d32f2f' }} onClick={handleDeleteConfirm}>Xóa</Button>
         </DialogActions>
       </Dialog>
     </div>
