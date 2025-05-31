@@ -234,30 +234,8 @@ export default function GymRoomList() {
         <DialogTitle sx={{ color: '#1a237e' }}>Xác nhận xóa</DialogTitle>
         <DialogContent sx={{ color: '#333' }}>Bạn có chắc chắn muốn xóa phòng tập này?</DialogContent>
         <DialogActions>
-          <Button 
-            variant="outlined" 
-            onClick={() => setOpenConfirm(false)}
-            sx={{ 
-              color: 'var(--admin-primary)', 
-              borderColor: 'var(--admin-primary)',
-              '&:hover': {
-                borderColor: 'var(--admin-primary)',
-                backgroundColor: 'rgba(26, 35, 126, 0.04)'
-              }
-            }}
-          >
-            Hủy
-          </Button>
-          <Button 
-            variant="contained" 
-            onClick={handleDeleteConfirm}
-            sx={{ 
-              backgroundColor: 'var(--admin-primary)',
-              '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
-            }}
-          >
-            Xóa
-          </Button>
+          <Button variant="outlined" onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button variant="contained" onClick={handleDeleteConfirm}>Xóa</Button>
         </DialogActions>
       </Dialog>
     </div>

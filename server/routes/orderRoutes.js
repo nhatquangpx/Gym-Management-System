@@ -7,7 +7,7 @@ const { verifyToken, verifyRole } = require("../middleware/authMiddleware");
 router.post("/manual", orderController.createManualOrder);
 
 // Get all orders (admin only)
-router.get("/", [verifyToken, verifyRole(["admin"])], orderController.getAllOrders);
+router.get("/", [verifyToken, verifyRole(["admin", "employee"])], orderController.getAllOrders);
 
 // Get user's orders (authenticated user)
 router.get("/user", verifyToken, orderController.getUserOrders);
@@ -19,7 +19,7 @@ router.get("/by-txnref/:txnRef", orderController.getOrderByTxnRef);
 router.get("/:id", verifyToken, orderController.getOrderById);
 
 // Update order status (admin only)
-router.patch("/:id/status", [verifyToken, verifyRole(["admin"])], orderController.updateOrderStatus);
+router.patch("/:id/status", [verifyToken, verifyRole(["admin", "employee"])], orderController.updateOrderStatus);
 
 // Upload receipt for manual payment (public)
 router.post("/upload-receipt", orderController.uploadReceipt);

@@ -256,19 +256,19 @@ export default function Equipment() {
                     <IconButton
                       component={Link}
                       to={`/staff/equipment/view/${item._id}`}
-                      color="primary"
+                      sx={{ color: 'var(--admin-primary)' }} 
                     >
                       <VisibilityIcon />
                     </IconButton>
                     <IconButton
                       component={Link}
                       to={`/staff/equipment/edit/${item._id}`}
-                      color="primary"
+                      sx={{ color: 'var(--admin-text)	' }} 
                     >
                       <EditIcon />
                     </IconButton>
                     <IconButton
-                      color="error"
+                      sx={{ color: '#d32f2f' }}
                       onClick={() => handleDelete(item._id)}
                     >
                       <DeleteIcon />

@@ -10,6 +10,16 @@ exports.getAllEquipments = async (req, res) => {
   }
 };
 
+// Lấy danh sách thiết bị theo phòng
+exports.getEquipmentsByRoom = async (req, res) => {
+  try {
+    const equipments = await Equipment.find({ roomId: req.params.id }).populate('roomId');
+    res.json(equipments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Thêm thiết bị mới
 exports.createEquipment = async (req, res) => {
   try {

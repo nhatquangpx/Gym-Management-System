@@ -2,37 +2,40 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Typography,
   Paper,
+  Typography,
   TextField,
   Button,
-  MenuItem,
   FormControl,
   InputLabel,
   Select,
+  MenuItem,
+  Alert,
   CircularProgress
 } from '@mui/material';
-import axios from 'axios';
 
-const AddGymRoom = () => {
+export default function AddGymRoom() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [form, setForm] = useState({
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
     name: '',
     roomType: 'cardio',
     status: 'active'
   });
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError('');
 
     try {
       const token = localStorage.getItem('token');
@@ -42,69 +45,85 @@ const AddGymRoom = () => {
         return;
       }
 
-      await axios.post('http://localhost:8001/api/gymrooms', form, {
+      const response = await fetch('http://localhost:8001/api/gymrooms', {
+        method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify(formData)
       });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to add gym room');
+      }
+
       alert('Thêm phòng tập thành công!');
       navigate('/admin/gymrooms');
-    } catch (err) {
-      console.error('Error adding room:', err);
-      setError(err.response?.data?.message || 'Không thể thêm phòng tập. Vui lòng thử lại sau.');
+    } catch (error) {
+      console.error('Error adding gym room:', error);
+      setError(error.message || 'Lỗi khi thêm phòng tập');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white min-h-screen p-6">
-      <Typography variant="h4" className="font-bold mb-6" sx={{ color: '#1a237e' }}>
-        Thêm phòng tập mới
-      </Typography>
+    <div className="p-6">
+      <Box className="flex justify-between items-center mb-6">
+        <Typography
+          variant="h4"
+          className="font-bold"
+          sx={{
+            color: '#1a237e',
+            fontWeight: 700,
+            fontSize: '2.2em',
+            mb: 4
+          }}
+        >
+          Thêm phòng tập mới
+        </Typography>
+      </Box>
 
-      {error && (
-        <Box className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </Box>
-      )}
+      <Paper sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
 
-      <Paper className="p-6 max-w-lg mx-auto">
         <form onSubmit={handleSubmit}>
           <Box className="space-y-4">
             <TextField
               fullWidth
               label="Tên phòng"
               name="name"
-              value={form.name}
+              value={formData.name}
               onChange={handleChange}
               required
-              sx={{ '& .MuiInputLabel-root': { color: '#1a237e' } }}
+              sx={{
+                '& .MuiInputLabel-root': { color: '#1a237e' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#1a237e' },
+                  '&:hover fieldset': { borderColor: '#283593' }
+                }
+              }}
             />
-
-            <FormControl fullWidth>
-              <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
-              <Select
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-                label="Trạng thái"
-                sx={{ '& .MuiSelect-icon': { color: '#1a237e' } }}
-              >
-                <MenuItem value="active">Hoạt động</MenuItem>
-                <MenuItem value="maintenance">Bảo trì</MenuItem>
-                <MenuItem value="inactive">Không hoạt động</MenuItem>
-              </Select>
-            </FormControl>
 
             <FormControl fullWidth>
               <InputLabel sx={{ color: '#1a237e' }}>Loại phòng</InputLabel>
               <Select
                 name="roomType"
-                value={form.roomType}
+                value={formData.roomType}
                 onChange={handleChange}
+                required
                 label="Loại phòng"
-                sx={{ '& .MuiSelect-icon': { color: '#1a237e' } }}
+                sx={{
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
+                }}
               >
                 <MenuItem value="cardio">Cardio</MenuItem>
                 <MenuItem value="strength">Tập sức mạnh</MenuItem>
@@ -113,39 +132,57 @@ const AddGymRoom = () => {
                 <MenuItem value="group">Tập nhóm</MenuItem>
               </Select>
             </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
+              <Select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                required
+                label="Trạng thái"
+                sx={{
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
+                }}
+              >
+                <MenuItem value="active">Hoạt động</MenuItem>
+                <MenuItem value="maintenance">Bảo trì</MenuItem>
+                <MenuItem value="inactive">Không hoạt động</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
 
-          <Box className="flex gap-3 mt-6">
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={loading}
-              sx={{ 
-                backgroundColor: 'var(--admin-primary)',
-                '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
-              }}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Thêm phòng tập'}
-            </Button>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 4 }}>
             <Button
               variant="outlined"
               onClick={() => navigate('/admin/gymrooms')}
-              sx={{ 
-                color: 'var(--admin-primary)', 
-                borderColor: 'var(--admin-primary)',
+              sx={{
+                color: '#1a237e',
+                borderColor: '#1a237e',
                 '&:hover': {
-                  borderColor: 'var(--admin-primary)',
+                  borderColor: '#283593',
                   backgroundColor: 'rgba(26, 35, 126, 0.04)'
                 }
               }}
             >
               Hủy
             </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading}
+              sx={{
+                backgroundColor: '#1a237e',
+                '&:hover': { backgroundColor: '#283593' }
+              }}
+            >
+              {loading ? <CircularProgress size={24} /> : 'Thêm phòng tập'}
+            </Button>
           </Box>
         </form>
       </Paper>
     </div>
   );
-};
-
-export default AddGymRoom; 
+} 
