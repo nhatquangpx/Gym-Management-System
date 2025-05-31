@@ -24,7 +24,7 @@ const blogPosts = [
     id: 3,
     title: "Cách Tăng Cơ Bắp Nhanh Chóng Và An Toàn",
     category: "Tập Luyện",
-    image: "https://images.unsplash.com/photo-1581009137052-c0b24a693789",
+    image: "https://musclefuel.vn/wp-content/uploads/cach-tao-dong-luc-tap-gym.jpg",
     date: "05 Tháng 7, 2024",
     excerpt: "Những bí quyết và lưu ý quan trọng giúp bạn xây dựng cơ bắp một cách hiệu quả và bền vững..."
   },

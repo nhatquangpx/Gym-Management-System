@@ -12,7 +12,7 @@ const equipmentData = {
     { 
       name: "Cardio Zone", 
       items: ["Máy chạy bộ Life Fitness", "Xe đạp tập Technogym", "Máy elliptical Precor"],
-      image: "https://images.unsplash.com/photo-1641126477398-a05cc822c7a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80"
+      image: "https://sm.lifehacker.com/lifehacker_au/feature/w/what-is-zo/what-is-zone-2-cardio-and-how-do-i-actually-do-it_vghp.jpg"
     },
     { 
       name: "Strength Area", 
@@ -42,7 +42,7 @@ const equipmentData = {
     { 
       name: "Combat Zone", 
       items: ["Bao đấm chuyên nghiệp", "Khu vực MMA", "Găng tay & Phụ kiện"],
-      image: "https://images.unsplash.com/photo-1615117972428-28de77cf1258?ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80"
+      image: "https://images.squarespace-cdn.com/content/v1/64662ff2b8c9a053cbdddcf6/c80f6877-90f4-4124-bb56-1178dd330776/HI_2018_Mililani-88.jpg?format=2500w"
     },
     { 
       name: "Group Exercise", 

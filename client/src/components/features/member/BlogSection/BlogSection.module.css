@@ -163,6 +163,7 @@
 }
 
 .viewAllButton:hover {
+  color: white;
   background-color: #e0002d;
   transform: translateY(-2px);
 }
