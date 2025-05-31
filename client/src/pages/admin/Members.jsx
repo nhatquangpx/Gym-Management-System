@@ -165,7 +165,7 @@ export default function Members() {
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><Link to={`/admin/members/view/${member.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
                       <Tooltip title="Chỉnh sửa"><Link to={`/admin/members/edit/${member.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(member.id)}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#d32f2f' }} onClick={() => handleDelete(member.id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>
@@ -177,10 +177,10 @@ export default function Members() {
       
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
         <DialogTitle>Xác nhận xóa</DialogTitle>
-        <DialogContent>Bạn có chắc chắn muốn xóa thành viên này?</DialogContent>
+        <DialogContent>Bạn có chắc chắn muốn xóa hội viên này?</DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+          <Button sx={{ color: '#d32f2f' }} onClick={handleDeleteConfirm}>Xóa</Button>
         </DialogActions>
       </Dialog>
     </div>

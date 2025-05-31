@@ -76,7 +76,7 @@ export default function AddGymRoom() {
           variant="h4"
           className="font-bold"
           sx={{
-            color: '#1a237e',
+            color: 'var(--admin-primary)',
             fontWeight: 700,
             fontSize: '2.2em',
             mb: 4
@@ -86,7 +86,7 @@ export default function AddGymRoom() {
         </Typography>
       </Box>
 
-      <Paper sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
+      <Paper sx={{ p: 4, maxWidth: 800, mx: 'auto', background: 'var(--admin-sidebar)' }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
@@ -102,17 +102,19 @@ export default function AddGymRoom() {
               value={formData.name}
               onChange={handleChange}
               required
+              InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
+              InputProps={{ style: { color: 'var(--admin-text)' } }}
               sx={{
-                '& .MuiInputLabel-root': { color: '#1a237e' },
                 '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: '#1a237e' },
-                  '&:hover fieldset': { borderColor: '#283593' }
+                  '& fieldset': { borderColor: 'var(--admin-primary)' },
+                  '&:hover fieldset': { borderColor: 'var(--admin-primary-dark)' },
+                  '&.Mui-focused fieldset': { borderColor: 'var(--admin-primary)' }
                 }
               }}
             />
 
             <FormControl fullWidth>
-              <InputLabel sx={{ color: '#1a237e' }}>Loại phòng</InputLabel>
+              <InputLabel sx={{ color: 'var(--admin-text)' }}>Loại phòng</InputLabel>
               <Select
                 name="roomType"
                 value={formData.roomType}
@@ -120,9 +122,10 @@ export default function AddGymRoom() {
                 required
                 label="Loại phòng"
                 sx={{
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
+                  color: 'var(--admin-text)',
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary-dark)' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
                 }}
               >
                 <MenuItem value="cardio">Cardio</MenuItem>
@@ -134,7 +137,7 @@ export default function AddGymRoom() {
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
+              <InputLabel sx={{ color: 'var(--admin-text)' }}>Trạng thái</InputLabel>
               <Select
                 name="status"
                 value={formData.status}
@@ -142,9 +145,10 @@ export default function AddGymRoom() {
                 required
                 label="Trạng thái"
                 sx={{
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#283593' },
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a237e' }
+                  color: 'var(--admin-text)',
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary-dark)' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' }
                 }}
               >
                 <MenuItem value="active">Hoạt động</MenuItem>
@@ -159,11 +163,11 @@ export default function AddGymRoom() {
               variant="outlined"
               onClick={() => navigate('/admin/gymrooms')}
               sx={{
-                color: '#1a237e',
-                borderColor: '#1a237e',
+                color: 'var(--admin-primary)',
+                borderColor: 'var(--admin-primary)',
                 '&:hover': {
-                  borderColor: '#283593',
-                  backgroundColor: 'rgba(26, 35, 126, 0.04)'
+                  borderColor: 'var(--admin-primary-dark)',
+                  backgroundColor: 'rgba(79, 140, 255, 0.04)'
                 }
               }}
             >
@@ -174,8 +178,9 @@ export default function AddGymRoom() {
               variant="contained"
               disabled={loading}
               sx={{
-                backgroundColor: '#1a237e',
-                '&:hover': { backgroundColor: '#283593' }
+                backgroundColor: 'var(--admin-primary)',
+                color: 'white',
+                '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
               }}
             >
               {loading ? <CircularProgress size={24} /> : 'Thêm phòng tập'}

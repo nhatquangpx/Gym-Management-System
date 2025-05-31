@@ -209,7 +209,7 @@ export default function GymRoomList() {
                       <IconButton sx={{ color: 'var(--admin-text)' }} onClick={() => navigate(`/admin/gymrooms/edit/${room._id}`)}>
                         <EditIcon />
                       </IconButton>
-                      <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(room._id)}>
+                      <IconButton sx={{ color: '#d32f2f' }} onClick={() => handleDelete(room._id)}>
                         <DeleteIcon />
                       </IconButton>
                     </div>
@@ -221,11 +221,11 @@ export default function GymRoomList() {
         </div>
       </Paper>
       <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle sx={{ color: 'var(--admin-primary)' }}>Xác nhận xóa</DialogTitle>
-        <DialogContent sx={{ color: 'var(--admin-text)' }}>Bạn có chắc chắn muốn xóa phòng tập này?</DialogContent>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xóa phòng tập này?</DialogContent>
         <DialogActions>
-          <Button variant="outlined" onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button variant="contained" color="error" onClick={handleDeleteConfirm}>Xóa</Button>
+          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
+          <Button sx={{ color: '#d32f2f' }} onClick={handleDeleteConfirm}>Xóa</Button>
         </DialogActions>
       </Dialog>
     </div>
