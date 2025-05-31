@@ -151,13 +151,28 @@
 
 .successMessage {
   color: #4CAF50;
-  background-color: rgba(76, 175, 80, 0.15); 
-  padding: 12px; 
-  border-radius: 8px;
-  text-align: center;
-  margin-bottom: 25px; 
-  font-weight: 500;
-  border: 1px solid #4CAF50; 
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  background: #E8F5E9;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.fadeOut {
+  animation: fadeOut 3s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .buttonGroup {

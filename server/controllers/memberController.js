@@ -152,7 +152,7 @@ exports.updateMember = async (req, res) => {
     
     const { gender, dateOfBirth, job, address, membershipEnd, name, email, phone } = req.body;
     const userId = req.params.id;
-
+    console.log(dateOfBirth);
     // Find user with member role
     const user = await User.findOne({ _id: userId, role: "member" });
     if (!user) {

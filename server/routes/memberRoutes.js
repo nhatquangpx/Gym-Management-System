@@ -12,6 +12,10 @@ router.post('/add-schedule', [verifyToken, verifyRole(["member"]), verifyActiveM
 
 router.put('/update-schedule/:id', [verifyToken, verifyRole(["member"]), verifyActiveMember], scheduleController.updateSchedule);
 
+router.get('/info/:id', [verifyToken, verifyRole(["member"])], memberController.getMemberById);
+
+router.put('/info/update/:id', [verifyToken, verifyRole(["member"])], memberController.updateMember);
+
 router.delete('/delete-schedule/:id', [verifyToken, verifyRole(["member"]), verifyActiveMember], scheduleController.deleteSchedule);
 // @route   POST /api/members
 // @desc    Create a new member
