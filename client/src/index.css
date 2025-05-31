@@ -33,6 +33,7 @@ code {
   /* Admin and Staff colors - matching trainer theme */
   --admin-bg: #f6f7fb;
   --admin-primary: #4f8cff;
+  --admin-primary-dark: #3a7bec;
   --admin-sidebar: #fff;
   --admin-header: #f9fafc;
   --admin-border: #e5e7eb;

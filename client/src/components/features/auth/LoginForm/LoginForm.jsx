@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { setLogin } from '../../../../redux/slices/authSlice';
 import styles from './LoginForm.module.css';
 import InputField from '../../../common/InputField/InputField';
-import PasswordField from '../../../common/PasswordField/PasswordField';
 import Button from '../../../common/Button/Button';
 import Divider from '../../../common/Divider/Divider';
 import GoogleButton from '../../../common/GoogleButton/GoogleButton';
@@ -23,6 +22,7 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,6 +36,10 @@ const LoginForm = () => {
     if (loginError) {
       setLoginError('');
     }
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   const validateForm = () => {
@@ -147,10 +151,11 @@ const LoginForm = () => {
         required={true}
       />
 
-      <PasswordField
+      <InputField
         id="password"
         name="password"
         label="Mật khẩu"
+        type="password"
         placeholder="Nhập mật khẩu"
         value={formData.password}
         onChange={handleChange}

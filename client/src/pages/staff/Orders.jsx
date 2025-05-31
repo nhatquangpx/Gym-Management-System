@@ -112,7 +112,7 @@ export default function StaffOrders() {
           variant="contained"
           sx={{ 
             backgroundColor: 'var(--admin-primary)',
-            '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
+            '&:hover': { backgroundColor: 'var(--admin-primary-dark)', color: '#fff' }
           }}
           startIcon={<AddIcon />}
           onClick={() => alert('Chức năng này chỉ demo UI!')}
@@ -199,23 +199,70 @@ export default function StaffOrders() {
       </TableContainer>
 
       {/* Chi tiết đơn hàng */}
-      <Dialog open={openDetail} onClose={() => setOpenDetail(false)} PaperProps={{ sx: { backgroundColor: 'var(--admin-sidebar)', color: 'var(--admin-text)' } }}>
-        <DialogTitle sx={{ color: 'var(--admin-text)' }}>Chi tiết đơn hàng</DialogTitle>
-        <DialogContent dividers sx={{ color: 'var(--admin-text)', borderColor: 'var(--admin-border)' }}>
+      <Dialog 
+        open={openDetail} 
+        onClose={() => setOpenDetail(false)} 
+        PaperProps={{ 
+          sx: { 
+            backgroundColor: 'var(--admin-sidebar)', 
+            color: 'var(--admin-text)', 
+            minWidth: 380, 
+            maxWidth: 480, 
+            borderRadius: 3, 
+            p: 2 
+          } 
+        }}
+      >
+        <DialogTitle 
+          sx={{ 
+            color: 'var(--admin-text)', 
+            fontSize: '2rem', 
+            fontWeight: 700, 
+            textAlign: 'center', 
+            pb: 1 
+          }}
+        >
+          Chi tiết đơn hàng
+        </DialogTitle>
+        <DialogContent 
+          dividers 
+          sx={{ 
+            color: 'var(--admin-text)', 
+            borderColor: 'var(--admin-border)', 
+            px: 4, 
+            py: 2 
+          }}
+        >
           {selectedOrder && (
-            <Box>
-              <Typography sx={{ color: 'var(--admin-text)' }}><b>Khách hàng:</b> {selectedOrder.user.name}</Typography>
-              <Typography sx={{ color: 'var(--admin-text)' }}><b>Email:</b> {selectedOrder.user.email}</Typography>
-              <Typography sx={{ color: 'var(--admin-text)' }}><b>Gói tập:</b> {selectedOrder.package.name}</Typography>
-              <Typography sx={{ color: 'var(--admin-text)' }}><b>Giá:</b> {selectedOrder.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Typography>
-              <Typography sx={{ color: 'var(--admin-text)' }}><b>Trạng thái:</b> {selectedOrder.status === 'pending' ? 'Chờ thanh toán' : selectedOrder.status === 'paid' ? 'Đã thanh toán' : 'Thất bại'}</Typography>
-              <Typography sx={{ color: 'var(--admin-text)' }}><b>Ngày tạo:</b> {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}</Typography>
-              <Typography sx={{ color: 'var(--admin-text)' }}><b>Loại thanh toán:</b> {selectedOrder.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}</Typography>
+            <Box sx={{ fontSize: '1.15rem', lineHeight: 1.7 }}>
+              <Typography component="div" sx={{ mb: 1.2 }}>
+                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Khách hàng:</b> {selectedOrder.user.name}
+              </Typography>
+              <Typography component="div" sx={{ mb: 1.2 }}>
+                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Email:</b> {selectedOrder.user.email}
+              </Typography>
+              <Typography component="div" sx={{ mb: 1.2 }}>
+                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Gói tập:</b> {selectedOrder.package.name}
+              </Typography>
+              <Typography component="div" sx={{ mb: 1.2 }}>
+                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Giá:</b> {selectedOrder.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+              </Typography>
+              <Typography component="div" sx={{ mb: 1.2 }}>
+                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Trạng thái:</b> {selectedOrder.status === 'pending' ? 'Chờ thanh toán' : selectedOrder.status === 'paid' ? 'Đã thanh toán' : 'Thất bại'}
+              </Typography>
+              <Typography component="div" sx={{ mb: 1.2 }}>
+                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Ngày tạo:</b> {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}
+              </Typography>
+              <Typography component="div" sx={{ mb: 1.2 }}>
+                <b style={{ fontWeight: 600, fontSize: '1.08em' }}>Loại thanh toán:</b> {selectedOrder.orderType === 'bank_transfer' ? 'Chuyển khoản' : 'Momo'}
+              </Typography>
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDetail(false)} sx={{ color: 'var(--admin-text)' }}>Đóng</Button>
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button onClick={() => setOpenDetail(false)} sx={{ color: 'var(--admin-text)', fontSize: '1.1rem', fontWeight: 600, px: 3 }}>
+            ĐÓNG
+          </Button>
         </DialogActions>
       </Dialog>
 

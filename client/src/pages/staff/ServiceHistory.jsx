@@ -67,7 +67,7 @@ export default function ServiceHistory() {
           />
           <Button
             variant="contained"
-            sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 } }}
+            sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
             onClick={handleSearchHistory}
           >
             Tìm kiếm
