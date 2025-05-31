@@ -17,7 +17,6 @@ export default function Orders() {
   const [searchCustomer, setSearchCustomer] = useState("");
   const [searchPackage, setSearchPackage] = useState("");
   const [searchStatus, setSearchStatus] = useState("");
-  const [searchPaymentMethod, setSearchPaymentMethod] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   
@@ -108,17 +107,15 @@ export default function Orders() {
     }
   };
   
-  // Lọc danh sách đơn hàng theo khách hàng, gói tập, trạng thái, phương thức thanh toán
+  // Lọc danh sách đơn hàng theo khách hàng, gói tập, trạng thái
   const filteredOrders = orders.filter(o => {
     const customerName = o.userId?.name || '';
     const packageName = o.packageId?.name || '';
     const orderStatus = o.status || '';
-    const paymentMethod = o.orderType || '';
     
     return customerName.toLowerCase().includes(searchCustomer.toLowerCase()) &&
       packageName.toLowerCase().includes(searchPackage.toLowerCase()) &&
-      orderStatus.toLowerCase().includes(searchStatus.toLowerCase()) &&
-      paymentMethod.toLowerCase().includes(searchPaymentMethod.toLowerCase());
+      orderStatus.toLowerCase().includes(searchStatus.toLowerCase());
   });
   
   const getStatusText = (status) => {
@@ -139,16 +136,6 @@ export default function Orders() {
     }
   };
   
-  const getPaymentMethodText = (type) => {
-    switch(type) {
-      case 'gym_package': return 'Gói tập';
-      case 'bank_transfer': return 'Chuyển khoản';
-      case 'vnpay': return 'VNPay';
-      case 'momo': return 'MoMo';
-      default: return type;
-    }
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
@@ -188,14 +175,14 @@ export default function Orders() {
           <input
             type="text"
             placeholder="Tìm kiếm khách hàng"
-            className="p-2 rounded border border-gray-300 min-w-[200px] text-[var(--admin-text)] placeholder:text-[var(--admin-text)]"
+            className="p-2 rounded border border-gray-300 min-w-[200px] text-black bg-white placeholder:text-gray-500"
             value={searchCustomer}
             onChange={e => setSearchCustomer(e.target.value)}
           />
           <input
             type="text"
             placeholder="Tìm kiếm gói tập"
-            className="p-2 rounded border border-gray-300 min-w-[120px] text-[var(--admin-text)] placeholder:text-[var(--admin-text)]"
+            className="p-2 rounded border border-gray-300 min-w-[120px] text-black bg-white placeholder:text-gray-500"
             value={searchPackage}
             onChange={e => setSearchPackage(e.target.value)}
           />
@@ -213,21 +200,6 @@ export default function Orders() {
               <MenuItem value="failed">Đã hủy</MenuItem>
             </Select>
           </FormControl>
-          <FormControl size="small" style={{ minWidth: 150 }}>
-            <InputLabel sx={{ color: 'var(--admin-text)' }}>Phương thức thanh toán</InputLabel>
-            <Select
-              value={searchPaymentMethod}
-              label="Phương thức thanh toán"
-              onChange={e => setSearchPaymentMethod(e.target.value)}
-              sx={{ color: 'var(--admin-text)' }}
-            >
-              <MenuItem value="">Tất cả</MenuItem>
-              <MenuItem value="gym_package">Gói tập</MenuItem>
-              <MenuItem value="bank_transfer">Chuyển khoản</MenuItem>
-              <MenuItem value="vnpay">VNPay</MenuItem>
-              <MenuItem value="momo">MoMo</MenuItem>
-            </Select>
-          </FormControl>
         </div>
       </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
@@ -238,7 +210,6 @@ export default function Orders() {
                 <th className="py-3 px-4 text-center">Khách hàng</th>
                 <th className="py-3 px-4 text-center">Gói tập</th>
                 <th className="py-3 px-4 text-center">Tổng tiền</th>
-                <th className="py-3 px-4 text-center">Phương thức</th>
                 <th className="py-3 px-4 text-center">Ngày tạo</th>
                 <th className="py-3 px-4 text-center">Trạng thái</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
@@ -262,9 +233,6 @@ export default function Orders() {
                   </td>
                   <td className="px-6 py-4 text-center text-[var(--admin-text)]">
                     {formatCurrency(o.amount)}
-                  </td>
-                  <td className="px-6 py-4 text-center text-[var(--admin-text)]">
-                    {getPaymentMethodText(o.orderType)}
                   </td>
                   <td className="px-6 py-4 text-center text-[var(--admin-text)]">
                     {formatDate(o.createdAt)}
