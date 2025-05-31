@@ -72,7 +72,7 @@ app.use("/api/trainers", trainerRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/packages", packageRoutes);
-app.use("/api/users", userRoutes); // Sửa từ "user" thành "users"
+app.use("/api/users", userRoutes); 
 app.use("/api/orders", orderRoutes);
 app.use("/api/registration", registrationRoutes);
 app.use('/api/equipments', equipmentRoutes);
