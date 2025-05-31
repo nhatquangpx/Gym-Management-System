@@ -114,6 +114,7 @@ import StaffGymRoomList from './pages/staff/GymRoomList';
 import StaffAddGymRoom from './pages/staff/AddGymRoom';
 import StaffEditGymRoom from './pages/staff/EditGymRoom';
 import StaffViewGymRoom from './pages/staff/ViewGymRoom';
+import StaffAttendance from './pages/staff/Attendance';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -197,6 +198,7 @@ function App() {
             <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="account" element={<StaffAccount />} />
+            <Route path="attendance" element={<StaffAttendance />} />
           </Route>
         </Route>
 

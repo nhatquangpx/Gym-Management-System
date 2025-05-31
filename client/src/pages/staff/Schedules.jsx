@@ -66,10 +66,7 @@ export default function StaffSchedules() {
         </Typography>
         <Button
           variant="contained"
-          sx={{ 
-            backgroundColor: 'var(--admin-primary)',
-            '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
-          }}
+          sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/staff/schedules/add')}
         >

@@ -10,6 +10,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import logo from "../../../assets/logo.svg";
 import styles from './StaffSidebar.module.css';
 
@@ -35,7 +36,30 @@ export default function StaffSidebar() {
         <span className={styles.brand}>GYMPRO</span>
       </div>
       <nav className={styles.nav}>
-        {menu.map((item) => (
+        {menu.slice(0, 9).map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
+            }
+            end
+          >
+            <span className={styles.icon}>{item.icon}</span>
+            <span className={styles.label}>{item.name}</span>
+          </NavLink>
+        ))}
+        <NavLink
+          to="/staff/attendance"
+          className={({ isActive }) =>
+            isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
+          }
+          end
+        >
+          <span className={styles.icon}><HowToRegIcon /></span>
+          <span className={styles.label}>Ghi nhận buổi tập</span>
+        </NavLink>
+        {menu.slice(9).map((item) => (
           <NavLink
             key={item.path}
             to={item.path}

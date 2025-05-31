@@ -379,10 +379,10 @@ const ProgressPage = () => {
                   </table>
                 </div>
               </div>
-              <Form form={form} onFinish={handleSubmitFeedback} layout="vertical">
+              <Form form={form} onFinish={handleSubmitFeedback} layout="vertical" style={{ marginTop: 32 }}>
                 <Form.Item
                   name="feedback"
-                  label="Nhận xét tiến độ (có thể thêm nhiều lần trong tháng)"
+                  label={<span style={{ fontWeight: 700, fontSize: 18, color: '#1976d2' }}>Nhận xét tiến độ (có thể thêm nhiều lần trong tháng)</span>}
                   rules={[{ required: true, message: 'Vui lòng nhập nhận xét' }]}
                 >
                   <TextArea
@@ -402,7 +402,7 @@ const ProgressPage = () => {
                   </Button>
                 </Form.Item>
               </Form>
-              <div style={{ marginTop: 24 }}>
+              <div style={{ marginTop: 32 }}>
                 <Button onClick={() => setShowHistory(h => !h)}>
                   {showHistory ? 'Ẩn lịch sử nhận xét' : 'Xem lịch sử nhận xét'}
                 </Button>

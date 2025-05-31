@@ -63,13 +63,7 @@ export default function StaffFeedback() {
         </Typography>
         <Button
           variant="contained"
-          sx={{ 
-            backgroundColor: 'var(--admin-primary)',
-            '&:hover': {
-              backgroundColor: 'var(--admin-primary)',
-              opacity: 0.9
-            }
-          }}
+          sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
           startIcon={<AddIcon />}
           onClick={() => navigate('/staff/feedback/add')}
         >
