@@ -40,23 +40,24 @@ export default function Attendance() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" fontWeight={700} mb={3} color="primary">Ghi nhận buổi tập</Typography>
-      <Paper sx={{ p: 2, mb: 3, display: 'flex', gap: 2, alignItems: 'center', maxWidth: 500 }}>
+    <Box sx={{ p: 3, minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
+      <Typography variant="h4" fontWeight={700} mb={3} color="primary" sx={{ alignSelf: 'flex-start' }}>Ghi nhận buổi tập</Typography>
+      <Paper sx={{ p: 3, mb: 4, display: 'flex', gap: 2, alignItems: 'center', maxWidth: 650, width: '100%', boxShadow: 4 }}>
         <TextField
           label="Tìm kiếm tên hội viên"
           value={search}
           onChange={e => setSearch(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
           fullWidth
+          sx={{ fontSize: '1.15rem', background: '#fff', borderRadius: 1 }}
         />
-        <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch} disabled={loading}>
+        <Button variant="contained" size="large" sx={{ minWidth: 90, fontWeight: 600 }} startIcon={<SearchIcon />} onClick={handleSearch} disabled={loading}>
           Tìm
         </Button>
       </Paper>
       {loading && <CircularProgress />}
       {!loading && results.length > 0 && (
-        <Paper sx={{ maxWidth: 500, mb: 2 }}>
+        <Paper sx={{ maxWidth: 650, width: '100%', mb: 2 }}>
           <List>
             {results.map(m => (
               <ListItem button key={m.id} onClick={() => handleSelect(m)}>

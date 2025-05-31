@@ -220,7 +220,7 @@ export default function GymRoomList() {
                     <IconButton sx={{ color: '#1a237e' }} onClick={() => navigate(`/admin/gymrooms/edit/${room._id}`)}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton sx={{ color: '#d32f2f' }} onClick={() => handleDelete(room._id)}>
+                    <IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => handleDelete(room._id)}>
                       <DeleteIcon />
                     </IconButton>
                   </td>
