@@ -25,20 +25,57 @@ export default function StaffDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Giả lập fetch API, sau này thay bằng API thực tế
     async function fetchStats() {
       setLoading(true);
-      // TODO: Thay bằng gọi API thực tế
-      setTimeout(() => {
+      const token = localStorage.getItem('token');
+      const headers = { 'Authorization': `Bearer ${token}` };
+
+      try {
+        const [
+          membersRes,
+          packagesRes,
+          equipmentRes,
+          workoutsRes,
+          feedbackRes
+        ] = await Promise.all([
+          fetch('http://localhost:8001/api/members', { headers }),
+          fetch('http://localhost:8001/api/packages', { headers }),
+          fetch('http://localhost:8001/api/equipments', { headers }),
+          fetch('http://localhost:8001/api/workouts', { headers }),
+          fetch('http://localhost:8001/api/feedbacks', { headers }),
+        ]);
+
+        const [
+          members,
+          packages,
+          equipment,
+          workouts,
+          feedback
+        ] = await Promise.all([
+          membersRes.json(),
+          packagesRes.json(),
+          equipmentRes.json(),
+          workoutsRes.json(),
+          feedbackRes.json(),
+        ]);
+
         setStats({
-          members: 120,
-          packages: 5,
-          equipment: 30,
-          workouts: 250,
-          feedback: 18,
+          members: Array.isArray(members) ? members.length : 0,
+          packages: Array.isArray(packages) ? packages.length : 0,
+          equipment: Array.isArray(equipment) ? equipment.length : 0,
+          workouts: Array.isArray(workouts) ? workouts.length : 0,
+          feedback: Array.isArray(feedback) ? feedback.length : 0,
         });
-        setLoading(false);
-      }, 600);
+      } catch (err) {
+        setStats({
+          members: 0,
+          packages: 0,
+          equipment: 0,
+          workouts: 0,
+          feedback: 0,
+        });
+      }
+      setLoading(false);
     }
     fetchStats();
   }, []);
