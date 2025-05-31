@@ -301,14 +301,15 @@ const SchedulePage = () => {
             const dateStr = item.date.slice(0, 10);
             if (!grouped[dateStr]) grouped[dateStr] = [];
             grouped[dateStr].push({
-              id: item._id,
+              id: item.id,
               startTime: item.timeStart,
               endTime: item.timeEnd,
               // Lấy đúng _id và name của học viên
-              student: item.memberId?._id || item.memberId,
-              studentName: item.memberId?.name || '', // Thêm trường name để hiển thị
+              student: item.memberId,
+              studentName: item.memberName || '', // Thêm trường name để hiển thị
               guide: item.exercises,
               date: dateStr,
+              package: item.packageName || '',
             });
           });
           const sessionsArr = Object.entries(grouped).map(([date, sessions]) => ({
@@ -323,7 +324,7 @@ const SchedulePage = () => {
     };
     fetchSchedules();
   }, []);
-
+  console.log('Sessions:', sessions);
   const weekDays = getWeekDays(baseDate);
   const todayStr = new Date().toISOString().slice(0, 10);
 

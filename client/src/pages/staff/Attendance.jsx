@@ -1,29 +1,67 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-
-const mockMembers = [
-  { id: 'M001', name: 'Nguyễn Văn A', packageId: 'PKG01', packageName: 'Gói 1 tháng' },
-  { id: 'M002', name: 'Trần Thị B', packageId: 'PKG02', packageName: 'Gói 3 tháng' },
-  { id: 'M003', name: 'Lê Văn C', packageId: 'PKG03', packageName: 'Gói 6 tháng' },
-];
 
 export default function Attendance() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [members, setMembers] = useState([]); // Store all members
   const [results, setResults] = useState([]);
   const [selected, setSelected] = useState(null);
   const [confirming, setConfirming] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  // Fetch all members when component mounts
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8001/api/employees/members', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          // Transform the data to match our component's structure
+          const formattedMembers = data.data.map(member => ({
+            id: member.memberId,
+            name: member.memberName,
+            packageId: member.packageId,
+            packageName: member.packageName,
+          }));
+          setMembers(formattedMembers);
+        } else {
+          setError('Không thể tải danh sách hội viên');
+        }
+      } catch (err) {
+        setError('Lỗi kết nối server');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, []);
 
   const handleSearch = () => {
+    if (!search.trim()) {
+      setResults([]);
+      return;
+    }
+    
     setLoading(true);
-    setTimeout(() => {
-      setResults(
-        mockMembers.filter(m => m.name.toLowerCase().includes(search.toLowerCase()))
-      );
-      setLoading(false);
-    }, 500);
+    // Filter from loaded members
+    const filtered = members.filter(m => 
+      m.name.toLowerCase().includes(search.toLowerCase()) ||
+      m.phone?.includes(search) ||
+      m.email?.toLowerCase().includes(search.toLowerCase())
+    );
+    setResults(filtered);
+    setLoading(false);
   };
 
   const handleSelect = (member) => {
@@ -31,12 +69,34 @@ export default function Attendance() {
     setSuccess(false);
   };
 
-  const handleConfirm = () => {
-    setConfirming(true);
-    setTimeout(() => {
+  const handleConfirm = async () => {
+    if (!selected) return;
+
+    try {
+      setConfirming(true);
+      setError('');
+      
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8001/api/employees/checkin/${selected.id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccess(true);
+      } else {
+        setError(data.message || 'Điểm danh thất bại');
+      }
+    } catch (err) {
+      setError('Lỗi kết nối server');
+    } finally {
       setConfirming(false);
-      setSuccess(true);
-    }, 800);
+    }
   };
 
   return (
@@ -96,7 +156,8 @@ export default function Attendance() {
               <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>Tên hội viên:</b> {selected.name}</Typography>
               <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>ID gói tập:</b> {selected.packageId}</Typography>
               <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>Tên gói tập:</b> {selected.packageName}</Typography>
-              {success && <Typography color="success.main" mt={2}>Xác nhận tham gia thành công!</Typography>}
+              {error && <Typography color="error" mt={2}>{error}</Typography>}
+              {success && <Typography color="success.main" mt={2}>Điểm danh thành công!</Typography>}
             </Box>
           )}
         </DialogContent>
@@ -107,4 +168,4 @@ export default function Attendance() {
       </Dialog>
     </Box>
   );
-} 
+}

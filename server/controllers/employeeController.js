@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const MembershipHistory = require("../models/MembershipHistory");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 
@@ -236,5 +237,104 @@ exports.deleteEmployee = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+};
+
+// @desc    Get all members with their active packages
+// @route   GET /api/employees/members
+// @access  Private (Employee)
+exports.getAllMembers = async (req, res) => {
+  try {
+    // Lấy danh sách membership đang active
+    const memberships = await MembershipHistory.find({ 
+      endDate: { $gte: new Date() } 
+    })
+    .populate('userId', 'name') // Lấy thêm email và phone của member
+    .populate('packageId', 'name') // Lấy thêm duration và price của gói tập
+    .select('userId packageId'); // Thêm startDate và endDate
+    // Format lại dữ liệu 
+    const formattedMembers = memberships.map(membership => ({
+      memberId: membership.userId._id,
+      memberName: membership.userId.name,
+      packageId: membership.packageId._id,
+      packageName: membership.packageId.name,
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: formattedMembers.length,
+      data: formattedMembers
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+};
+
+const Schedule = require("../models/Schedule");
+
+// @desc    Check in for a member's workout
+// @route   POST /api/employees/checkin/:memberId
+// @access  Private (Employee)
+exports.checkInMember = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+    // Get today's date
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    const currentTime = today.toLocaleTimeString('en-US', { 
+      hour12: false, 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+
+    // Find schedule for today
+    let schedule = await Schedule.findOne({
+      memberId,
+      date: todayStr,
+    });
+    if (schedule && schedule.status === 'Đã tập') {
+      return res.status(400).json({
+        success: false,
+        message: "Hội viên đã checkin hôm nay rồi"
+      });
+    }
+    if (!schedule) {
+      // Create new schedule if none exists
+      schedule = new Schedule({
+        memberId,
+        membershipId: memberId,
+        date: todayStr,
+        timeStart: '',
+        timeEnd: '',
+        status: 'Đã tập',
+        checkinTime: new Date(),
+        exercises: ''
+      });
+    } else {
+      // Update existing schedule
+      schedule.status = 'Đã tập';
+      schedule.checkinTime = new Date();
+    }
+
+    await schedule.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Checkin thành công",
+      data: {
+        scheduleId: schedule._id,
+        checkinTime: schedule.checkinTime,
+        status: schedule.status
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ 
+      success: false,
+      message: "Lỗi server", 
+      error: error.message 
+    });
   }
 };

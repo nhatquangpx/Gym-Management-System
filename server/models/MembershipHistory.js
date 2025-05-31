@@ -12,6 +12,10 @@ const MembershipHistorySchema = new mongoose.Schema({
         ref: "Package", 
         required: true 
     },
+    trainerId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "Trainer",
+    },
     orderId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Order" 
