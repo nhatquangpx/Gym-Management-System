@@ -9,11 +9,19 @@ const {
     deleteSchedule,
     getAllSchedules,
     getSchedulesByTrainer,
-    getSchedulesByDate
+    getSchedulesByDate,
+    getMemberUsageSummary,
+    getMemberUsageDetails
 } = require('../controllers/scheduleController');
 
 // Lấy lịch tập theo học viên
 router.get('/member/:memberId', verifyToken, getSchedulesByMember);
+
+// Lấy tổng hợp lịch sử sử dụng của tất cả hội viên
+router.get('/member-usage', verifyToken, verifyRole(['admin', 'employee']), getMemberUsageSummary);
+
+// Lấy chi tiết thời gian sử dụng của một hội viên
+router.get('/member-usage/:memberId', verifyToken, verifyRole(['admin', 'employee']), getMemberUsageDetails);
 
 // Thêm lịch tập (cho trainer)
 router.post('/trainer', verifyToken, verifyRole(['trainer']), trainerAddSchedule);
