@@ -200,7 +200,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
             <div className={styles.checkinTime}>
               <div className={styles.checkinTimeLabel}>Thời gian checkin</div>
               <div className={styles.checkinTimeValue}>
-                {session?.checkinTime ? new Date(session.checkinTime).toLocaleString('vi-VN') : 'Chưa checkin'}
+                {session?.checkinTime ? session.checkinTime : 'Chưa checkin'}
               </div>
             </div>
           )}
@@ -253,7 +253,8 @@ const SchedulePage = () => {
         id: s._id,
         startTime: s.timeStart,
         endTime: s.timeEnd,
-        detail: s.exercises
+        detail: s.exercises,
+        checkinTime: s.checkinTime,
       });
     });
     return Object.entries(map).map(([date, sessions]) => ({
@@ -272,6 +273,7 @@ const SchedulePage = () => {
           }
         });
         const data = await res.json();
+        console.log('Fetched schedules:', data);
         if (data.success) {
           const grouped = groupSchedulesByDate(data.data);
           setSessions(grouped);
@@ -287,7 +289,7 @@ const SchedulePage = () => {
       fetchMemberSchedules(memberId);
     } 
   }, []);
-
+  console.log('Sessions:', sessions);
   const [baseDate, setBaseDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();

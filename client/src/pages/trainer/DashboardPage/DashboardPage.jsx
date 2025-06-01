@@ -48,11 +48,32 @@ const DashboardPage = () => {
       }
     };
 
-    // const fetchStudentProgress = async () => { ... }
+    const fetchStudentProgress = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:8001/api/trainers/student-progress', {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          const formattedProgress = data.data.map(student => ({
+            name: student.name,
+            progress: student.progress,
+            goal: student.goal,
+          }));
+          setStudentProgress(formattedProgress);
+        }
+      } catch (err) {
+        console.error('Error fetching student progress:', err);
+      }
+    };
 
     fetchStats();
     fetchTodaySchedule();
-    // fetchStudentProgress();
+    fetchStudentProgress();
   }, []);
 
   // Nếu chưa có API, giữ mock data cho todaySchedule và studentProgress

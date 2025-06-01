@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const TrainerFeedback = require('../models/TrainerFeedback');
 const MembershipHistory = require("../models/MembershipHistory");
 const Schedule = require("../models/Schedule");
 const { validationResult } = require("express-validator");
@@ -239,26 +240,66 @@ exports.getTrainerStudents = async (req, res) => {
   try {
     const trainerId = req.user.id;
 
-    // Lấy tất cả các membership của trainer này và chỉ lấy những membership active
+    // Get active memberships
     const memberships = await MembershipHistory.find({ 
       trainerId,
-      // status: 'active'
-    }).select("userId");
+    }).populate('userId', 'name email phone')
+      .populate('packageId', 'name');
+    // Calculate progress for each student
+    const formattedStudents = await Promise.all(memberships.map(async (membership) => {
+      const startDate = new Date(membership.startDate);
+      const endDate = new Date(membership.endDate);
+      const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
 
-    // Lấy danh sách userId duy nhất
-    const userIds = [...new Set(memberships.map(membership => membership.userId.toString()))];
+      // Get completed workouts count
+      const completedWorkouts = await Schedule.countDocuments({
+        memberId: membership.userId._id,
+        status: 'Đã tập',
+        date: {
+          $gte: membership.startDate,
+          $lte: membership.endDate
+        }
+      });
 
-    // Lấy thông tin học viên
-    const students = await User.find({ _id: { $in: userIds } }).select("name _id");
+      // Calculate progress percentage
+      const progress = Math.min(
+        Math.round((completedWorkouts / totalDays) * 100),
+        100
+      );
+      let status = '';
+      if( new Date() > new Date(membership.endDate) ) {
+        status = 'Hết hạn';
+      } else if (new Date() < new Date(membership.startDate)) {
+        status = 'Chưa bắt đầu';
+      } else {
+        status = 'Đang hoạt động';
+      }
+      return {
+        _id: membership.userId._id,
+        name: membership.userId.name,
+        email: membership.userId.email,
+        phone: membership.userId.phone,
+        membershipStart: membership.startDate,
+        membershipEnd: membership.endDate,
+        progress,
+        packageName: membership.packageId.name,
+        goal: 'Giảm cân',
+        status: status
+      };
+    }));
 
     res.status(200).json({
       success: true,
-      count: students.length,
-      data: students
+      count: formattedStudents.length,
+      data: formattedStudents
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Lỗi server", error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: "Lỗi server", 
+      error: error.message 
+    });
   }
 };
 
@@ -270,7 +311,7 @@ exports.getAllSchedules = async (req, res) => {
     const trainerId = req.user.id;
     const schedules = await Schedule.find({ trainerId })
       .populate('memberId', 'name _id')
-      .select('timeStart timeEnd memberId exercises date');
+      .select('timeStart timeEnd memberId exercises date status comment');
 
     // Lấy thông tin gói tập từ MembershipHistory cho từng member
     const scheduleWithPackages = await Promise.all(schedules.map(async (schedule) => {
@@ -288,6 +329,8 @@ exports.getAllSchedules = async (req, res) => {
         memberName: schedule.memberId?.name,
         exercises: schedule.exercises,
         date: schedule.date,
+        status: schedule.status,
+        comment: schedule.comment || '',
         packageName: membership?.packageId?.name || 'Chưa có gói tập'
       };
     }));
@@ -391,28 +434,51 @@ exports.getStudentProgress = async (req, res) => {
   try {
     const trainerId = req.user.id;
 
-    // Lấy danh sách học viên của trainer
-    const memberships = await MembershipHistory.find({ trainerId }).select("userId");
-    const userIds = [...new Set(memberships.map(membership => membership.userId.toString()))];
+    // Get active memberships and their packages
+    const memberships = await MembershipHistory.find({ 
+      trainerId, 
+      endDate: { $gte: new Date() } 
+    })
+    .populate('userId', 'name');
+    const studentsProgress = await Promise.all(memberships.map(async (membership) => {
+      const startDate = new Date(membership.startDate);
+      const endDate = new Date(membership.endDate);
+      const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
 
-    // Lấy thông tin học viên và tiến độ (giả lập, bạn cần thay bằng dữ liệu thực tế nếu có)
-    const students = await User.find({ _id: { $in: userIds } }).select("name _id goal progress");
+      // Get completed workouts count since membership start
+      const completedWorkouts = await Schedule.countDocuments({
+        memberId: membership.userId._id,
+        status: 'Đã tập',
+        date: {
+          $gte: membership.startDate,
+          $lte: membership.endDate
+        }
+      });
 
-    // Nếu chưa có trường goal/progress, bạn cần bổ sung vào model User hoặc lấy từ bảng khác
-    // Ở đây giả lập dữ liệu nếu chưa có
-    const data = students.map(s => ({
-      name: s.name,
-      progress: s.progress || Math.floor(Math.random() * 50) + 50, // random 50-99%
-      goal: s.goal || "Chưa cập nhật"
+      // Calculate progress percentage
+      const progress = Math.min(
+        Math.round((completedWorkouts / totalDays) * 100),
+        100
+      );
+
+      return {
+        name: membership.userId.name,
+        progress: progress,
+        goal: `Giảm cân`
+      };
     }));
 
     res.status(200).json({
       success: true,
-      data
+      data: studentsProgress
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Lỗi server", error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: "Lỗi server", 
+      error: error.message 
+    });
   }
 };
 
@@ -422,7 +488,7 @@ exports.getStudentProgress = async (req, res) => {
 exports.logWorkout = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, comment } = req.body;
+    const { comment } = req.body;
 
     // Tìm lịch tập theo id
     const schedule = await Schedule.findById(id);
@@ -432,10 +498,17 @@ exports.logWorkout = async (req, res) => {
         message: "Không tìm thấy lịch tập"
       });
     }
-
-    // Cập nhật status và comment
-    if (status) schedule.status = status;
+    if (schedule.comment && schedule.status === 'Đã tập') {
+      return res.status(400).json({
+        success: false,
+        message: "Buổi tập đã được ghi nhận trước đó"
+      });
+    }
+    // Cập nhật comment
     if (comment !== undefined) schedule.comment = comment;
+    if (schedule.status !== 'Đã tập') {
+      schedule.status = 'Đã tập'; // Chỉ cập nhật status nếu chưa ghi nhận
+    }
 
     await schedule.save();
 
@@ -443,6 +516,67 @@ exports.logWorkout = async (req, res) => {
       success: true,
       message: "Ghi nhận buổi tập thành công",
       data: schedule
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server",
+      error: error.message
+    });
+  }
+};
+
+// @desc    Add feedback for student
+// @route   POST /api/trainers/feedback
+// @access  Private (Trainer)
+exports.addFeedback = async (req, res) => {
+  try {
+    const { memberId, content } = req.body;
+    const trainerId = req.user.id;
+    const date = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
+    // Create new feedback
+    const feedback = new TrainerFeedback({
+      trainerId,
+      memberId,
+      content,
+      date
+    });
+
+    await feedback.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Thêm nhận xét thành công",
+      data: feedback
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server",
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get feedback history for a student
+// @route   GET /api/trainers/feedback/:memberId
+// @access  Private (Trainer)
+exports.getFeedbackHistory = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+    const trainerId = req.user.id;
+
+    let query = { trainerId, memberId };
+
+    const feedbacks = await TrainerFeedback.find(query)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: feedbacks.length,
+      data: feedbacks
     });
   } catch (error) {
     console.error(error);

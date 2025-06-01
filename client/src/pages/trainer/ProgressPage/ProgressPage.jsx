@@ -8,39 +8,6 @@ import { FaSearch, FaPhone, FaCalendarAlt, FaDumbbell } from 'react-icons/fa';
 
 const { TextArea } = Input;
 
-const mockStudents = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+84 123 456 789',
-    joinDate: '2024-01-15',
-    status: 'active',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    package: 'Premium Fitness',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '+84 987 654 321',
-    joinDate: '2024-02-01',
-    status: 'pending',
-    avatar: 'https://i.pravatar.cc/150?img=2',
-    package: 'Basic Training',
-  },
-  {
-    id: 3,
-    name: 'Nguyễn Văn A',
-    email: 'vana@example.com',
-    phone: '+84 111 222 333',
-    joinDate: '2024-03-01',
-    status: 'completed',
-    avatar: 'https://i.pravatar.cc/150?img=3',
-    package: 'Yoga',
-  },
-];
-
 const statusOptions = [
   { value: 'pending', label: 'Chờ phê duyệt' },
   { value: 'active', label: 'Đang hướng dẫn' },
@@ -57,6 +24,7 @@ const statusColorClass = {
 
 const ProgressPage = () => {
   const [form] = Form.useForm();
+  const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -71,10 +39,47 @@ const ProgressPage = () => {
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [sessionModalData, setSessionModalData] = useState(null);
 
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8001/api/trainers/students', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          const formattedStudents = data.data.map(student => ({
+            id: student._id,
+            name: student.name,
+            email: student.email,
+            phone: student.phone,
+            joinDate: student.membershipStart,
+            status: student.status,
+            avatar: student.avatar || 'https://i.pravatar.cc/150?img=1',
+            package: student.packageName,
+            progress: student.progress || 0
+          }));
+          setStudents(formattedStudents);
+        } else {
+          setError('Không thể tải danh sách học viên');
+        }
+      } catch (err) {
+        console.error('Error fetching students:', err);
+        setError('Lỗi kết nối server');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
   // Tạo danh sách các tháng từ tháng đầu tiên đến tháng hiện tại
   useEffect(() => {
     // Giả sử lấy tháng đầu tiên là tháng joinDate nhỏ nhất trong mockStudents
-    const minJoinDate = mockStudents.reduce((min, s) => s.joinDate < min ? s.joinDate : min, dayjs().format('YYYY-MM-DD'));
+    const minJoinDate = students.reduce((min, s) => s.joinDate < min ? s.joinDate : min, dayjs().format('YYYY-MM-DD'));
     const startMonth = dayjs(minJoinDate).startOf('month');
     const endMonth = dayjs().startOf('month');
     const months = [];
@@ -84,95 +89,7 @@ const ProgressPage = () => {
       m = m.add(1, 'month');
     }
     setMonthOptions(months.reverse()); // Gần nhất lên đầu
-  }, []);
-
-  // Sinh dữ liệu đi/vắng cho tháng được chọn
-  const generateMonthlyAttendance = (monthStr) => {
-    const month = dayjs(monthStr);
-    const today = dayjs();
-    const startOfMonth = month.startOf('month');
-    const isCurrentMonth = month.isSame(today, 'month');
-    const daysInMonth = isCurrentMonth ? today.date() : month.daysInMonth();
-
-    const trainerComments = {
-      attended: [
-        'Học viên tập luyện tích cực, hoàn thành tốt các bài tập được giao.',
-        'Thể lực tiến bộ rõ rệt, cần duy trì cường độ tập luyện.',
-        'Kỹ thuật thực hiện bài tập đã cải thiện nhiều, cần chú ý thêm về nhịp thở.',
-        'Tinh thần tập luyện tốt, hoàn thành đầy đủ các bài tập với cường độ cao.',
-        'Cần tăng thêm cường độ tập luyện để đạt hiệu quả tốt hơn.',
-        'Thực hiện tốt các bài tập cardio, sức bền đã cải thiện đáng kể.',
-        'Kỹ thuật squat đã chuẩn hơn, cần duy trì và phát triển thêm.',
-        'Tập luyện chăm chỉ, đạt được mục tiêu đề ra cho buổi tập.',
-        'Cần chú ý thêm về kỹ thuật deadlift để tránh chấn thương.',
-        'Thể lực tốt, hoàn thành xuất sắc các bài tập với cường độ cao.'
-      ],
-      missed: [
-        'Học viên vắng mặt, cần liên hệ để nắm rõ lý do.',
-        'Không tham gia buổi tập, đề nghị báo trước khi vắng mặt.',
-        'Vắng mặt không lý do, cần trao đổi về lịch tập phù hợp hơn.',
-        'Đã thông báo vắng mặt trước, sẽ bù buổi tập vào tuần sau.',
-        'Vắng mặt do bận việc đột xuất, cần sắp xếp lại lịch tập.',
-        'Không tham gia buổi tập, cần xác nhận lại mục tiêu và cam kết.',
-        'Vắng mặt do ốm, đề nghị nghỉ ngơi và hồi phục sức khỏe.',
-        'Không tham gia buổi tập, cần trao đổi về động lực tập luyện.',
-        'Vắng mặt do công việc, sẽ điều chỉnh lịch tập phù hợp hơn.',
-        'Không tham gia buổi tập, cần xác nhận lại cam kết với chương trình.'
-      ]
-    };
-
-    const days = [];
-    for (let d = 0; d < daysInMonth; d++) {
-      const date = startOfMonth.add(d, 'day');
-      // Random hóa trạng thái đi/vắng
-      const status = Math.random() > 0.25 ? 'attended' : 'missed';
-      const startTime = '08:00';
-      const endTime = '09:00';
-      const randomComment = trainerComments[status][Math.floor(Math.random() * trainerComments[status].length)];
-      days.push({
-        date: date.format('YYYY-MM-DD'),
-        time: startTime,
-        endTime: endTime,
-        status,
-        type: ['Cardio', 'Strength', 'HIIT'][Math.floor(Math.random()*3)],
-        trainerComment: randomComment
-      });
-    }
-    return days;
-  };
-
-  // Khi chọn học viên, reset lại tháng về tháng hiện tại và clear attendanceData
-  const handleSelectStudent = (student) => {
-    setSelectedStudent(student);
-    setSelectedMonth(dayjs().format('YYYY-MM'));
-    setAttendanceData([]);
-  };
-
-  // Khi chọn tháng, generate lại attendanceData
-  useEffect(() => {
-    if (selectedStudent && selectedMonth) {
-      setAttendanceData(generateMonthlyAttendance(selectedMonth));
-    }
-  }, [selectedStudent, selectedMonth]);
-
-  const handleSubmitFeedback = async (values) => {
-    setLoading(true);
-    try {
-      setFeedbackHistory(prev => [
-        {
-          id: Date.now(),
-          content: values.feedback,
-          date: dayjs().format('YYYY-MM-DD HH:mm'),
-        },
-        ...prev
-      ]);
-      message.success('Thêm nhận xét thành công!');
-      form.resetFields(['feedback']);
-    } catch (error) {
-      message.error('Có lỗi xảy ra khi gửi nhận xét');
-    }
-    setLoading(false);
-  };
+  }, [students]);
 
   // Prepare data for pie chart
   const chartData = [
@@ -203,12 +120,141 @@ const ProgressPage = () => {
   };
 
   // Lọc và tìm kiếm học viên
-  const filteredStudents = mockStudents.filter(student => {
+  const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  // Update handleSelectStudent function
+  const handleSelectStudent = async (student) => {
+    setSelectedStudent(student);
+    setSelectedMonth(dayjs().format('YYYY-MM'));
+    setAttendanceData([]); // Clear existing data
+    await fetchStudentSchedule(student.id, dayjs().format('YYYY-MM')); // Fetch new data
+  };
+
+  // Add new function to fetch schedule
+  const fetchStudentSchedule = async (studentId, monthStr) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8001/api/trainers/get-schedule-by-id/${studentId}?month=${monthStr}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        const formattedSchedule = data.data.map(schedule => ({
+          date: dayjs(schedule.date).format('YYYY-MM-DD'),
+          time: schedule.timeStart,
+          endTime: schedule.timeEnd,
+          status: schedule.status === 'Đã tập' ? 'attended' : 'missed',
+          type: schedule.exercises,
+          trainerComment: schedule.comment || 'Chưa có nhận xét'
+        }));
+        setAttendanceData(formattedSchedule);
+      } else {
+        message.error('Không thể tải lịch tập');
+      }
+    } catch (err) {
+      console.error('Error fetching schedule:', err);
+      message.error('Lỗi kết nối server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update month selection effect
+  useEffect(() => {
+    if (selectedStudent && selectedMonth) {
+      fetchStudentSchedule(selectedStudent.id, selectedMonth);
+    }
+  }, [selectedStudent?.id, selectedMonth]);
+
+  const handleSubmitFeedback = async (values) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8001/api/trainers/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          memberId: selectedStudent.id,
+          content: values.feedback,
+          month: selectedMonth
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Add new feedback to history
+        setFeedbackHistory(prev => [
+          {
+            id: data.data._id,
+            content: values.feedback,
+            date: dayjs().format('YYYY-MM-DD HH:mm'),
+          },
+          ...prev
+        ]);
+        message.success('Thêm nhận xét thành công!');
+        form.resetFields(['feedback']);
+        
+        // Refresh feedback history
+        fetchFeedbackHistory(selectedStudent.id, selectedMonth);
+      } else {
+        message.error(data.message || 'Có lỗi xảy ra khi gửi nhận xét');
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      message.error('Có lỗi xảy ra khi gửi nhận xét');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add this new function to fetch feedback history
+  const fetchFeedbackHistory = async (studentId, month) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8001/api/trainers/feedback/${studentId}?month=${month}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const formattedFeedback = data.data.map(fb => ({
+          id: fb._id,
+          content: fb.content,
+          date: dayjs(fb.createdAt).format('YYYY-MM-DD HH:mm')
+        }));
+        setFeedbackHistory(formattedFeedback);
+      } else {
+        message.error('Không thể tải lịch sử nhận xét');
+      }
+    } catch (error) {
+      console.error('Error fetching feedback history:', error);
+      message.error('Lỗi kết nối server');
+    }
+  };
+
+  // Add this useEffect to load feedback history when student or month changes
+  useEffect(() => {
+    if (selectedStudent && selectedMonth) {
+      fetchFeedbackHistory(selectedStudent.id, selectedMonth);
+    }
+  }, [selectedStudent?.id, selectedMonth]);
 
   return (
     <div className={styles.container}>
@@ -510,4 +556,4 @@ const ProgressPage = () => {
   );
 };
 
-export default ProgressPage; 
+export default ProgressPage;

@@ -68,28 +68,38 @@ const ChangePasswordPage = () => {
 
     setLoading(true);
     try {
-      // TODO: Implement BE API endpoint
-      // const response = await axios.post('/api/users/change-password', {
-      //   currentPassword: formData.currentPassword,
-      //   newPassword: formData.newPassword
-      // });
-
-      // For testing purposes only
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSuccess(true);
-      setFormData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8001/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmPassword
+        })
       });
-      
-      // Redirect to home after 2 seconds
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Có lỗi xảy ra khi đổi mật khẩu');
+      }
+
+      if (data.success) {
+        setSuccess(true);
+        setFormData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+      } else {
+        throw new Error(data.message || 'Có lỗi xảy ra khi đổi mật khẩu');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu');
+      setError(err.message || 'Có lỗi xảy ra khi đổi mật khẩu');
     } finally {
       setLoading(false);
     }
@@ -105,7 +115,7 @@ const ChangePasswordPage = () => {
           {error && <div className={styles.errorMessage}>{error}</div>}
           {success && (
             <div className={styles.successMessage}>
-              Đổi mật khẩu thành công! Đang chuyển hướng...
+              Đổi mật khẩu thành công!
             </div>
           )}
 
@@ -171,4 +181,4 @@ const ChangePasswordPage = () => {
   );
 };
 
-export default ChangePasswordPage; 
+export default ChangePasswordPage;
