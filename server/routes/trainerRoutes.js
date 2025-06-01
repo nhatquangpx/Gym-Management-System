@@ -15,6 +15,11 @@ router.get('/dashboard-stats', [verifyToken, verifyRole(["trainer"])], trainerCo
 // @access  Private (Trainer)
 router.get('/today-schedule', [verifyToken, verifyRole(["trainer"])], trainerController.getTodaySchedule);
 
+// @route   GET /api/trainers/student-progress
+// @desc    Lấy tiến độ học tập của học viên
+// @access  Private (Trainer)
+router.get('/student-progress', [verifyToken, verifyRole(["trainer"])], trainerController.getStudentProgress);
+
 // @route   GET /api/trainers/students
 // @desc    Lấy danh sách học viên của huấn luyện viên
 // @access  Private (Admin, Trainer)
@@ -49,6 +54,16 @@ router.delete('/delete-schedule/:id', [verifyToken, verifyRole(['trainer'])], sc
 // @desc    Ghi nhận buổi tập của học viên
 // @access  Private (Trainer)
 router.put('/log-workout/:id', [verifyToken, verifyRole(['trainer'])], trainerController.logWorkout);
+
+// @route   POST /api/trainers/feedback
+// @desc    Thêm phản hồi cho học viên
+// @access  Private (Trainer)
+router.post('/feedback', [verifyToken, verifyRole(['trainer'])], trainerController.addFeedback);
+
+// @route   GET /api/trainers/feedback/:memberId
+// @desc    Lấy lịch sử phản hồi của học viên
+// @access  Private (Trainer)
+router.get('/feedback/:memberId', [verifyToken, verifyRole(['trainer'])], trainerController.getFeedbackHistory);
 
 // @route   POST /api/trainers
 // @desc    Create a new trainer

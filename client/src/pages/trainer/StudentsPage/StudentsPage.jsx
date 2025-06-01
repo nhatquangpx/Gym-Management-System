@@ -1,115 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch, FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaDumbbell, FaTimes, FaChartLine, FaClipboardList, FaChevronDown } from 'react-icons/fa';
 import styles from './StudentsPage.module.css';
-
-// Mock data - sẽ thay thế bằng API call thực tế
-const mockStudents = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+84 123 456 789',
-    joinDate: '2024-01-15',
-    status: 'active',
-    avatar: 'https://i.pravatar.cc/150?img=1',
-    package: 'Premium Fitness',
-    lastWorkout: '2024-03-15',
-    progress: 75,
-    goals: ['Giảm cân', 'Tăng cơ'],
-    notes: 'Học viên chăm chỉ, tiến bộ tốt',
-    nextSession: '2024-03-20 15:00'
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '+84 987 654 321',
-    joinDate: '2024-02-01',
-    status: 'pending',
-    avatar: 'https://i.pravatar.cc/150?img=2',
-    package: 'Basic Training',
-    lastWorkout: '2024-03-14',
-    progress: 30,
-    goals: ['Tăng sức bền'],
-    notes: 'Cần tập trung vào cardio',
-    nextSession: '2024-03-21 16:00'
-  },
-  {
-    id: 3,
-    name: 'Nguyễn Văn A',
-    email: 'vana@example.com',
-    phone: '+84 111 222 333',
-    joinDate: '2024-03-01',
-    status: 'completed',
-    avatar: 'https://i.pravatar.cc/150?img=3',
-    package: 'Yoga',
-    lastWorkout: '2024-03-18',
-    progress: 100,
-    goals: ['Dẻo dai', 'Thư giãn'],
-    notes: 'Đã hoàn thành mục tiêu',
-    nextSession: '2024-03-25 10:00'
-  },
-  {
-    id: 4,
-    name: 'Lê Thị B',
-    email: 'leb@example.com',
-    phone: '+84 444 555 666',
-    joinDate: '2024-01-20',
-    status: 'inactive',
-    avatar: 'https://i.pravatar.cc/150?img=4',
-    package: 'Cardio',
-    lastWorkout: '2024-02-28',
-    progress: 10,
-    goals: ['Giảm cân'],
-    notes: 'Cần động viên thêm',
-    nextSession: '2024-03-30 09:00'
-  },
-  {
-    id: 5,
-    name: 'Trần Văn C',
-    email: 'tranc@example.com',
-    phone: '+84 777 888 999',
-    joinDate: '2024-02-10',
-    status: 'active',
-    avatar: 'https://i.pravatar.cc/150?img=5',
-    package: 'Crossfit',
-    lastWorkout: '2024-03-19',
-    progress: 60,
-    goals: ['Tăng sức mạnh'],
-    notes: 'Tiến bộ tốt',
-    nextSession: '2024-03-22 17:00'
-  }
-];
 
 const statusOptions = [
   { value: 'pending', label: 'Chờ phê duyệt', color: '#ff9800', bg: '#fff7e6', border: '#ffe0b2' },
   { value: 'active', label: 'Đang hướng dẫn', color: '#219653', bg: '#e3fcef', border: '#b7eedc' },
   { value: 'completed', label: 'Đã hoàn thành', color: '#1976d2', bg: '#e3f2fd', border: '#bbdefb' },
-  { value: 'inactive', label: 'Ngừng theo dõi', color: '#d84315', bg: '#fbe9e7', border: '#ffccbc' }
 ];
 
 const statusColorClass = {
   pending: styles.statusPending,
   active: styles.statusActive,
-  completed: styles.statusCompleted,
-  inactive: styles.statusInactive
+  completed: styles.statusCompleted
 };
 
-const StudentModal = ({ student, onClose, onStatusChange }) => {
+const StudentModal = ({ student, onClose }) => {
   const [editStatus, setEditStatus] = useState(student.status);
-  const [showSuccess, setShowSuccess] = useState(false);
   const modalFooterRef = React.useRef(null);
-
-  const handleUpdate = () => {
-    onStatusChange(student.id, editStatus);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-    setTimeout(() => {
-      if (modalFooterRef.current) {
-        modalFooterRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }
-    }, 100); // scroll sau khi render thông báo
-  };
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -208,27 +115,13 @@ const StudentModal = ({ student, onClose, onStatusChange }) => {
 
           <div className={styles.modalSection}>
             <h3 className={styles.sectionTitle}>Mục tiêu</h3>
-            <ul className={styles.goalsList}>
-              {student.goals.map((goal, index) => (
-                <li key={index} className={styles.goalItem}>
-                  {goal}
-                </li>
-              ))}
-            </ul>
+            <p className={styles.infoValue}>{student.goal}</p>
           </div>
         </div>
 
         <div className={styles.modalFooter} ref={modalFooterRef}>
-          {showSuccess && <div className={styles.successMsgCenter}>Cập nhật thành công!</div>}
           <div className={styles.modalFooterButtons}>
             <button className={`${styles.modalButton} ${styles.secondary}`} onClick={onClose}>Đóng</button>
-            <button
-              className={`${styles.modalButton} ${styles.primary}`}
-              onClick={handleUpdate}
-              disabled={editStatus === student.status}
-            >
-              Cập nhật thông tin
-            </button>
           </div>
         </div>
       </div>
@@ -237,10 +130,62 @@ const StudentModal = ({ student, onClose, onStatusChange }) => {
 };
 
 const StudentsPage = () => {
-  const [students, setStudents] = useState(mockStudents);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedStudent, setSelectedStudent] = useState(null);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8001/api/trainers/students', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        console.log('Fetched students:', data);
+        if (data.success) {
+          // Transform API data to match our component's structure
+          const formattedStudents = data.data.map(student => ({
+            id: student._id,
+            name: student.name,
+            email: student.email,
+            phone: student.phone,
+            joinDate: student.membershipStart,
+            status: getStatusFromDates(student.membershipEnd),
+            avatar: `https://i.pravatar.cc/150?img=1`,
+            package: student.packageName,
+            lastWorkout: new Date().toISOString(),
+            progress: student.progress || 0,
+            goal: student.goal,
+
+          }));
+          setStudents(formattedStudents);
+        } else {
+          setError('Không thể tải danh sách học viên');
+        }
+      } catch (err) {
+        console.error('Error fetching students:', err);
+        setError('Lỗi kết nối server');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  // Helper function to determine status based on membership end date
+  const getStatusFromDates = (endDate) => {
+    const now = new Date();
+    const end = new Date(endDate);
+    if (end < now) return 'completed';
+    return 'active';
+  };
 
   // Xử lý tìm kiếm và lọc
   const filteredStudents = students.filter(student => {
@@ -251,12 +196,34 @@ const StudentsPage = () => {
   });
 
   // Đổi trạng thái (chỉ cập nhật khi bấm cập nhật trong modal)
-  const handleStatusChange = (studentId, newStatus) => {
-    setStudents(students.map(student => student.id === studentId ? { ...student, status: newStatus } : student));
-    if (selectedStudent && selectedStudent.id === studentId) {
-      setSelectedStudent({ ...selectedStudent, status: newStatus });
+  const handleStatusChange = async (studentId, newStatus) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8001/api/trainers/update-student-status/${studentId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setStudents(students.map(student => 
+          student.id === studentId ? { ...student, status: newStatus } : student
+        ));
+        if (selectedStudent && selectedStudent.id === studentId) {
+          setSelectedStudent({ ...selectedStudent, status: newStatus });
+        }
+      }
+    } catch (err) {
+      console.error('Error updating student status:', err);
     }
   };
+
+  if (loading) return <div className={styles.loading}>Đang tải...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   // Render trạng thái với màu sắc
   const renderStatus = (status) => {
@@ -373,4 +340,4 @@ const StudentsPage = () => {
   );
 };
 
-export default StudentsPage; 
+export default StudentsPage;

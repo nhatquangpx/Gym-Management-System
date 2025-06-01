@@ -99,20 +99,49 @@ exports.forgotPassword = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   try {
-    const { newPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
     const id = req.user.id;
 
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Mật khẩu mới không khớp!" 
+      });
+    }
+
     const user = await User.findById(id);
-    if (!user) return res.status(400).json({ message: "Người dùng không tồn tại!" });
+    if (!user) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Người dùng không tồn tại!" 
+      });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Mật khẩu hiện tại không chính xác!" 
+      });
+    }
 
     const salt = await bcrypt.genSalt();
     const hashNewPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashNewPassword;
     await user.save();
 
-    res.status(200).json({ message: "Mật khẩu của bạn đã được đặt lại thành công!" });
+    res.status(200).json({ 
+      success: true,
+      message: "Đổi mật khẩu thành công!" 
+    });
   } catch (err) {
-    res.status(500).json({ message: "Đã xảy ra lỗi khi đặt lại mật khẩu.", error: err.message });
+    res.status(500).json({ 
+      success: false,
+      message: "Đã xảy ra lỗi khi đổi mật khẩu.",
+      error: err.message 
+    });
   }
 };
 
