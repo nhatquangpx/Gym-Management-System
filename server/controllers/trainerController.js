@@ -498,7 +498,7 @@ exports.logWorkout = async (req, res) => {
         message: "Không tìm thấy lịch tập"
       });
     }
-    if (schedule.comment && schedule.status === 'Đã tập') {
+    if (schedule.comment) {
       return res.status(400).json({
         success: false,
         message: "Buổi tập đã được ghi nhận trước đó"

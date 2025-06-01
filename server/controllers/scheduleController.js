@@ -16,22 +16,22 @@ exports.getSchedulesByMember = async (req, res) => {
     let query = { memberId };
 
     // If month is provided, add date filter
-if (month) {
-  const startDate = new Date(month + '-01'); // First day of month
-  const endDate = new Date(month + '-01');
-  endDate.setMonth(endDate.getMonth() + 1); // First day of next month
-  endDate.setDate(endDate.getDate() - 1); // Last day of current month
-  
-  const currentDate = new Date();
-  
-  // Compare dates and use the earlier one
-  const finalEndDate = endDate < currentDate ? endDate : currentDate;
+    if (month) {
+      const startDate = new Date(month + '-01'); // First day of month
+      const endDate = new Date(month + '-01');
+      endDate.setMonth(endDate.getMonth() + 1); // First day of next month
+      endDate.setDate(endDate.getDate() - 1); // Last day of current month
+      
+      const currentDate = new Date();
+      
+      // Compare dates and use the earlier one
+      const finalEndDate = endDate < currentDate ? endDate : currentDate;
 
-  query.date = {
-    $gte: startDate,
-    $lte: finalEndDate
-  };
-}
+      query.date = {
+        $gte: startDate,
+        $lte: finalEndDate
+      };
+    }
 
     const schedules = await Schedule.find(query)
       .select('-createdAt -updatedAt')
