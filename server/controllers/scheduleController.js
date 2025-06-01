@@ -2,6 +2,7 @@ const MembershipHistory = require("../models/MembershipHistory");
 const Schedule = require("../models/Schedule");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
+const { now } = require("mongoose");
 
 // @desc    Lấy lịch tập theo học viên
 // @route   GET /get-schedule/:memberId
@@ -9,9 +10,33 @@ const bcrypt = require("bcryptjs");
 exports.getSchedulesByMember = async (req, res) => {
   try {
     const { memberId } = req.params;
-    const schedules = await Schedule.find({ memberId })
+    const { month } = req.query; // Get month from query params (YYYY-MM format)
+
+    let query = { memberId };
+
+    // If month is provided, add date filter
+if (month) {
+  const startDate = new Date(month + '-01'); // First day of month
+  const endDate = new Date(month + '-01');
+  endDate.setMonth(endDate.getMonth() + 1); // First day of next month
+  endDate.setDate(endDate.getDate() - 1); // Last day of current month
+  
+  const currentDate = new Date();
+  
+  // Compare dates and use the earlier one
+  const finalEndDate = endDate < currentDate ? endDate : currentDate;
+
+  query.date = {
+    $gte: startDate,
+    $lte: finalEndDate
+  };
+}
+
+    const schedules = await Schedule.find(query)
       .select('-createdAt -updatedAt')
-      .populate('memberId', 'name');
+      .populate('memberId', 'name')
+      .sort({ date: 1, timeStart: 1 }); // Sort by date and time
+
     res.status(200).json({
       success: true,
       count: schedules.length,

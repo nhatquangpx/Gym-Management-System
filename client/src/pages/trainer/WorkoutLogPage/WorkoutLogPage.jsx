@@ -74,7 +74,6 @@ const WorkoutLogPage = () => {
           'Authorization': 'Bearer ' + token
         },
         body: JSON.stringify({
-          status: form.status === 'present' ? 'Đã tập' : 'Vắng mặt',
           comment: form.note
         })
       });
@@ -121,18 +120,6 @@ const WorkoutLogPage = () => {
             onChange={handleChange}
             disabled
           />
-        </div>
-        <div>
-          <label className={styles.label}>Trạng thái</label>
-          <select
-            className={styles.statusSelect}
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-          >
-            <option value="present">Đã tập</option>
-            <option value="absent">Vắng mặt</option>
-          </select>
         </div>
         <div className={styles.textarea}>
           <label className={styles.label}>Nhận xét, đánh giá</label>
