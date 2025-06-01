@@ -27,6 +27,11 @@ const PackageSchema = new mongoose.Schema({
         enum: ["Tự tập", "Tập với PT"],
         default: "Tự tập"
     },
+    typePackage: {
+        type: String, 
+        enum: ["yoga", "gym"],
+        default: "gym"
+    },
     features: {
         type: [String],
         default: []
