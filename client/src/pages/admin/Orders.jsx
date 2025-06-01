@@ -280,7 +280,7 @@ export default function Orders() {
                           <IconButton
                             size="small"
                             onClick={() => handleDelete(o._id)}
-                            sx={{ color: 'var(--admin-primary)' }}
+                            sx={{ color: '#d32f2f' }}
                           >
                             <DeleteIcon />
                           </IconButton>
