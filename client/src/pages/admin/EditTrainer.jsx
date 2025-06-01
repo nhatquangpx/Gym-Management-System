@@ -11,6 +11,7 @@ export default function EditTrainer() {
     phone: '',
     email: '',
     specialization: '',
+    type: 'gym'
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,6 +32,7 @@ export default function EditTrainer() {
             phone: data.data.phone,
             email: data.data.email,
             specialization: data.data.trainerInfo?.specialization || '',
+            type: data.data.trainerInfo?.type || 'gym'
           });
         } else {
           setError(data.message || 'Không thể tải thông tin huấn luyện viên');
@@ -139,6 +141,18 @@ export default function EditTrainer() {
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
             required
           />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Loại hình tập</label>
+          <select 
+            name="type" 
+            value={form.type} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+          >
+            <option value="gym">Gym</option>
+            <option value="yoga">Yoga</option>
+          </select>
         </div>
         <div className="flex gap-3">
           <Button type="submit" color="primary" disabled={updateLoading}>

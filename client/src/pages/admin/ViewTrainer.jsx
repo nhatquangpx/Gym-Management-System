@@ -116,6 +116,10 @@ export default function ViewTrainer() {
                 <label className="block text-sm text-gray-500">Chuyên môn</label>
                 <p className="text-lg">{trainer.trainerInfo?.specialization || 'Chưa cập nhật'}</p>
               </div>
+              <div>
+                <label className="block text-sm text-gray-500">Loại hình tập</label>
+                <p className="text-lg">{trainer.trainerInfo?.type === 'gym' ? 'Gym' : 'Yoga'}</p>
+              </div>
             </div>
           </div>
         </div>

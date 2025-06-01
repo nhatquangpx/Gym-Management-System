@@ -2,7 +2,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { IconButton, Paper, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { IconButton, Paper, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ export default function Trainers() {
   const [searchName, setSearchName] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
   const [searchSpecialization, setSearchSpecialization] = useState("");
+  const [searchType, setSearchType] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,7 +68,8 @@ export default function Trainers() {
   const filteredTrainers = trainers.filter(trainer =>
     trainer.name.toLowerCase().includes(searchName.toLowerCase()) &&
     trainer.phone.includes(searchPhone) &&
-    (trainer.trainerInfo?.specialization || '').toLowerCase().includes(searchSpecialization.toLowerCase())
+    (trainer.trainerInfo?.specialization || '').toLowerCase().includes(searchSpecialization.toLowerCase()) &&
+    (trainer.trainerInfo?.type || '').toLowerCase().includes(searchType.toLowerCase())
   );
 
   const navigate = useNavigate();
@@ -123,6 +125,19 @@ export default function Trainers() {
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
+          <FormControl size="small" style={{ minWidth: 150 }}>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Loại hình tập</InputLabel>
+            <Select
+              value={searchType}
+              label="Loại hình tập"
+              onChange={e => setSearchType(e.target.value)}
+              sx={{ color: 'var(--admin-text)' }}
+            >
+              <MenuItem value="">Tất cả</MenuItem>
+              <MenuItem value="gym">Gym</MenuItem>
+              <MenuItem value="yoga">Yoga</MenuItem>
+            </Select>
+          </FormControl>
         </div>
       </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
@@ -131,6 +146,7 @@ export default function Trainers() {
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-center">Tên huấn luyện viên</th>
+                <th className="py-3 px-4 text-center">Loại hình tập</th>
                 <th className="py-3 px-4 text-center">Chuyên môn</th>
                 <th className="py-3 px-4 text-center">Email</th>
                 <th className="py-3 px-4 text-center">Số điện thoại</th>
@@ -139,13 +155,14 @@ export default function Trainers() {
             </thead>
             <tbody>
               {filteredTrainers.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-4">Không có huấn luyện viên nào</td></tr>
+                <tr><td colSpan={6} className="text-center py-4">Không có huấn luyện viên nào</td></tr>
               ) : filteredTrainers.map((trainer) => (
                 <tr key={trainer._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
                   <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] justify-center text-center">
                     <GroupIcon className="text-[var(--admin-primary)]" />
                     <span>{trainer.name}</span>
                   </td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{trainer.trainerInfo?.type === 'gym' ? 'Gym' : 'Yoga'}</td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{trainer.trainerInfo?.specialization || 'Chưa cập nhật'}</td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{trainer.email}</td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{trainer.phone}</td>

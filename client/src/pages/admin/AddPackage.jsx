@@ -14,6 +14,7 @@ const AddPackage = () => {
     price: '',
     period: '/tháng',
     type: 'Tự tập',
+    typePackage: 'gym',
     features: [],
     duration: 30
   });
@@ -114,6 +115,19 @@ const AddPackage = () => {
           >
             <option value="Tự tập">Tự tập</option>
             <option value="Tập với PT">Tập với PT</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Loại hình tập</label>
+          <select 
+            name="typePackage" 
+            value={form.typePackage} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+          >
+            <option value="gym">Gym</option>
+            <option value="yoga">Yoga</option>
           </select>
         </div>
 
