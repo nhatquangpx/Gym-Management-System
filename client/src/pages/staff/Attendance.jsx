@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from '@mui/material';
+import { Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 export default function Attendance() {
@@ -11,6 +11,8 @@ export default function Attendance() {
   const [confirming, setConfirming] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [option, setOption] = useState('checkin');
+  const [checkedIn, setCheckedIn] = useState(false); // trạng thái đã checkin chưa
 
   // Fetch all members when component mounts
   useEffect(() => {
@@ -64,33 +66,66 @@ export default function Attendance() {
     setLoading(false);
   };
 
-  const handleSelect = (member) => {
+  const handleSelect = async (member) => {
     setSelected(member);
     setSuccess(false);
+    setError('');
+    setOption('checkin');
+    // Kiểm tra trạng thái đã checkin chưa
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:8001/api/employees/checkin-status/${member.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setCheckedIn(!!data.checkedIn); // true nếu đã checkin hôm nay
+    } catch {
+      setCheckedIn(false);
+    }
   };
 
   const handleConfirm = async () => {
     if (!selected) return;
-
+    setError('');
+    setSuccess(false);
+    setConfirming(true);
+    const token = localStorage.getItem('token');
     try {
-      setConfirming(true);
-      setError('');
-      
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8001/api/employees/checkin/${selected.id}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      if (option === 'checkin') {
+        const response = await fetch(`http://localhost:8001/api/employees/checkin/${selected.id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        if (data.success) {
+          setSuccess(true);
+          setCheckedIn(true);
+        } else {
+          setError(data.message || 'Điểm danh thất bại');
         }
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setSuccess(true);
-      } else {
-        setError(data.message || 'Điểm danh thất bại');
+      } else if (option === 'checkout') {
+        if (!checkedIn) {
+          setError('Bạn cần checkin trước khi checkout!');
+          setConfirming(false);
+          return;
+        }
+        const response = await fetch(`http://localhost:8001/api/employees/checkout/${selected.id}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        if (data.success) {
+          setSuccess(true);
+          setCheckedIn(false);
+        } else {
+          setError(data.message || 'Checkout thất bại');
+        }
       }
     } catch (err) {
       setError('Lỗi kết nối server');
@@ -156,14 +191,26 @@ export default function Attendance() {
               <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>Tên hội viên:</b> {selected.name}</Typography>
               <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>ID gói tập:</b> {selected.packageId}</Typography>
               <Typography sx={{ mb: 1 }}><b style={{ fontWeight: 700 }}>Tên gói tập:</b> {selected.packageName}</Typography>
+              <FormControl fullWidth sx={{ mt: 2, mb: 1 }}>
+                <InputLabel id="option-label">Tuỳ chọn</InputLabel>
+                <Select
+                  labelId="option-label"
+                  value={option}
+                  label="Tuỳ chọn"
+                  onChange={e => setOption(e.target.value)}
+                >
+                  <MenuItem value="checkin">Checkin</MenuItem>
+                  <MenuItem value="checkout">Checkout</MenuItem>
+                </Select>
+              </FormControl>
               {error && <Typography color="error" mt={2}>{error}</Typography>}
-              {success && <Typography color="success.main" mt={2}>Điểm danh thành công!</Typography>}
+              {success && <Typography color="success.main" mt={2}>{option === 'checkin' ? 'Checkin thành công!' : 'Checkout thành công!'}</Typography>}
             </Box>
           )}
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
           <Button onClick={() => setSelected(null)} disabled={confirming} sx={{ minWidth: 100 }}>Đóng</Button>
-          {!success && <Button variant="contained" onClick={handleConfirm} disabled={confirming} sx={{ minWidth: 180, fontWeight: 600 }}>{confirming ? <CircularProgress size={20} /> : 'Xác nhận tham gia'}</Button>}
+          {!success && <Button variant="contained" onClick={handleConfirm} disabled={confirming} sx={{ minWidth: 180, fontWeight: 600 }}>{confirming ? <CircularProgress size={20} /> : 'Xác nhận'}</Button>}
         </DialogActions>
       </Dialog>
     </Box>
