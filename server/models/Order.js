@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const OrderSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     packageId: { type: mongoose.Schema.Types.ObjectId, ref: "Package", required: true },
+    trainerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Store selected trainer for new registrations
     amount: { type: Number, required: true },
     orderType: { type: String, default: "gym_package" },
     status: { type: String, enum: ["pending", "paid", "failed"], default: "pending" },
