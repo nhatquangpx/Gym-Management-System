@@ -12,6 +12,31 @@
   z-index: 100;
   box-shadow: 1px 0 0 var(--admin-border);
   overflow-y: auto;
+  scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+}
+
+/* Ẩn scrollbar mặc định trên Chrome, Edge, Safari */
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Khi hover mới hiện scrollbar đẹp */
+.sidebar:hover {
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-primary) var(--admin-sidebar);
+}
+.sidebar:hover::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  background: var(--admin-sidebar);
+}
+.sidebar:hover::-webkit-scrollbar-thumb {
+  background: var(--admin-primary);
+  border-radius: 6px;
+}
+.sidebar:hover::-webkit-scrollbar-track {
+  background: var(--admin-sidebar);
+  border-radius: 6px;
 }
 
 .logoBox {
