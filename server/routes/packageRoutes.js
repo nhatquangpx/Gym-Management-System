@@ -7,6 +7,8 @@ const { verifyToken, verifyRole } = require("../middleware/authMiddleware");
 router.post("/", [verifyToken, verifyRole(["admin", "employee"])], packageController.createPackage);
 // Lấy danh sách package
 router.get("/", packageController.getAllPackages);
+// Lấy danh sách package theo loại (yoga/gym)
+router.get("/type/:type", packageController.getPackagesByType);
 // Lấy chi tiết package
 router.get("/:id", packageController.getPackageById);
 // Cập nhật package (chỉ admin)

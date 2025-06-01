@@ -3,45 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './RegisterPTPage.module.css';
 import Button from '../../../components/common/Button/Button';
 
-// Dữ liệu mẫu với ảnh người thật
-const trainers = [
-  {
-    id: 1,
-    name: "Phạm Duy Đông",
-    specialty: "Tăng cơ, Sức mạnh",
-    experience: "5 năm kinh nghiệm",
-    rating: 4.8,
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" // Ảnh nam PT
-  },
-  {
-    id: 2,
-    name: "Đoàn Nhật Quang",
-    specialty: "Yoga, Linh hoạt",
-    experience: "7 năm kinh nghiệm",
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" // Ảnh nữ Yoga
-  },
-  {
-    id: 3,
-    name: "Lê Quốc Đảng",
-    specialty: "Crossfit, Cardio",
-    experience: "4 năm kinh nghiệm",
-    rating: 4.7,
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" // Ảnh nam Crossfit
-  },
-  {
-    id: 4,
-    name: "Hồ Tuấn Huy",
-    specialty: "Giảm cân, Dinh dưỡng",
-    experience: "6 năm kinh nghiệm",
-    rating: 4.6,
-    image: "https://images.unsplash.com/photo-1594882645126-14020914d58d?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80" // Ảnh nữ PT
-  }
-  // Thêm HLV nếu cần
-];
-
 const RegisterPT = () => {
   const [selectedTrainer, setSelectedTrainer] = useState(null);
+  const [trainers, setTrainers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [packageData, setPackageData] = useState(null);
@@ -49,10 +15,59 @@ const RegisterPT = () => {
   useEffect(() => {
     if (location.state && location.state.package) {
       setPackageData(location.state.package);
+      // Lấy loại gói tập (typePackage)
+      const packageType = location.state.package.typePackage || 'gym';
+      // Gọi API lấy danh sách huấn luyện viên dựa trên loại gói
+      fetchTrainersByType(packageType);
     } else {
       navigate('/register/package');
     }
   }, [location, navigate]);
+  
+  const fetchTrainersByType = async (type) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:8001/api/trainers/by-type/${type}`);
+      
+      if (!response.ok) {
+        throw new Error(`Lỗi kết nối: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        setTrainers(data.data);
+      } else {
+        throw new Error('Không thể tải danh sách huấn luyện viên');
+      }
+      
+      setError(null);
+    } catch (err) {
+      console.error('Lỗi khi tải danh sách huấn luyện viên:', err);
+      setError('Không thể tải danh sách huấn luyện viên. Vui lòng thử lại sau.');
+      // Sử dụng dữ liệu mẫu khi gặp lỗi
+      setTrainers([
+        {
+          id: 1,
+          name: "Phạm Duy Đông",
+          specialty: "Tăng cơ, Sức mạnh",
+          experience: "5 năm kinh nghiệm",
+          rating: 4.8,
+          image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+        },
+        {
+          id: 2,
+          name: "Đoàn Nhật Quang",
+          specialty: "Yoga, Linh hoạt",
+          experience: "7 năm kinh nghiệm",
+          rating: 4.9,
+          image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleTrainerSelect = (trainer) => {
     setSelectedTrainer(trainer);
@@ -82,31 +97,37 @@ const RegisterPT = () => {
             <strong>{packageData.name}</strong>
           </div>
         )}
-      </div>
-
-      <div className={styles.trainersGrid}>
-        {trainers.map((trainer) => (
+      </div>      <div className={styles.trainersGrid}>
+        {loading ? (
+          <div className={styles.loading}>Đang tải danh sách huấn luyện viên...</div>
+        ) : error ? (
+          <div className={styles.error}>{error}</div>
+        ) : trainers.length === 0 ? (
+          <div className={styles.noTrainers}>Không có huấn luyện viên phù hợp với gói tập đã chọn</div>
+        ) : (
+          trainers.map((trainer) => (
             <div 
-            key={trainer.id}
-            className={`${styles.trainerCard} ${selectedTrainer?.id === trainer.id ? styles.selected : ''}`}
-            onClick={() => handleTrainerSelect(trainer)}
-          >
-            <div className={styles.trainerImage} style={{backgroundImage: `url(${trainer.image})`}} />
-            <div className={styles.trainerContent}>
-              <h3>{trainer.name}</h3>
-              <div className={styles.trainerRating}>
-                <i className="material-icons">star</i>
-                <span>{trainer.rating}</span>
+              key={trainer.id}
+              className={`${styles.trainerCard} ${selectedTrainer?.id === trainer.id ? styles.selected : ''}`}
+              onClick={() => handleTrainerSelect(trainer)}
+            >
+              <div className={styles.trainerImage} style={{backgroundImage: `url(${trainer.image})`}} />
+              <div className={styles.trainerContent}>
+                <h3>{trainer.name}</h3>
+                <div className={styles.trainerRating}>
+                  <i className="material-icons">star</i>
+                  <span>{trainer.rating}</span>
+                </div>
+                <p className={styles.trainerSpecialty}>{trainer.specialty}</p>
+                <p className={styles.trainerExperience}>{trainer.experience || '5 năm kinh nghiệm'}</p>
               </div>
-              <p className={styles.trainerSpecialty}>{trainer.specialty}</p>
-              <p className={styles.trainerExperience}>{trainer.experience}</p>
+              {/* Thêm nút chọn trực tiếp trên card */}
+              <button className={`${styles.selectButton} ${selectedTrainer?.id === trainer.id ? styles.selectedButton : ''}`}>
+                {selectedTrainer?.id === trainer.id ? 'Đã chọn' : 'Chọn HLV'}
+              </button>
             </div>
-               {/* Thêm nút chọn trực tiếp trên card */}
-               <button className={`${styles.selectButton} ${selectedTrainer?.id === trainer.id ? styles.selectedButton : ''}`}>
-                  {selectedTrainer?.id === trainer.id ? 'Đã chọn' : 'Chọn HLV'}
-               </button>
-      </div>
-          ))}
+          ))
+        )}
       </div>
 
         <div className={styles.buttonGroup}>

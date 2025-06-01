@@ -13,7 +13,7 @@ const MembershipHistory = require("../models/MembershipHistory");
 //          For existing member package registration, see memberController.js
 exports.registerMember = async (req, res) => {
   try {
-    const { account, personal, packageInfo } = req.body;
+    const { account, personal, packageInfo, trainer } = req.body;
     
     // 1. Kiểm tra dữ liệu đầu vào
     if (!account || !account.email || !account.password || !packageInfo || !packageInfo.id) {
@@ -33,7 +33,7 @@ exports.registerMember = async (req, res) => {
     }
 
     // 3. Tìm gói tập
-    const packageId = packageInfo.id || packageInfo._id;
+    const packageId = packageInfo._id;
     let gymPackage = null;
     
     if (!isNaN(packageId)) {
@@ -83,12 +83,11 @@ exports.registerMember = async (req, res) => {
       { id: newUser._id, role: newUser.role },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
-    );
-
-    // 8. Tạo đơn hàng thanh toán với userId chính thức
+    );    // 8. Tạo đơn hàng thanh toán với userId chính thức
     const order = await Order.create({
       userId: newUser._id,
       packageId: gymPackage._id,
+      trainerId: trainer?.id || null, // Store selected trainer ID
       amount: gymPackage.price,
       status: "pending",
       orderInfo: `Đăng ký gói tập ${gymPackage.name} cho thành viên mới`
@@ -129,28 +128,28 @@ exports.registerMember = async (req, res) => {
 // @access  Private - Yêu cầu JWT
 exports.activateAfterPayment = async (req, res) => {
   try {
-    const { txnRef, responseCode } = req.body;
-    const userId = req.user.id;
-    
-    console.log(`Attempting to activate account after payment: User=${userId}, TxnRef=${txnRef}, Code=${responseCode}`);
-    
-    // Chỉ kích hoạt nếu mã phản hồi là '00' (thành công)
-    if (responseCode !== '00') {
-      return res.status(400).json({
-        success: false,
-        message: 'Mã phản hồi thanh toán không hợp lệ'
-      });
-    }
-    
-    // Tìm đơn hàng dựa trên txnRef
-    const order = await Order.findOne({ vnp_TxnRef: txnRef });
-    
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy đơn hàng với mã giao dịch này'
-      });
-    }
+  const { txnRef, responseCode } = req.body;
+  const userId = req.user.id;
+  
+  console.log(`Attempting to activate account after payment: User=${userId}, TxnRef=${txnRef}, Code=${responseCode}`);
+  
+  // Chỉ kích hoạt nếu mã phản hồi là '00' (thành công)
+  if (responseCode !== '00') {
+    return res.status(400).json({
+      success: false,
+      message: 'Mã phản hồi thanh toán không hợp lệ'
+    });
+  }
+  
+  // Tìm đơn hàng dựa trên txnRef
+  const order = await Order.findOne({ vnp_TxnRef: txnRef });
+  
+  if (!order) {
+    return res.status(404).json({
+      success: false,
+      message: 'Không tìm thấy đơn hàng với mã giao dịch này'
+    });
+  }
     
     // Tìm user từ JWT token
     const user = await User.findById(userId);
@@ -176,8 +175,7 @@ exports.activateAfterPayment = async (req, res) => {
         userId: user._id,
         orderId: order._id
       });
-      
-      return res.json({
+        return res.json({
         success: true,
         message: 'Đơn hàng này đã được thanh toán trước đó',
         user: {
@@ -188,7 +186,8 @@ exports.activateAfterPayment = async (req, res) => {
           packageInfo: {
             id: gymPackage._id,
             name: gymPackage.name
-          }
+          },
+          trainerId: existingHistory?.trainerId || null
         }
       });
     }
@@ -255,17 +254,43 @@ exports.activateAfterPayment = async (req, res) => {
         // Tính lại ngày hết hạn mới
         membershipExpiryDate = new Date(membershipStartDate);
         membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30));
-      }
-      
-      // Tạo bản ghi MembershipHistory trong cùng transaction
-      const membershipHistory = new MembershipHistory({
-        userId: user._id,
-        packageId: gymPackage._id,
-        orderId: order._id,
-        startDate: membershipStartDate,
-        endDate: membershipExpiryDate,
-        renewalType: renewalType,
-      });
+      }        // Xác định trainerId: ưu tiên lấy từ MembershipHistory cũ nếu là gia hạn, 
+        // hoặc tìm từ các bản ghi MembershipHistory trước đó của user này, 
+        // hoặc từ Order hiện tại nếu là đăng ký mới
+        let trainerId = null;
+        
+        if (existingMembership && existingMembership.trainerId) {
+          // Nếu là gia hạn, sử dụng trainerId từ membership cũ
+          trainerId = existingMembership.trainerId;
+          console.log(`Using existing trainerId from previous membership: ${trainerId}`);
+        } else {
+          // Nếu là đăng ký mới, tìm trainerId từ MembershipHistory gần nhất của user
+          const latestMembership = await MembershipHistory.findOne({
+            userId: user._id
+          }).sort({ createdAt: -1 });
+          
+          if (latestMembership && latestMembership.trainerId) {
+            trainerId = latestMembership.trainerId;
+            console.log(`Using trainerId from latest membership history: ${trainerId}`);
+          } else if (order.trainerId) {
+            // Nếu không có MembershipHistory trước đó, lấy từ Order hiện tại (đăng ký mới)
+            trainerId = order.trainerId;
+            console.log(`Using trainerId from current order: ${trainerId}`);
+          } else {
+            console.log('No trainerId found in previous memberships or current order');
+          }
+        }
+
+        // Tạo bản ghi MembershipHistory trong cùng transaction
+        const membershipHistory = new MembershipHistory({
+          userId: user._id,
+          packageId: gymPackage._id,
+          orderId: order._id,
+          trainerId: trainerId,
+          startDate: membershipStartDate,
+          endDate: membershipExpiryDate,
+          renewalType: renewalType,
+        });
       
       await membershipHistory.save({ session });
       
@@ -287,6 +312,8 @@ exports.activateAfterPayment = async (req, res) => {
         
         if (updatedOrder && updatedOrder.status === 'paid') {
           console.log(`Order ${order._id} was processed by another request`);
+            // Tìm MembershipHistory đã được tạo
+          const membershipHistory = await MembershipHistory.findOne({ orderId: order._id });
           
           return res.json({
             success: true,
@@ -299,7 +326,8 @@ exports.activateAfterPayment = async (req, res) => {
               packageInfo: {
                 id: gymPackage._id,
                 name: gymPackage.name
-              }
+              },
+              trainerId: membershipHistory?.trainerId || null
             }
           });
         }
@@ -308,10 +336,8 @@ exports.activateAfterPayment = async (req, res) => {
       // Nếu là lỗi khác, throw để catch bên ngoài xử lý
       throw error;
     }
-    
-    console.log(`User ${user._id} activated successfully via client-side activation`);
-    
-    // Trả về thông tin thành công
+        console.log(`User ${user._id} activated successfully via client-side activation`);
+      // Trả về thông tin thành công
     return res.json({
       success: true,
       message: 'Tài khoản đã được kích hoạt thành công',
@@ -323,7 +349,8 @@ exports.activateAfterPayment = async (req, res) => {
         packageInfo: {
           id: gymPackage._id,
           name: gymPackage.name
-        }
+        },
+        trainerId: trainerId
       }
     });
   } catch (error) {
