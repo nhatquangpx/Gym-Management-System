@@ -102,17 +102,6 @@ export default function WorkoutList() {
         >
           Danh sách buổi tập
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ 
-            backgroundColor: 'var(--admin-primary)',
-            '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
-          }}
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/admin/workouts/add')}
-        >
-          Thêm buổi tập
-        </Button>
       </Box>
       <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
         <Box className="flex flex-wrap gap-4">
@@ -209,20 +198,6 @@ export default function WorkoutList() {
                     >
                       <VisibilityIcon />
                     </IconButton>
-                    <IconButton 
-                      onClick={() => navigate(`/admin/workouts/edit/${wk._id}`)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <Tooltip title="Xóa">
-                      <IconButton 
-                        size="small" 
-                        sx={{ color: '#d32f2f' }} 
-                        onClick={() => { setItemToDelete(wk._id); setOpenConfirm(true); }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
                     <Tooltip title="Xem lịch sử">
                       <IconButton 
                         size="small" 
@@ -276,23 +251,6 @@ export default function WorkoutList() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowHistory(false)}>Đóng</Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-        <DialogTitle>Xác nhận xóa</DialogTitle>
-        <DialogContent>Bạn có chắc chắn muốn xóa buổi tập này?</DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Hủy</Button>
-          <Button 
-            sx={{ color: '#d32f2f' }} 
-            onClick={async () => { 
-              await handleDelete(itemToDelete); 
-              setOpenConfirm(false); 
-              setItemToDelete(null); 
-            }}
-          >
-            Xóa
-          </Button>
         </DialogActions>
       </Dialog>
     </div>
