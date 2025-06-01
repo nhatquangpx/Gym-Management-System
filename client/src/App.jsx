@@ -51,13 +51,11 @@ import AdminAddEquipment from './pages/admin/AddEquipment';
 import AdminEditEquipment from './pages/admin/EditEquipment';
 import AdminViewEquipment from './pages/admin/ViewEquipment';
 import AdminFeedback from './pages/admin/Feedback';
-import AdminWorkouts from './pages/admin/Workouts';
+import AdminWorkoutList from './pages/admin/WorkoutList';
 
 import ViewFeedback from './pages/admin/ViewFeedback';
 import ViewWorkout from './pages/admin/ViewWorkout';
-import EditWorkout from './pages/admin/EditWorkout';
 import EquipmentList from './pages/admin/EquipmentList';
-import WorkoutList from './pages/admin/WorkoutList';
 import AddMember from './pages/admin/AddMember';
 // import AddEmployee from './pages/admin/AddEmployee';
 import AddPackage from './pages/admin/AddPackage';
@@ -108,7 +106,6 @@ import StaffEditPackage from './pages/staff/EditPackage';
 import StaffAddEquipment from './pages/staff/AddEquipment';
 import StaffEditEquipment from './pages/staff/EditEquipment';
 import StaffViewEquipment from './pages/staff/ViewEquipment';
-import StaffAddSchedule from './pages/staff/AddSchedule';
 import StaffOrders from './pages/staff/Orders';
 import StaffServiceHistory from './pages/staff/ServiceHistory';
 import StaffViewOrder from './pages/staff/ViewOrder';
@@ -237,10 +234,8 @@ function App() {
             <Route path="gymrooms/add" element={<AddGymRoom />} />
             <Route path="gymrooms/view/:id" element={<ViewGymRoom />} />
             <Route path="gymrooms/edit/:id" element={<EditGymRoom />} />
-            <Route path="workouts" element={<WorkoutList />} />
+            <Route path="workouts" element={<AdminWorkoutList />} />
             <Route path="workouts/view/:id" element={<ViewWorkout />} />
-            <Route path="workouts/edit/:id" element={<EditWorkout />} />
-            <Route path="workouts/add" element={<EditWorkout />} />
             <Route path="feedback" element={<AdminFeedback />} />
             <Route path="feedback/view/:id" element={<ViewFeedback />} />
             <Route path="statistics" element={<AdminStatistics />} />

@@ -24,7 +24,7 @@ const menu = [
   { name: "Ưu đãi", path: "/admin/promotions", icon: <LocalOfferIcon /> },
   { name: "Phòng tập", path: "/admin/gymrooms", icon: <MeetingRoomIcon /> },
   { name: "Thiết bị", path: "/admin/equipment", icon: <BuildIcon /> },
-  { name: "Lịch sử tập luyện", path: "/admin/workouts", icon: <HistoryIcon /> },
+  { name: "Lịch sử sử dụng dịch vụ", path: "/admin/workouts", icon: <HistoryIcon /> },
   { name: "Phản hồi", path: "/admin/feedback", icon: <FeedbackIcon /> },
   { name: "Tài khoản admin", path: "/admin/account", icon: <AccountCircleIcon /> },
 ];

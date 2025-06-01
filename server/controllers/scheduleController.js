@@ -3,6 +3,7 @@ const Schedule = require("../models/Schedule");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const { now } = require("mongoose");
+const User = require("../models/User");
 
 // @desc    Lấy lịch tập theo học viên
 // @route   GET /get-schedule/:memberId
@@ -35,7 +36,6 @@ if (month) {
     const schedules = await Schedule.find(query)
       .select('-createdAt -updatedAt')
       .populate('memberId', 'name')
-      .populate('trainerId', 'name')
        .sort({ date: 1, timeStart: 1 }); // Sort by date and time
     res.status(200).json({
       success: true,
@@ -373,4 +373,103 @@ exports.getSchedulesByDate = async (req, res) => {
             error: error.message
         });
     }
+};
+
+// @desc    Lấy tổng hợp lịch sử sử dụng của tất cả hội viên
+// @route   GET /api/schedules/member-usage
+// @access  Private (Admin)
+exports.getMemberUsageSummary = async (req, res) => {
+    try {
+        // Lấy tất cả lịch tập và nhóm theo hội viên
+        const schedules = await Schedule.find()
+            .populate('memberId', 'name email phone')
+            .sort({ date: -1 });
+
+        // Tạo map để lưu thông tin tổng hợp cho mỗi hội viên
+        const memberUsageMap = new Map();
+
+        schedules.forEach(schedule => {
+            const memberId = schedule.memberId._id.toString();
+            
+            if (!memberUsageMap.has(memberId)) {
+                memberUsageMap.set(memberId, {
+                    _id: memberId,
+                    name: schedule.memberId.name,
+                    email: schedule.memberId.email,
+                    phone: schedule.memberId.phone,
+                    totalSessions: 0,
+                    lastUsed: null
+                });
+            }
+
+            const memberData = memberUsageMap.get(memberId);
+            memberData.totalSessions++;
+
+            // Cập nhật ngày sử dụng gần nhất
+            const scheduleDate = new Date(schedule.date);
+            if (!memberData.lastUsed || scheduleDate > new Date(memberData.lastUsed)) {
+                memberData.lastUsed = schedule.date;
+            }
+        });
+
+        // Chuyển map thành array và sắp xếp theo ngày sử dụng gần nhất
+        const memberUsageArray = Array.from(memberUsageMap.values())
+            .sort((a, b) => new Date(b.lastUsed) - new Date(a.lastUsed));
+
+        res.status(200).json({
+            success: true,
+            count: memberUsageArray.length,
+            data: memberUsageArray
+        });
+    } catch (error) {
+        console.error('Error getting member usage summary:', error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server",
+            error: error.message
+        });
+    }
+};
+
+// @desc    Lấy chi tiết thời gian sử dụng dịch vụ của hội viên
+// @route   GET /api/schedules/member-usage/:memberId
+// @access  Private (Admin)
+exports.getMemberUsageDetails = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+
+    // Lấy thông tin hội viên
+    const member = await User.findById(memberId).select('name');
+    if (!member) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy hội viên"
+      });
+    }
+
+    // Lấy lịch sử sử dụng
+    const schedules = await Schedule.find({ memberId })
+      .select('date timeStart timeEnd')
+      .sort({ date: -1 });
+
+    res.status(200).json({
+      success: true,
+      member: {
+        _id: member._id,
+        name: member.name
+      },
+      history: schedules.map(schedule => ({
+        date: schedule.date,
+        timeStart: schedule.timeStart,
+        timeEnd: schedule.timeEnd
+      }))
+    });
+  } catch (error) {
+    console.error('Lỗi lấy chi tiết thời gian sử dụng:', error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server",
+      error: error.message
+    });
+  }
 };

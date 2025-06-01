@@ -1,107 +1,97 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { FaArrowLeft, FaEdit } from 'react-icons/fa';
-import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
+import { FaArrowLeft } from 'react-icons/fa';
+import {
+  Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
+} from '@mui/material';
 
 export default function ViewWorkout() {
   const { id } = useParams();
-  const [workout, setWorkout] = useState(null);
+  const [member, setMember] = useState(null);
+  const [usageHistory, setUsageHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchWorkout = async () => {
+    const fetchMemberHistory = async () => {
       try {
-        const response = await fetch(`/api/schedules/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/schedules/member-usage/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
         const data = await response.json();
-        setWorkout(data.data);
+        if (data.success) {
+          setMember(data.member);
+          setUsageHistory(data.history || []);
+        } else {
+          console.error('Error:', data.message);
+        }
       } catch (error) {
-        console.error('Error fetching workout:', error);
+        console.error('Error fetching member history:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchWorkout();
+    fetchMemberHistory();
   }, [id]);
 
   if (loading) return <div className="p-6">Đang tải...</div>;
-  if (!workout) return <div className="p-6">Không tìm thấy buổi tập</div>;
+  if (!member) return <div className="p-6">Không tìm thấy thông tin hội viên</div>;
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-blue-600">Chi tiết buổi tập</h1>
-        <div className="flex gap-3">
-          <Link
-            to={`/admin/workouts/edit/${id}`}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
-          >
-            <FaEdit /> Chỉnh sửa
-          </Link>
-          <Link
-            to="/admin/workouts"
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
-          >
-            <FaArrowLeft /> Quay lại
-          </Link>
-        </div>
+        <h1 className="text-2xl font-bold text-blue-600">Lịch sử sử dụng dịch vụ</h1>
+        <Link
+          to="/admin/workouts"
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+        >
+          <FaArrowLeft /> Quay lại
+        </Link>
       </div>
-      <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-2xl mx-auto">
-        <div className="grid grid-cols-2 gap-6">
+
+      <Paper className="p-6 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>
+        <Typography variant="h6" className="mb-4">Thông tin hội viên</Typography>
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <h3 className="text-lg font-semibold mb-2">Thông tin chung</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-500">Ngày tập</label>
-                <p className="text-lg">{new Date(workout.date).toLocaleDateString()}</p>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500">Giờ bắt đầu</label>
-                <p className="text-lg">{workout.startTime}</p>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500">Giờ kết thúc</label>
-                <p className="text-lg">{workout.endTime}</p>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500">Trạng thái</label>
-                <div className="mt-1">
-                  <StatusBadge status={workout.status} />
-                </div>
-              </div>
-            </div>
+            <Typography variant="subtitle2" color="textSecondary">Họ tên</Typography>
+            <Typography>{member.name}</Typography>
           </div>
           <div>
-            <h3 className="text-lg font-semibold mb-2">Hội viên & HLV</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-500">Hội viên</label>
-                <p className="text-lg">{workout.member.name} ({workout.member.phone})</p>
-                <p className="text-sm text-gray-400">{workout.member.email}</p>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500">Huấn luyện viên</label>
-                <p className="text-lg">{workout.trainer.name}</p>
-                <p className="text-sm text-gray-400">{workout.trainer.specialization}</p>
-              </div>
-            </div>
+            <Typography variant="subtitle2" color="textSecondary">Tổng số buổi đã sử dụng</Typography>
+            <Typography>{usageHistory.length} buổi</Typography>
           </div>
         </div>
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2">Nội dung buổi tập</h3>
-          <p className="text-gray-700 whitespace-pre-wrap mb-2"><b>Bài tập:</b> {workout.content.exercises}</p>
-          <p className="text-gray-700 whitespace-pre-wrap"><b>Ghi chú:</b> {workout.content.notes}</p>
-        </div>
-        <div className="mt-6 grid grid-cols-2 gap-6">
-          <div>
-            <h4 className="font-semibold mb-1">Nhận xét của HLV</h4>
-            <p className="text-gray-700 whitespace-pre-wrap">{workout.feedback.trainer}</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Nhận xét của hội viên</h4>
-            <p className="text-gray-700 whitespace-pre-wrap">{workout.feedback.member}</p>
-          </div>
-        </div>
-      </div>
+      </Paper>
+
+      <Paper sx={{ background: 'var(--admin-sidebar)', borderRadius: 2 }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Ngày sử dụng</TableCell>
+                <TableCell>Giờ bắt đầu</TableCell>
+                <TableCell>Giờ kết thúc</TableCell>
+                <TableCell>Thời gian sử dụng</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {usageHistory.map((session, index) => (
+                <TableRow key={index}>
+                  <TableCell>{new Date(session.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{session.timeStart}</TableCell>
+                  <TableCell>{session.timeEnd}</TableCell>
+                  <TableCell>
+                    {`${Math.round((new Date(session.timeEnd) - new Date(session.timeStart)) / (1000 * 60))} phút`}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </div>
   );
 } 
