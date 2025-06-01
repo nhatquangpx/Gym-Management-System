@@ -93,8 +93,6 @@ import StaffViewMember from './pages/staff/ViewMember';
 import StaffEditMember from './pages/staff/EditMember';
 import StaffPackages from './pages/staff/Packages';
 import StaffEquipment from './pages/staff/Equipment';
-import StaffWorkouts from './pages/staff/Workouts';
-import StaffSchedules from './pages/staff/Schedules';
 import StaffFeedback from './pages/staff/Feedback';
 import StaffViewFeedback from './pages/staff/ViewFeedback';
 import StaffAccount from './pages/staff/Account';
@@ -115,7 +113,6 @@ import StaffAddGymRoom from './pages/staff/AddGymRoom';
 import StaffEditGymRoom from './pages/staff/EditGymRoom';
 import StaffViewGymRoom from './pages/staff/ViewGymRoom';
 import StaffAttendance from './pages/staff/Attendance';
-import StaffViewWorkout from './pages/staff/ViewWorkout';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -194,10 +191,6 @@ function App() {
             <Route path="orders" element={<StaffOrders />} />
             <Route path="orders/view/:id" element={<StaffViewOrder />} />
             <Route path="orders/edit/:id" element={<StaffEditOrder />} />
-            <Route path="workouts" element={<StaffWorkouts />} />
-            <Route path="workouts/view/:id" element={<StaffViewWorkout />} />
-            <Route path="service-history" element={<StaffServiceHistory />} />
-            <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="feedback/view/:id" element={<StaffViewFeedback />} />
             <Route path="account" element={<StaffAccount />} />
