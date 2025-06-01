@@ -44,7 +44,12 @@ const UserSchema = new mongoose.Schema(
       }
     },
     trainerInfo: {
-      specialization: String
+      specialization: String, 
+      type: {
+        type: String,
+        enum: ["yoga", "gym"],
+        default: "gym"
+      },
     },
     employeeInfo: {
       position: String,
