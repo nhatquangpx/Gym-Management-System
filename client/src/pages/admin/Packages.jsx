@@ -104,10 +104,12 @@ export default function Packages() {
   const [searchName, setSearchName] = useState("");
   const [searchPrice, setSearchPrice] = useState("");
   const [searchType, setSearchType] = useState("");  // Lọc theo loại gói
+  const [searchTypePackage, setSearchTypePackage] = useState(""); // Lọc theo loại hình tập
   const filteredPackages = packages.filter(p =>
     (p.name && p.name.toLowerCase().includes(searchName.toLowerCase())) &&
     (p.formattedPrice && p.formattedPrice.includes(searchPrice)) &&
-    (p.type && p.type.toLowerCase().includes(searchType.toLowerCase()))
+    (p.type && p.type.toLowerCase().includes(searchType.toLowerCase())) &&
+    (p.typePackage && p.typePackage.toLowerCase().includes(searchTypePackage.toLowerCase()))
   );
   
   return (
@@ -168,6 +170,19 @@ export default function Packages() {
               <MenuItem value="Tập với PT">Tập với PT</MenuItem>
             </Select>
           </FormControl>
+          <FormControl size="small" style={{ minWidth: 150 }}>
+            <InputLabel sx={{ color: 'var(--admin-text)' }}>Loại hình tập</InputLabel>
+            <Select
+              value={searchTypePackage}
+              label="Loại hình tập"
+              onChange={e => setSearchTypePackage(e.target.value)}
+              sx={{ color: 'var(--admin-text)' }}
+            >
+              <MenuItem value="">Tất cả</MenuItem>
+              <MenuItem value="gym">Gym</MenuItem>
+              <MenuItem value="yoga">Yoga</MenuItem>
+            </Select>
+          </FormControl>
         </div>
       </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
@@ -176,21 +191,22 @@ export default function Packages() {
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-center">Tên gói tập</th>
-                <th className="py-3 px-4 text-center">Giá</th>
+                <th className="py-3 px-4 text-center">Loại hình tập</th>
                 <th className="py-3 px-4 text-center">Loại gói</th>
+                <th className="py-3 px-4 text-center">Giá</th>
                 <th className="py-3 px-4 text-center">Thời hạn</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>            <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4">
+                  <td colSpan={6} className="text-center py-4">
                     <CircularProgress size={24} sx={{ color: 'var(--admin-primary)' }} />
                     <span className="ml-2">Đang tải dữ liệu...</span>
                   </td>
                 </tr>
               ) : filteredPackages.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-4">Không có gói tập nào</td></tr>
+                <tr><td colSpan={6} className="text-center py-4">Không có gói tập nào</td></tr>
               ) : filteredPackages.map((p) => (
                 <tr key={p._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">
@@ -199,8 +215,9 @@ export default function Packages() {
                       {p.name}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.formattedPrice}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.typePackage === 'gym' ? 'Gym' : 'Yoga'}</td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.type}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.formattedPrice}</td>
                   <td className="px-6 py-4 text-[var(--admin-text)] text-center">{p.duration} ngày</td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">

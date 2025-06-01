@@ -11,6 +11,7 @@ export default function AddTrainer() {
     email: '',
     password: '',
     specialization: '',
+    type: 'gym'
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -115,6 +116,18 @@ export default function AddTrainer() {
             className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
             required
           />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Loại hình tập</label>
+          <select 
+            name="type" 
+            value={form.type} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+          >
+            <option value="gym">Gym</option>
+            <option value="yoga">Yoga</option>
+          </select>
         </div>
         <div className="flex gap-3">
           <Button type="submit" color="primary" disabled={loading}>
