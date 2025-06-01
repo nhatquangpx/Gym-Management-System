@@ -587,3 +587,51 @@ exports.getFeedbackHistory = async (req, res) => {
     });
   }
 };
+
+// @desc    Get trainers by type (yoga or gym)
+// @route   GET /api/trainers/by-type/:type
+// @access  Public
+exports.getTrainersByType = async (req, res) => {
+  try {
+    const { type } = req.params;
+    
+    // Kiểm tra type có hợp lệ không
+    if (type !== 'yoga' && type !== 'gym') {
+      return res.status(400).json({ 
+        success: false,
+        message: "Loại huấn luyện viên không hợp lệ, chỉ chấp nhận 'yoga' hoặc 'gym'" 
+      });
+    }
+    
+    // Tìm các huấn luyện viên có trainerInfo.type phù hợp
+    const trainers = await User.find({ 
+      role: "trainer", 
+      "trainerInfo.type": type
+    })
+    .select("-password")
+    .lean();
+    
+    // Định dạng dữ liệu trả về để phù hợp với giao diện
+    const formattedTrainers = trainers.map(trainer => ({
+      id: trainer._id,
+      name: trainer.name,
+      specialty: trainer.trainerInfo?.specialization || 'Chung',
+      experience: '5 năm kinh nghiệm', // Giá trị mặc định, nếu có thể bổ sung trường này vào model
+      rating: 4.5, // Giá trị mặc định, có thể tính toán từ model Feedback
+      image: trainer.trainerInfo?.image || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80' // Ảnh mặc định
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: formattedTrainers.length,
+      data: formattedTrainers
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ 
+      success: false,
+      message: "Lỗi server khi lấy danh sách huấn luyện viên", 
+      error: error.message 
+    });
+  }
+};

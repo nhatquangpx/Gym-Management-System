@@ -95,4 +95,9 @@ router.get("/:id", [verifyToken, verifyRole(["admin"])], trainerController.getTr
 // @access  Private (Admin)
 router.delete("/:id", [verifyToken, verifyRole(["admin"])], trainerController.deleteTrainer);
 
+// @route   GET /api/trainers/by-type/:type
+// @desc    Get trainers by type (yoga or gym)
+// @access  Public
+router.get('/by-type/:type', trainerController.getTrainersByType);
+
 module.exports = router;

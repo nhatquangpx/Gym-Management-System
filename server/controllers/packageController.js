@@ -3,13 +3,14 @@ const Package = require("../models/Package");
 // Tạo mới package
 exports.createPackage = async (req, res) => {
     try {
-        const { name, description, price, period, type, features, duration, status } = req.body;
+        const { name, description, price, period, type, typePackage, features, duration, status } = req.body;
         const pkg = new Package({ 
             name, 
             description, 
             price, 
             period: period || "/tháng", 
             type: type || "Tự tập", 
+            typePackage: typePackage || "gym",
             features: features || [],
             duration: duration || 30
         });
@@ -44,7 +45,7 @@ exports.getPackageById = async (req, res) => {
 // Cập nhật package
 exports.updatePackage = async (req, res) => {
     try {
-        const { name, description, price, period, type, features, duration, status } = req.body;
+        const { name, description, price, period, type, typePackage, features, duration, status } = req.body;
         const updateData = {};
         
         // Chỉ cập nhật các trường được cung cấp
@@ -53,6 +54,7 @@ exports.updatePackage = async (req, res) => {
         if (price !== undefined) updateData.price = price;
         if (period !== undefined) updateData.period = period;
         if (type !== undefined) updateData.type = type;
+        if (typePackage !== undefined) updateData.typePackage = typePackage;
         if (features !== undefined) updateData.features = features;
         if (duration !== undefined) updateData.duration = duration;
         
@@ -84,5 +86,22 @@ exports.deletePackage = async (req, res) => {
         res.json({ message: "Package deleted successfully" });
     } catch (err) {
         res.status(500).json({ message: "Error deleting package", error: err.message });
+    }
+};
+
+// Lấy danh sách package theo loại (yoga/gym)
+exports.getPackagesByType = async (req, res) => {
+    try {
+        const { type } = req.params;
+        
+        // Kiểm tra type có hợp lệ không
+        if (type !== 'yoga' && type !== 'gym') {
+            return res.status(400).json({ message: "Invalid package type, only 'yoga' or 'gym' are allowed" });
+        }
+        
+        const packages = await Package.find({ typePackage: type });
+        res.json(packages);
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching packages by type", error: err.message });
     }
 };

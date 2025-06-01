@@ -49,14 +49,13 @@ const RegisterPackage = () => {
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
   };
-
   const handleContinue = () => {
     if (!selectedPackage) return;
     
-    if (selectedPackage.type === "Tập với PT") {
-      navigate('/register/pt', { state: { package: selectedPackage } });
-    } else {
+    if (selectedPackage.type === "Tự tập") {
       navigate('/register/account', { state: { package: selectedPackage } });
+    } else {
+      navigate('/register/pt', { state: { package: selectedPackage } });
     }
   };
 

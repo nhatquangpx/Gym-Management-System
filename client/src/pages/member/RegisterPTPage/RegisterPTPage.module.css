@@ -203,3 +203,29 @@
     width: 100%;
   }
 }
+
+.loading,
+.error,
+.noTrainers {
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.loading {
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.error {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #d32f2f;
+  border: 1px solid #d32f2f;
+}
+
+.noTrainers {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #666;
+  font-style: italic;
+}
