@@ -35,8 +35,8 @@ if (month) {
     const schedules = await Schedule.find(query)
       .select('-createdAt -updatedAt')
       .populate('memberId', 'name')
-      .sort({ date: 1, timeStart: 1 }); // Sort by date and time
-
+      .populate('trainerId', 'name')
+       .sort({ date: 1, timeStart: 1 }); // Sort by date and time
     res.status(200).json({
       success: true,
       count: schedules.length,
@@ -291,4 +291,86 @@ exports.deleteSchedule = async (req, res) => {
       error: error.message
     });
   }
+};
+
+// @desc    Lấy tất cả lịch tập
+// @route   GET /api/schedules
+// @access  Private (Admin)
+exports.getAllSchedules = async (req, res) => {
+    try {
+        const schedules = await Schedule.find()
+            .populate('memberId', 'name')
+            .populate('trainerId', 'name')
+            .sort({ date: -1 });
+        res.status(200).json({
+            success: true,
+            count: schedules.length,
+            data: schedules
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server",
+            error: error.message
+        });
+    }
+};
+
+// @desc    Lấy lịch tập theo trainer
+// @route   GET /api/schedules/trainer/:trainerId
+// @access  Private (Trainer, Admin)
+exports.getSchedulesByTrainer = async (req, res) => {
+    try {
+        const { trainerId } = req.params;
+        const schedules = await Schedule.find({ trainerId })
+            .populate('memberId', 'name')
+            .populate('trainerId', 'name')
+            .sort({ date: -1 });
+        res.status(200).json({
+            success: true,
+            count: schedules.length,
+            data: schedules
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server",
+            error: error.message
+        });
+    }
+};
+
+// @desc    Lấy lịch tập theo ngày
+// @route   GET /api/schedules/date/:date
+// @access  Private (Admin, Trainer)
+exports.getSchedulesByDate = async (req, res) => {
+    try {
+        const { date } = req.params;
+        const startDate = new Date(date);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(date);
+        endDate.setHours(23, 59, 59, 999);
+
+        const schedules = await Schedule.find({
+            date: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        })
+        .populate('memberId', 'name')
+        .populate('trainerId', 'name')
+        .sort({ timeStart: 1 });
+
+        res.status(200).json({
+            success: true,
+            count: schedules.length,
+            data: schedules
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server",
+            error: error.message
+        });
+    }
 };

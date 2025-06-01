@@ -48,7 +48,6 @@ import ViewOrder from './pages/admin/ViewOrder';
 import EditOrder from './pages/admin/EditOrder';
 import EditProfile from './pages/admin/EditProfile';
 import AdminAddEquipment from './pages/admin/AddEquipment';
-import AdminEquipment from './pages/admin/EquipmentList';
 import AdminEditEquipment from './pages/admin/EditEquipment';
 import AdminViewEquipment from './pages/admin/ViewEquipment';
 import AdminFeedback from './pages/admin/Feedback';
@@ -119,6 +118,7 @@ import StaffAddGymRoom from './pages/staff/AddGymRoom';
 import StaffEditGymRoom from './pages/staff/EditGymRoom';
 import StaffViewGymRoom from './pages/staff/ViewGymRoom';
 import StaffAttendance from './pages/staff/Attendance';
+import StaffViewWorkout from './pages/staff/ViewWorkout';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -198,6 +198,7 @@ function App() {
             <Route path="orders/view/:id" element={<StaffViewOrder />} />
             <Route path="orders/edit/:id" element={<StaffEditOrder />} />
             <Route path="workouts" element={<StaffWorkouts />} />
+            <Route path="workouts/view/:id" element={<StaffViewWorkout />} />
             <Route path="service-history" element={<StaffServiceHistory />} />
             <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />

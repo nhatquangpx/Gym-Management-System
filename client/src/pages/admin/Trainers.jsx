@@ -4,37 +4,78 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { IconButton, Paper, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 
 export default function Trainers() {
-  const employees = [
-    { id: 1, name: "Nguyễn Văn D", role: "Huấn luyện viên", phone: "0901111222", status: "Đang làm việc" },
-    { id: 2, name: "Phạm Thị E", role: "Nhân viên lễ tân", phone: "0911222333", status: "Nghỉ việc" },
-    { id: 3, name: "Trần Văn F", role: "Huấn luyện viên", phone: "0922333444", status: "Đang làm việc" },
-  ];
+  const [trainers, setTrainers] = useState([]);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [searchName, setSearchName] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
-  const [searchRole, setSearchRole] = useState("");
-  // Lọc danh sách huấn luyện viên (role === 'Huấn luyện viên')
-  const filteredEmployees = employees.filter(e =>
-    e.role === 'Huấn luyện viên' &&
-    e.name.toLowerCase().includes(searchName.toLowerCase()) &&
-    e.phone.includes(searchPhone) &&
-    e.role.toLowerCase().includes(searchRole.toLowerCase())
-  );
+  const [searchSpecialization, setSearchSpecialization] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTrainers();
+  }, []);
+
+  const fetchTrainers = async () => {
+    try {
+      const response = await fetch('/api/trainers', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTrainers(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching trainers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDelete = (id) => {
     setItemToDelete(id);
     setOpenConfirm(true);
   };
-  const handleDeleteConfirm = () => {
+
+  const handleDeleteConfirm = async () => {
+    try {
+      const response = await fetch(`/api/trainers/${itemToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchTrainers(); // Refresh list after deletion
+      }
+    } catch (error) {
+      console.error('Error deleting trainer:', error);
+    }
     setOpenConfirm(false);
     setItemToDelete(null);
   };
+
+  // Lọc danh sách huấn luyện viên
+  const filteredTrainers = trainers.filter(trainer =>
+    trainer.name.toLowerCase().includes(searchName.toLowerCase()) &&
+    trainer.phone.includes(searchPhone) &&
+    (trainer.trainerInfo?.specialization || '').toLowerCase().includes(searchSpecialization.toLowerCase())
+  );
+
   const navigate = useNavigate();
+
+  if (loading) {
+    return <div className="p-6">Đang tải...</div>;
+  }
+
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6">
       <div className="flex justify-between items-center mb-6">
@@ -75,9 +116,9 @@ export default function Trainers() {
             InputProps={{ style: { color: 'var(--admin-text)' } }}
           />
           <TextField
-            label="Chức vụ"
-            value={searchRole}
-            onChange={e => setSearchRole(e.target.value)}
+            label="Chuyên môn"
+            value={searchSpecialization}
+            onChange={e => setSearchSpecialization(e.target.value)}
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
@@ -90,29 +131,29 @@ export default function Trainers() {
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
                 <th className="py-3 px-4 text-center">Tên huấn luyện viên</th>
-                <th className="py-3 px-4 text-center">Chức vụ</th>
+                <th className="py-3 px-4 text-center">Chuyên môn</th>
+                <th className="py-3 px-4 text-center">Email</th>
                 <th className="py-3 px-4 text-center">Số điện thoại</th>
-                <th className="py-3 px-4 text-center">Trạng thái</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {filteredEmployees.length === 0 ? (
+              {filteredTrainers.length === 0 ? (
                 <tr><td colSpan={5} className="text-center py-4">Không có huấn luyện viên nào</td></tr>
-              ) : filteredEmployees.map((e) => (
-                <tr key={e.id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
+              ) : filteredTrainers.map((trainer) => (
+                <tr key={trainer._id} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition rounded-xl">
                   <td className="px-6 py-4 flex items-center gap-3 text-[var(--admin-text)] justify-center text-center">
                     <GroupIcon className="text-[var(--admin-primary)]" />
-                    <span>{e.name}</span>
+                    <span>{trainer.name}</span>
                   </td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{e.role}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{e.phone}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{e.status}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{trainer.trainerInfo?.specialization || 'Chưa cập nhật'}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{trainer.email}</td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">{trainer.phone}</td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
-                      <Tooltip title="Xem chi tiết"><Link to={`/admin/trainers/view/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/trainers/edit/${e.id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
-                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#d32f2f' }} onClick={() => handleDelete(e.id)}><DeleteIcon /></IconButton></Tooltip>
+                      <Tooltip title="Xem chi tiết"><Link to={`/admin/trainers/view/${trainer._id}`}><IconButton size="small" sx={{ color: 'var(--admin-primary)' }}><VisibilityIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Chỉnh sửa"><Link to={`/admin/trainers/edit/${trainer._id}`}><IconButton size="small" sx={{ color: 'var(--admin-text)' }}><EditIcon /></IconButton></Link></Tooltip>
+                      <Tooltip title="Xóa"><IconButton size="small" sx={{ color: '#d32f2f' }} onClick={() => handleDelete(trainer._id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>

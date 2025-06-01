@@ -11,36 +11,9 @@ export default function ViewWorkout() {
   useEffect(() => {
     const fetchWorkout = async () => {
       try {
-        // Dữ liệu mẫu để test giao diện
-        const mockWorkout = {
-          id: id,
-          date: '2024-06-01',
-          startTime: '08:00',
-          endTime: '09:00',
-          status: 'Hoàn thành',
-          member: {
-            name: 'Nguyễn Văn A',
-            phone: '0901111222',
-            email: 'member.a@example.com',
-          },
-          trainer: {
-            name: 'HLV Trần B',
-            specialization: 'Fitness',
-          },
-          content: {
-            exercises: 'Squat, Deadlift, Bench Press',
-            notes: 'Tập trung vào kỹ thuật, nghỉ giữa các hiệp 2 phút.',
-          },
-          feedback: {
-            trainer: 'Học viên tập tốt, cần cải thiện sức bền.',
-            member: 'Huấn luyện viên hướng dẫn nhiệt tình, bài tập phù hợp.',
-          },
-        };
-        setWorkout(mockWorkout);
-        // Khi có API thật, dùng đoạn sau:
-        // const response = await fetch(`/api/workouts/${id}`);
-        // const data = await response.json();
-        // setWorkout(data);
+        const response = await fetch(`/api/schedules/${id}`);
+        const data = await response.json();
+        setWorkout(data.data);
       } catch (error) {
         console.error('Error fetching workout:', error);
       } finally {

@@ -20,6 +20,7 @@ const registrationRoutes = require("./routes/registrationRoutes");
 const equipmentRoutes = require('./routes/equipmentRoutes');
 const gymRoomRoutes = require('./routes/gymRoomRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -78,5 +79,6 @@ app.use("/api/registration", registrationRoutes);
 app.use('/api/equipments', equipmentRoutes);
 app.use('/api/gymrooms', gymRoomRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
+app.use('/api/schedules', scheduleRoutes);
 
 app.listen(PORT, () => console.log(`Server run in port: ${PORT}`));
