@@ -7,29 +7,26 @@ export default function ViewTrainer() {
   const { id } = useParams();
   const [trainer, setTrainer] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchTrainer = async () => {
       try {
-        // Tạm thời sử dụng dữ liệu mẫu để test
-        const mockTrainer = {
-          id: id,
-          name: "Nguyễn Văn A",
-          phone: "0901111222",
-          email: "trainer.a@example.com",
-          specialization: "Fitness & Yoga",
-          experience: "5",
-          status: "Đang làm việc",
-          description: "Huấn luyện viên chuyên nghiệp với 5 năm kinh nghiệm trong lĩnh vực fitness và yoga. Đã đào tạo nhiều học viên đạt được mục tiêu tập luyện của họ."
-        };
-        setTrainer(mockTrainer);
+        const response = await fetch(`/api/trainers/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        const data = await response.json();
         
-        // Khi có API thật, uncomment đoạn code sau
-        // const response = await fetch(`/api/trainers/${id}`);
-        // const data = await response.json();
-        // setTrainer(data);
+        if (data.success) {
+          setTrainer(data.data);
+        } else {
+          setError(data.message || 'Không thể tải thông tin huấn luyện viên');
+        }
       } catch (error) {
         console.error('Error fetching trainer:', error);
+        setError('Có lỗi xảy ra khi tải thông tin huấn luyện viên');
       } finally {
         setLoading(false);
       }
@@ -42,8 +39,34 @@ export default function ViewTrainer() {
     return <div className="p-6">Đang tải...</div>;
   }
 
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+        <Link
+          to="/admin/trainers"
+          className="mt-4 inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2 w-fit"
+        >
+          <FaArrowLeft /> Quay lại
+        </Link>
+      </div>
+    );
+  }
+
   if (!trainer) {
-    return <div className="p-6">Không tìm thấy huấn luyện viên</div>;
+    return (
+      <div className="p-6">
+        <div className="text-center">Không tìm thấy huấn luyện viên</div>
+        <Link
+          to="/admin/trainers"
+          className="mt-4 inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2 w-fit"
+        >
+          <FaArrowLeft /> Quay lại
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -91,25 +114,10 @@ export default function ViewTrainer() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-500">Chuyên môn</label>
-                <p className="text-lg">{trainer.specialization}</p>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500">Kinh nghiệm</label>
-                <p className="text-lg">{trainer.experience} năm</p>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500">Trạng thái</label>
-                <div className="mt-1">
-                  <StatusBadge status={trainer.status} />
-                </div>
+                <p className="text-lg">{trainer.trainerInfo?.specialization || 'Chưa cập nhật'}</p>
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2">Mô tả</h3>
-          <p className="text-gray-700 whitespace-pre-wrap">{trainer.description}</p>
         </div>
       </div>
     </div>

@@ -9,25 +9,41 @@ export default function AddTrainer() {
     name: '',
     phone: '',
     email: '',
+    password: '',
     specialization: '',
-    experience: '',
-    status: 'Đang làm việc',
-    description: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   
   const handleSubmit = async e => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+
     try {
-      await fetch('/api/trainers', {
+      const response = await fetch('/api/trainers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify(form),
       });
-      navigate('/admin/trainers');
+
+      const data = await response.json();
+      
+      if (data.success) {
+        navigate('/admin/trainers');
+      } else {
+        setError(data.message || 'Có lỗi xảy ra khi thêm huấn luyện viên');
+      }
     } catch (error) {
-      alert('Có lỗi xảy ra!');
+      setError('Có lỗi xảy ra khi thêm huấn luyện viên');
+      console.error('Error adding trainer:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,6 +58,11 @@ export default function AddTrainer() {
           <FaArrowLeft /> Quay lại
         </Link>
       </div>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
       <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Tên</label>
@@ -75,6 +96,17 @@ export default function AddTrainer() {
           />
         </div>
         <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Mật khẩu</label>
+          <input 
+            name="password" 
+            type="password"
+            value={form.password} 
+            onChange={handleChange} 
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
+            required
+          />
+        </div>
+        <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Chuyên môn</label>
           <input 
             name="specialization" 
@@ -84,41 +116,10 @@ export default function AddTrainer() {
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-1 text-[var(--admin-text)]">Kinh nghiệm (năm)</label>
-          <input 
-            name="experience" 
-            type="number"
-            value={form.experience} 
-            onChange={handleChange} 
-            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-1 text-[var(--admin-text)]">Trạng thái</label>
-          <select 
-            name="status" 
-            value={form.status} 
-            onChange={handleChange} 
-            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
-          >
-            <option value="Đang làm việc">Đang làm việc</option>
-            <option value="Nghỉ việc">Nghỉ việc</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-1 text-[var(--admin-text)]">Mô tả</label>
-          <textarea 
-            name="description" 
-            value={form.description} 
-            onChange={handleChange} 
-            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]" 
-            rows="4"
-          />
-        </div>
         <div className="flex gap-3">
-          <Button type="submit" color="primary">Lưu</Button>
+          <Button type="submit" color="primary" disabled={loading}>
+            {loading ? 'Đang xử lý...' : 'Lưu'}
+          </Button>
           <Link to="/admin/trainers"><Button type="button" color="secondary">Hủy</Button></Link>
         </div>
       </form>
