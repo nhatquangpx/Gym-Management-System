@@ -106,6 +106,7 @@ import StaffEditEquipment from './pages/staff/EditEquipment';
 import StaffViewEquipment from './pages/staff/ViewEquipment';
 import StaffOrders from './pages/staff/Orders';
 import StaffServiceHistory from './pages/staff/ServiceHistory';
+import StaffViewServiceHistory from './pages/staff/ViewServiceHistory';
 import StaffViewOrder from './pages/staff/ViewOrder';
 import StaffEditOrder from './pages/staff/EditOrder';
 import StaffGymRoomList from './pages/staff/GymRoomList';
@@ -188,6 +189,8 @@ function App() {
             <Route path="equipment/add" element={<StaffAddEquipment />} />
             <Route path="equipment/view/:id" element={<StaffViewEquipment />} />
             <Route path="equipment/edit/:id" element={<StaffEditEquipment />} />
+            <Route path="service-history" element={<StaffServiceHistory />} />
+            <Route path="service-history/view/:id" element={<StaffViewServiceHistory />} />
             <Route path="orders" element={<StaffOrders />} />
             <Route path="orders/view/:id" element={<StaffViewOrder />} />
             <Route path="orders/edit/:id" element={<StaffEditOrder />} />
