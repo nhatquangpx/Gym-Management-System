@@ -90,8 +90,7 @@ const PaymentPage = () => {
     // as we're redirecting directly to VNPay
     return true;
   };
-  
-  // Hàm trích xuất thông tin từ cấu trúc dữ liệu
+    // Hàm trích xuất thông tin từ cấu trúc dữ liệu
   const extractPaymentInfo = () => {
     // Cấu trúc dữ liệu cũ
     if (paymentData?.account) {
@@ -103,20 +102,32 @@ const PaymentPage = () => {
         email: paymentData.account?.email
       };
     } 
-    // Cấu trúc dữ liệu mới
-    else if (paymentData?.user) {
+    // Cấu trúc dữ liệu mới từ redux user và package
+    else if (paymentData?.user && paymentData?.package) {
+      return {
+        userId: paymentData.user?.id || paymentData.user?._id,
+        packageId: paymentData.package?._id || paymentData.package?.id,
+        packageName: paymentData.package?.name,
+        price: paymentData.package?.price,
+        email: paymentData.user?.email,
+        trainerId: paymentData.trainer?._id || paymentData.trainer?.id
+      };
+    }
+    // Cấu trúc dữ liệu mới từ order
+    else if (paymentData?.user && paymentData?.order) {
       return {
         userId: paymentData.user?.id,
         packageId: paymentData.order?.packageId || paymentData.package?.id,
         orderId: paymentData.order?.orderId,
         packageName: paymentData.package?.name,
         price: paymentData.package?.price || paymentData.order?.amount,
-        email: paymentData.user?.email
+        email: paymentData.user?.email,
+        trainerId: paymentData.trainer?._id || paymentData.trainer?.id
       };
     }
     
     return null;
-  };  const handleSubmit = async (e) => {
+  };const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Trích xuất thông tin thanh toán từ cấu trúc dữ liệu
@@ -142,21 +153,34 @@ const PaymentPage = () => {
           ...paymentInfo
         });if (paymentMethod === 'card') {          // Handle card payment through VNPAY
           console.log('Full payment data:', paymentData);
-          
-          // Xử lý dữ liệu thanh toán từ cấu trúc dữ liệu mới hoặc cũ
+            // Xử lý dữ liệu thanh toán từ cấu trúc dữ liệu mới hoặc cũ
           const payloadData = {};
           
           if (paymentData?.user && paymentData?.order?.orderId) {
-            // Cấu trúc mới từ quy trình đăng ký mới
-            console.log('Using new registration data structure');
+            // Cấu trúc mới từ quy trình đăng ký mới (có sẵn order)
+            console.log('Using existing order data structure');
             payloadData.userId = paymentData.user.id;
             payloadData.packageId = paymentData.order.packageId || paymentData.package.id;
             payloadData.orderId = paymentData.order.orderId;
+            if (paymentData.trainer) {
+              payloadData.trainerId = paymentData.trainer?._id || paymentData.trainer?.id;
+            }
+          } else if (paymentData?.user && paymentData?.package) {
+            // Cấu trúc mới từ luồng mới (user đăng nhập)
+            console.log('Using logged-in user flow data structure');
+            payloadData.userId = paymentData.user.id || paymentData.user._id;
+            payloadData.packageId = paymentData.package._id || paymentData.package.id;
+            if (paymentData.trainer) {
+              payloadData.trainerId = paymentData.trainer?._id || paymentData.trainer?.id;
+            }
           } else {
             // Cấu trúc cũ
             console.log('Using old registration data structure');
             payloadData.userId = paymentData?.account?._id || paymentData?.account?.email;
             payloadData.packageId = paymentData?.package?._id || paymentData?.package?.id;
+            if (paymentData?.trainer) {
+              payloadData.trainerId = paymentData.trainer?._id || paymentData.trainer?.id;
+            }
           }
           
           console.log('Extracted payment identifiers:', payloadData);
@@ -303,17 +327,32 @@ const PaymentPage = () => {
       </div>
 
         <div className={styles.paymentLayout}>
-          <div className={styles.infoSection}>
-            <div className={styles.packageSummary}>
+          <div className={styles.infoSection}>            <div className={styles.packageSummary}>
               <h3>Thông tin gói tập</h3>
               <div className={styles.packageDetails}>
                 <div className={styles.packageInfo}>
-            <span className={styles.packageName}>{paymentData.package.name}</span>
-            <span className={styles.packageType}>{paymentData.package.type}</span>
-          </div>
+                  <span className={styles.packageName}>{paymentData.package.name}</span>
+                  <span className={styles.packageType}>{paymentData.package.type}</span>
+                </div>
                 <span className={styles.packagePrice}>{paymentData.package.price}{paymentData.package.period}</span>
-        </div>
-      </div>      <div className={styles.paymentMethods}>
+              </div>
+              
+              {paymentData.user && (
+                <div className={styles.userInfo}>
+                  <h4>Thông tin người đăng ký:</h4>
+                  <p>Họ tên: {paymentData.user.name || paymentData.user.fullName || 'Chưa cung cấp'}</p>
+                  <p>Email: {paymentData.user.email || 'Chưa cung cấp'}</p>
+                </div>
+              )}
+              
+              {paymentData.trainer && (
+                <div className={styles.trainerInfo}>
+                  <h4>Huấn luyện viên:</h4>
+                  <p>{paymentData.trainer.name}</p>
+                  <p>{paymentData.trainer.specialty || ''}</p>
+                </div>
+              )}
+            </div><div className={styles.paymentMethods}>
         <h3>Phương thức thanh toán</h3>
         <div className={styles.methodOptions}>
                 <div 
