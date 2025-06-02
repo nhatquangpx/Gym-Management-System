@@ -334,3 +334,76 @@ exports.checkInMember = async (req, res) => {
     });
   }
 };
+
+// @desc    Check out for a member's workout
+// @route   POST /api/employees/checkout/:memberId
+// @access  Private (Employee)
+exports.checkOutMember = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+    // Get today's date
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    const currentTime = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')}`;
+
+    // Find schedule for today
+    let schedule = await Schedule.findOne({
+      memberId,
+      date: todayStr,
+    });
+    if (!schedule) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy lịch tập của hôm nay"
+      });
+    }
+
+    if (schedule.status !== 'Đã tập') {
+      return res.status(400).json({
+        success: false,
+        message: "Hội viên chưa checkin hôm nay"
+      });
+    }
+
+    if (schedule.checkoutTime) {
+      return res.status(400).json({
+        success: false,
+        message: "Hội viên đã checkout hôm nay rồi"
+      });
+    }
+
+    // Update schedule with checkout time
+    schedule.checkoutTime = currentTime;
+    
+    // Calculate duration if both checkin and checkout times exist
+    if (schedule.checkinTime && currentTime) {
+      const [checkInHour, checkInMin] = schedule.checkinTime.split(':').map(Number);
+      const [checkOutHour, checkOutMin] = currentTime.split(':').map(Number);
+      
+      const durationMinutes = (checkOutHour * 60 + checkOutMin) - (checkInHour * 60 + checkInMin);
+      schedule.duration = Math.max(0, durationMinutes); // Ensure non-negative duration
+    }
+
+    await schedule.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Checkout thành công",
+      data: {
+        scheduleId: schedule._id,
+        checkinTime: schedule.checkinTime,
+        checkoutTime: schedule.checkoutTime,
+        duration: schedule.duration,
+        status: schedule.status
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ 
+      success: false,
+      message: "Lỗi server", 
+      error: error.message 
+    });
+  }
+};

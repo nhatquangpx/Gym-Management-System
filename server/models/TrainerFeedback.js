@@ -11,6 +11,11 @@ const trainerFeedbackSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  packageId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Package',
+    required: true
+  },
   content: {
     type: String,
     required: true

@@ -21,25 +21,8 @@ const MyPackagesPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [expandedComments, setExpandedComments] = useState(null);
-  
-  // Dữ liệu mẫu về đánh giá của trainer
-  const trainerComments = {
-    // Giả lập dữ liệu mẫu cho từng gói tập
-    'pkg1': [
-      { id: 1, text: 'Bạn đã hoàn thành tốt các bài tập, nhưng cần cải thiện tư thế khi squat.', time: '2025/06/10 14:30', trainer: 'Huấn luyện viên Minh' },
-      { id: 2, text: 'Hôm nay đã có tiến bộ về tư thế. Tiếp tục duy trì lịch tập đều đặn nhé!', time: '2025/06/17 15:45', trainer: 'Huấn luyện viên Minh' }
-    ],
-    'pkg2': [
-      { id: 3, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
-      { id: 4, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
-      { id: 5, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
-      { id: 6, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
-      { id: 7, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
-      { id: 8, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
-      { id: 9, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
-      { id: 10, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' }
-    ],
-  };
+  const [packageFeedback, setPackageFeedback] = useState({});
+  const [loadingFeedback, setLoadingFeedback] = useState(false);
   
   // Fetch packages available in the system
   useEffect(() => {
@@ -213,8 +196,40 @@ const MyPackagesPage = () => {
   const isActive = hasCurrent && currentHistory.status === 'Đang sử dụng';
 
   // Hàm xử lý việc xem/ẩn đánh giá trainer
-  const toggleComments = (packageId) => {
-    setExpandedComments(current => current === packageId ? null : packageId);
+  const fetchPackageFeedback = async (packageId) => {
+    setLoadingFeedback(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8001/api/users/my-feedback/${packageId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setPackageFeedback(prev => ({
+          ...prev,
+          [packageId]: data.data
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching feedback:', error);
+    } finally {
+      setLoadingFeedback(false);
+    }
+  };
+
+  const toggleComments = async (packageId) => {
+    if (expandedComments === packageId) {
+      setExpandedComments(null);
+    } else {
+      setExpandedComments(packageId);
+      if (!packageFeedback[packageId]) {
+        await fetchPackageFeedback(packageId);
+      }
+    }
   };
 
   return (
@@ -324,9 +339,10 @@ const MyPackagesPage = () => {
                               </button>
                             </div>
                             <div className={styles.commentsList}>
-                              {/* Sử dụng ID mẫu để hiển thị dữ liệu demo */}
-                              {(trainerComments[pkg.id === 'pkg1' ? 'pkg1' : 'pkg2'] || []).length > 0 ? (
-                                trainerComments[pkg.id === 'pkg1' ? 'pkg1' : 'pkg2'].map(comment => (
+                              {loadingFeedback ? (
+                                <div className={styles.loadingState}>Đang tải đánh giá...</div>
+                              ) : packageFeedback[pkg.id]?.length > 0 ? (
+                                packageFeedback[pkg.id].map(comment => (
                                   <div key={comment.id} className={styles.commentItem}>
                                     <div className={styles.commentMeta}>
                                       <span className={styles.commentTrainer}>{comment.trainer}</span>
@@ -382,4 +398,4 @@ const MyPackagesPage = () => {
   );
 };
 
-export default MyPackagesPage; 
+export default MyPackagesPage;

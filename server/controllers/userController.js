@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const TrainerFeedback = require('../models/TrainerFeedback');
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -249,3 +250,48 @@ exports.deleteUser = async (req, res) => {
         res.status(500).json({ message: 'Lỗi khi xóa người dùng!', error: err.message });
     }
 }
+
+// @desc    Get trainer feedback for member's packages
+// @route   GET /api/users/my-feedback/:packageId
+// @access  Private (Member)
+exports.getPackageFeedback = async (req, res) => {
+  try {
+    const { packageId } = req.params;
+    const memberId = req.user.id;
+
+    // Find all feedback for this member and package
+    const feedback = await TrainerFeedback.find({ 
+      memberId,
+      packageId 
+    })
+    .populate('trainerId', 'name') // Get trainer name
+    .sort({ createdAt: -1 }); // Sort by newest first
+
+    // Format feedback to match frontend structure
+    const formattedFeedback = feedback.map(fb => ({
+      id: fb._id,
+      text: fb.content,
+      time: new Date(fb.date).toLocaleString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      trainer: `Huấn luyện viên ${fb.trainerId.name}`
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formattedFeedback
+    });
+
+  } catch (error) {
+    console.error('Error getting package feedback:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi lấy nhận xét của huấn luyện viên',
+      error: error.message
+    });
+  }
+};

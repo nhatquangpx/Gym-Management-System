@@ -37,6 +37,7 @@ exports.getSchedulesByMember = async (req, res) => {
       .select('-createdAt -updatedAt')
       .populate('memberId', 'name')
        .sort({ date: 1, timeStart: 1 }); // Sort by date and time
+    console.log('Schedules for member:', schedules);
     res.status(200).json({
       success: true,
       count: schedules.length,
@@ -264,6 +265,13 @@ exports.deleteSchedule = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Không tìm thấy lịch tập"
+      });
+    }
+
+    if (existingSchedule.status !== 'Chưa tập') {
+      return res.status(400).json({
+        success: false,
+        message: "Không thể xóa lịch tập đã hoàn thành"
       });
     }
 

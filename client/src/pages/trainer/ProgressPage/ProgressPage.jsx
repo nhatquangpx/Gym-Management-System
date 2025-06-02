@@ -60,6 +60,7 @@ const ProgressPage = () => {
             status: student.status,
             avatar: student.avatar || 'https://i.pravatar.cc/150?img=1',
             package: student.packageName,
+            packageId: student.packageId,
             progress: student.progress || 0
           }));
           setStudents(formattedStudents);
@@ -179,6 +180,7 @@ const ProgressPage = () => {
   const handleSubmitFeedback = async (values) => {
     setLoading(true);
     try {
+      console.log(selectedStudent);
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8001/api/trainers/feedback', {
         method: 'POST',
@@ -188,6 +190,7 @@ const ProgressPage = () => {
         },
         body: JSON.stringify({
           memberId: selectedStudent.id,
+          packageId: selectedStudent.packageId,
           content: values.feedback,
           month: selectedMonth
         })

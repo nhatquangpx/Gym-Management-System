@@ -71,17 +71,6 @@ export default function Attendance() {
     setSuccess(false);
     setError('');
     setOption('checkin');
-    // Kiểm tra trạng thái đã checkin chưa
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:8001/api/employees/checkin-status/${member.id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      setCheckedIn(!!data.checkedIn); // true nếu đã checkin hôm nay
-    } catch {
-      setCheckedIn(false);
-    }
   };
 
   const handleConfirm = async () => {
@@ -107,11 +96,6 @@ export default function Attendance() {
           setError(data.message || 'Điểm danh thất bại');
         }
       } else if (option === 'checkout') {
-        if (!checkedIn) {
-          setError('Bạn cần checkin trước khi checkout!');
-          setConfirming(false);
-          return;
-        }
         const response = await fetch(`http://localhost:8001/api/employees/checkout/${selected.id}`, {
           method: 'POST',
           headers: {
@@ -142,7 +126,7 @@ export default function Attendance() {
           label="Tìm kiếm tên hội viên"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+          // onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
           fullWidth
           sx={{ fontSize: '1.15rem', background: '#fff', borderRadius: 1 }}
         />
