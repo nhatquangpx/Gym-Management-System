@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import {
-  Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
+  Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button
 } from '@mui/material';
 
 export default function ViewWorkout() {
@@ -44,12 +44,24 @@ export default function ViewWorkout() {
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-blue-600">Lịch sử sử dụng dịch vụ</h1>
-        <Link
-          to="/staff/service-history"
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+        <Button
+          variant="outlined"
+          startIcon={<FaArrowLeft />}
+          href="/staff/service-history"
+          sx={{
+            color: 'var(--admin-primary)',
+            borderColor: 'var(--admin-primary)',
+            fontWeight: 500,
+            borderRadius: 1,
+            textTransform: 'none',
+            '&:hover': {
+              borderColor: 'var(--admin-primary)',
+              backgroundColor: 'rgba(79, 140, 255, 0.04)'
+            }
+          }}
         >
-          <FaArrowLeft /> Quay lại
-        </Link>
+          Quay lại
+        </Button>
       </div>
 
       <Paper className="p-6 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>

@@ -1,6 +1,7 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft, FaEdit } from 'react-icons/fa';
+import { Button } from '@mui/material';
 
 export default function ViewEquipment() {
   const { id } = useParams();
@@ -52,18 +53,48 @@ export default function ViewEquipment() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-blue-600">Chi tiết thiết bị</h1>
         <div className="flex gap-3">
-          <Link
-            to={`/admin/equipment/edit/${id}`}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+          <Button
+            variant="contained"
+            startIcon={<FaEdit />}
+            onClick={() => navigate(`/admin/equipment/edit/${id}`)}
+            sx={{
+              backgroundColor: 'var(--admin-primary)',
+              color: 'white',
+              borderRadius: 1,
+              fontWeight: 500,
+              boxShadow: 'none',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: 'var(--admin-primary-dark)',
+                color: 'white',
+                boxShadow: 'none',
+                border: 'none'
+              }
+            }}
           >
-            <FaEdit /> Chỉnh sửa
-          </Link>
-          <Link
-            to="/admin/equipment"
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+            Chỉnh sửa
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<FaArrowLeft />}
+            onClick={() => navigate('/admin/equipment')}
+            sx={{
+              color: 'var(--admin-primary)',
+              borderColor: 'var(--admin-primary)',
+              backgroundColor: 'white',
+              borderRadius: 2,
+              fontWeight: 500,
+              boxShadow: 'none',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: 'rgba(79, 140, 255, 0.08)',
+                borderColor: 'var(--admin-primary)',
+                color: 'var(--admin-primary)'
+              }
+            }}
           >
-            <FaArrowLeft /> Quay lại
-          </Link>
+            Quay lại
+          </Button>
         </div>
       </div>
       <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-2xl mx-auto">

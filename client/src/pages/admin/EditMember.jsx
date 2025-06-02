@@ -90,7 +90,7 @@ export default function EditMember() {
   };
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
-      <h1 className="text-2xl font-bold mb-6">Chỉnh sửa thành viên</h1>      <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
+      <h1 className="text-2xl font-bold mb-6">Chỉnh sửa hội viên</h1>      <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-1 text-[var(--admin-text)]">Tên</label>
           <input 

@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
-import Button from "../../components/features/admin/Button/Button";
+import { Button } from '@mui/material';
 import { FaArrowLeft } from 'react-icons/fa';
 
 export default function AddTrainer() {
@@ -52,12 +52,27 @@ export default function AddTrainer() {
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-blue-600">Thêm huấn luyện viên</h1>
-        <Link
-          to="/admin/trainers"
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+        <Button
+          variant="outlined"
+          startIcon={<FaArrowLeft />}
+          onClick={() => navigate('/admin/trainers')}
+          sx={{
+            color: 'var(--admin-primary)',
+            borderColor: 'var(--admin-primary)',
+            backgroundColor: 'white',
+            borderRadius: 2,
+            fontWeight: 500,
+            boxShadow: 'none',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'rgba(79, 140, 255, 0.08)',
+              borderColor: 'var(--admin-primary)',
+              color: 'var(--admin-primary)'
+            }
+          }}
         >
-          <FaArrowLeft /> Quay lại
-        </Link>
+          Quay lại
+        </Button>
       </div>
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
