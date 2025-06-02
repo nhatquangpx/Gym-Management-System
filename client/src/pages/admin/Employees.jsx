@@ -134,16 +134,22 @@ export default function Employees() {
         <h1 style={{ color: 'var(--admin-primary)', fontWeight: 700, fontSize: '2.2em', marginBottom: 32 }}>
           Danh sách nhân viên
         </h1>
-        <div className="flex justify-end">
-          <Link
-            to="/admin/employees/add"
-            style={{ backgroundColor: 'var(--admin-primary)', color: 'white', padding: '8px 16px', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', fontWeight: 500 }}
-            onMouseOver={e => { e.currentTarget.style.backgroundColor = 'var(--admin-primary)'; }}
-            onMouseOut={e => { e.currentTarget.style.backgroundColor = 'var(--admin-primary)'; }}
-          >
-            <FaPlus /> Thêm nhân viên
-          </Link>
-        </div>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          component={Link}
+          to="/admin/employees/add"
+          sx={{
+            backgroundColor: 'var(--admin-primary)',
+            color: 'white',
+            borderRadius: 1,
+            boxShadow: 'none',
+            fontWeight: 500,
+            '&:hover': { backgroundColor: 'var(--admin-primary-dark)', boxShadow: 'none', opacity: 1 }
+          }}
+        >
+          Thêm nhân viên
+        </Button>
       </div>
       {/* Thanh tìm kiếm */}
       <Paper className="p-4 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>
