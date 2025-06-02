@@ -60,7 +60,7 @@ export default function AddMember() {
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
-      <h1 className="text-2xl font-bold mb-6">Thêm thành viên mới</h1>
+      <h1 className="text-2xl font-bold mb-6">Thêm hội viên mới</h1>
       
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

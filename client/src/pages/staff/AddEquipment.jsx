@@ -113,118 +113,98 @@ export default function AddEquipment() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className="p-6">
-        <Paper className="p-6 shadow-lg rounded-lg max-w-xl mx-auto">
-          <Typography 
-            variant="h4" 
-            className="font-bold mb-6"
-            sx={{ 
-              color: '#4f8cff', 
-              fontWeight: 700, 
-              fontSize: '2.2em'
-            }}
-          >
-            Thêm thiết bị mới
-          </Typography>
-          
-          {error && (
-            <Alert severity="error" className="mb-4">
-              {error}
-            </Alert>
-          )}
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <TextField 
-              label="Tên thiết bị" 
-              name="name" 
-              value={form.name} 
-              onChange={handleChange} 
-              fullWidth 
-              required 
-              margin="normal"
+      <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
+        <h1 className="text-2xl font-bold mb-6">Thêm thiết bị mới</h1>
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>
+        )}
+        <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block mb-1 text-[var(--admin-text)]">Tên thiết bị</label>
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+              required
             />
-            
-            <FormControl fullWidth margin="normal" required>
-              <InputLabel>Phòng tập</InputLabel>
-              <Select
-                name="roomId"
-                value={form.roomId}
-                onChange={handleChange}
-                label="Phòng tập"
-              >
-                {rooms.map(room => (
-                  <MenuItem key={room._id} value={room._id}>
-                    {room.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Trạng thái</InputLabel>
-              <Select 
-                name="status" 
-                value={form.status} 
-                onChange={handleChange} 
-                label="Trạng thái"
-              >
-                <MenuItem value="active">Hoạt động</MenuItem>
-                <MenuItem value="maintenance">Bảo trì</MenuItem>
-                <MenuItem value="inactive">Không hoạt động</MenuItem>
-              </Select>
-            </FormControl>
-            
-            <TextField 
-              label="Ngày mua" 
-              name="purchaseDate" 
-              type="date" 
-              value={form.purchaseDate} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-              InputLabelProps={{ shrink: true }}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-[var(--admin-text)]">Phòng tập</label>
+            <select
+              name="roomId"
+              value={form.roomId}
+              onChange={handleChange}
+              className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+              required
+            >
+              <option value="">-- Chọn phòng tập --</option>
+              {rooms.map(room => (
+                <option key={room._id} value={room._id}>{room.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-[var(--admin-text)]">Trạng thái</label>
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+            >
+              <option value="active">Hoạt động</option>
+              <option value="maintenance">Bảo trì</option>
+              <option value="inactive">Không hoạt động</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-[var(--admin-text)]">Ngày mua</label>
+            <input
+              name="purchaseDate"
+              type="date"
+              value={form.purchaseDate}
+              onChange={handleChange}
+              className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
             />
-            
-            <TextField 
-              label="Ngày hết hạn bảo hành" 
-              name="warrantyDate" 
-              type="date" 
-              value={form.warrantyDate} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-              InputLabelProps={{ shrink: true }}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-[var(--admin-text)]">Ngày hết hạn bảo hành</label>
+            <input
+              name="warrantyDate"
+              type="date"
+              value={form.warrantyDate}
+              onChange={handleChange}
+              className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
             />
-            
-            <TextField 
-              label="Mô tả" 
-              name="description" 
-              value={form.description} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-              multiline 
-              rows={3}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-[var(--admin-text)]">Mô tả</label>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+              rows="3"
             />
-            
-            <Box className="flex gap-4 mt-6">
-              <Button 
-                variant="contained" 
-                color="primary" 
-                type="submit" 
-                disabled={loading}
-              >
-                {loading ? 'Đang lưu...' : 'Lưu'}
-              </Button>
-              <Button 
-                variant="outlined" 
-                onClick={() => navigate('/staff/equipment')}
-              >
-                Hủy
-              </Button>
-            </Box>
-          </form>
-        </Paper>
+          </div>
+          <div className="flex gap-3 mt-6">
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading}
+              sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 } }}
+            >
+              {loading ? 'Đang xử lý...' : 'Lưu'}
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => navigate('/staff/equipment')}
+              sx={{ color: 'var(--admin-primary)', borderColor: 'var(--admin-primary)', '&:hover': { borderColor: 'var(--admin-primary)', backgroundColor: 'rgba(26, 35, 126, 0.04)' } }}
+            >
+              Hủy
+            </Button>
+          </div>
+        </form>
       </div>
     </ThemeProvider>
   );

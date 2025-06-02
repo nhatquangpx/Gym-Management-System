@@ -42,7 +42,7 @@ export default function ViewMember() {
 
   return (
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
-      <h1 className="text-2xl font-bold mb-6">Thông tin thành viên</h1>
+      <h1 className="text-2xl font-bold mb-6">Thông tin hội viên</h1>
       <div className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto">
         <div className="mb-4"><b>Tên:</b> {member.name || `${member.firstName || ''} ${member.lastName || ''}`}</div>
         <div className="mb-4"><b>Email:</b> {member.email}</div>

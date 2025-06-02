@@ -1,6 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
-import Button from "../../components/features/admin/Button/Button";
+import { Button } from '@mui/material';
 import { FaArrowLeft } from 'react-icons/fa';
 import axios from '../../utils/axiosConfig';
 
@@ -56,12 +56,27 @@ export default function AddEmployee() {
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-blue-600">Thêm nhân viên</h1>
-        <Link
-          to="/admin/employees"
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+        <Button
+          variant="outlined"
+          startIcon={<FaArrowLeft />}
+          onClick={() => navigate('/admin/employees')}
+          sx={{
+            color: 'var(--admin-primary)',
+            borderColor: 'var(--admin-primary)',
+            backgroundColor: 'white',
+            borderRadius: 2,
+            fontWeight: 500,
+            boxShadow: 'none',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'rgba(79, 140, 255, 0.08)',
+              borderColor: 'var(--admin-primary)',
+              color: 'var(--admin-primary)'
+            }
+          }}
         >
-          <FaArrowLeft /> Quay lại
-        </Link>
+          Quay lại
+        </Button>
       </div>
       <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
         <div className="mb-4">
