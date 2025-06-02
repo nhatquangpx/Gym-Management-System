@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styles from './RegisterPackagePage.module.css';
 import Button from '../../../components/common/Button/Button';
 
@@ -9,6 +10,10 @@ const RegisterPackage = () => {
   const [error, setError] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const navigate = useNavigate();
+  const { user, isLoggedIn } = useSelector(state => state.auth);
+  
+  // Kiểm tra trạng thái đăng nhập
+  const isUserLoggedIn = isLoggedIn || !!localStorage.getItem('token');
   
   // Hàm định dạng giá tiền
   const formatPrice = (price) => {
@@ -48,27 +53,48 @@ const RegisterPackage = () => {
 
   const handlePackageSelect = (pkg) => {
     setSelectedPackage(pkg);
-  };
-  const handleContinue = () => {
+  };  const handleContinue = () => {
     if (!selectedPackage) return;
     
-    if (selectedPackage.type === "Tự tập") {
-      navigate('/register/account', { state: { package: selectedPackage } });
+    console.log('Selected package:', selectedPackage);
+    console.log('Package type:', selectedPackage.type);
+    console.log('Is user logged in:', isUserLoggedIn);
+      if (isUserLoggedIn) {
+      // Người dùng đã đăng nhập - bỏ qua bước nhập thông tin cá nhân
+      if (selectedPackage.type === "Tự tập") {
+        // Chuyển thẳng đến thanh toán cho gói tự tập
+        console.log('Navigating to payment for self-training package');
+        navigate('/payment', { state: { 
+          package: selectedPackage,
+          user: user
+        }});
+      } else {
+        // Có PT - chuyển đến trang chọn PT
+        console.log('Navigating to PT selection for PT package');
+        navigate('/register/pt', { state: { package: selectedPackage, skipAccountInfo: true } });
+      }
     } else {
-      navigate('/register/pt', { state: { package: selectedPackage } });
+      // Người dùng chưa đăng nhập - giữ flow cũ
+      if (selectedPackage.type === "Tự tập") {
+        navigate('/register/account', { state: { package: selectedPackage } });
+      } else {
+        navigate('/register/pt', { state: { package: selectedPackage } });
+      }
     }
   };
-
   // Hàm xử lý nút quay lại
-  const handleBack = () => {
-    navigate(-1); // Quay lại trang trước đó
+  const handleBackToLogin = () => {
+    if (isUserLoggedIn) {
+      navigate('/my-packages');
+    } else {
+      navigate('/login');
+    }
   };
   return (
     <div className={styles.pageContainer}> 
-      <div className={styles.contentWrapper}>
-        <div className={styles.header}>
+      <div className={styles.contentWrapper}>        <div className={styles.header}>
           <h1>Chọn Gói Tập</h1>
-          <p>Lựa chọn gói tập phù hợp với mục tiêu của bạn</p>
+          <p>{isUserLoggedIn ? 'Lựa chọn gói tập để mua thêm' : 'Lựa chọn gói tập phù hợp với mục tiêu của bạn'}</p>
         </div>
 
         {loading ? (
@@ -125,13 +151,12 @@ const RegisterPackage = () => {
             onClick={handleBack} 
           >
             Quay lại
-          </Button>
-          <Button 
+          </Button>          <Button 
             className={`${styles.continueButton} ${!selectedPackage ? styles.disabled : ''}`}
             onClick={handleContinue}
             disabled={!selectedPackage}
           >
-            Tiếp tục
+            {isUserLoggedIn ? 'Tiếp tục' : 'Tiếp tục'}
           </Button>
         </div>
       </div>

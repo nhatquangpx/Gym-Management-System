@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styles from './RegisterPTPage.module.css';
 import Button from '../../../components/common/Button/Button';
 
@@ -11,6 +12,12 @@ const RegisterPT = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [packageData, setPackageData] = useState(null);
+  const { user, isLoggedIn } = useSelector(state => state.auth);
+  
+  // Kiểm tra trạng thái đăng nhập
+  const isUserLoggedIn = isLoggedIn || !!localStorage.getItem('token');
+  // Kiểm tra có bỏ qua bước nhập thông tin không
+  const skipAccountInfo = location.state?.skipAccountInfo || false;
 
   useEffect(() => {
     if (location.state && location.state.package) {
@@ -71,17 +78,39 @@ const RegisterPT = () => {
 
   const handleTrainerSelect = (trainer) => {
     setSelectedTrainer(trainer);
-  };
-
-  const handleContinue = () => {
+  };  const handleContinue = () => {
     if (!selectedTrainer) return;
-    navigate('/register/account', { 
-      state: { package: packageData, trainer: selectedTrainer } 
-    });
+    
+    console.log('Continue clicked on PT page');
+    console.log('Selected trainer:', selectedTrainer);
+    console.log('Package data:', packageData);
+    console.log('Is user logged in:', isUserLoggedIn);
+    console.log('Skip account info:', skipAccountInfo);
+    
+    if (isUserLoggedIn && skipAccountInfo) {
+      // Người dùng đã đăng nhập - chuyển thẳng đến thanh toán
+      console.log('Navigating to payment');
+      navigate('/payment', { 
+        state: { 
+          package: packageData, 
+          trainer: selectedTrainer,
+          user: user
+        } 
+      });
+    } else {
+      // Người dùng chưa đăng nhập - flow cũ
+      console.log('Navigating to account registration');
+      navigate('/register/account', { 
+        state: { package: packageData, trainer: selectedTrainer } 
+      });
+    }
   };
-
   const handleBack = () => {
-    navigate('/register/package');
+    if (isUserLoggedIn) {
+      navigate('/register/package');
+    } else {
+      navigate('/register/package');
+    }
   };
 
   // Sử dụng container riêng
@@ -136,13 +165,12 @@ const RegisterPT = () => {
             onClick={handleBack}
           >
             Quay lại
-          </Button>
-          <Button 
+          </Button>          <Button 
             className={`${styles.continueButton} ${!selectedTrainer ? styles.disabled : ''}`}
             onClick={handleContinue}
             disabled={!selectedTrainer}
           >
-            Tiếp tục
+            {isUserLoggedIn && skipAccountInfo ? 'Thanh toán' : 'Tiếp tục'}
           </Button>
         </div>
       </div>

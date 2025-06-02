@@ -139,10 +139,15 @@ const MyPackagesPage = () => {
   // Process data for display
   const sortedHistory = [...packageHistory].sort((a, b) => new Date(b.end) - new Date(a.end));
   const currentHistory = sortedHistory.find(h => h.status === 'Đang sử dụng');
-  const currentPackage = currentHistory ? allPackages.find(p => p.id === currentHistory.id) : null;
-
-  // Xử lý mở popup xác nhận
+  const currentPackage = currentHistory ? allPackages.find(p => p.id === currentHistory.id) : null;  // Xử lý mở popup xác nhận hoặc chuyển đến trang đăng ký
   const handleAction = (action, pkg) => {
+    if (action === 'register') {
+      // Chuyển đến trang đăng ký gói tập mới cho thành viên đã đăng nhập
+      navigate('/register/package');
+      return;
+    }
+    
+    // Với các action khác (renew, buyMore), hiển thị modal thanh toán
     setModalAction(action);
     setSelectedPackage(pkg);
     setShowModal(true);
@@ -255,7 +260,7 @@ const MyPackagesPage = () => {
                     </>}
                     {!hasCurrent && <p>Bạn chưa đăng ký gói tập nào.</p>}
                   </div>
-                  <div className={styles.packageStats}>                    {hasCurrent && <>
+                  <div className={styles.packageStats}>j{hasCurrent && <>
                       <div className={styles.remainingBox}>
                         <span className={styles.remainingLabel}>Số ngày còn lại</span>
                         <span className={styles.remainingValue}>{currentHistory.remaining}</span>
@@ -373,10 +378,9 @@ const MyPackagesPage = () => {
       {/* Modal xác nhận thanh toán mới */}
       {showModal && (
         <div className={styles.paymentModalOverlay}>
-          <div className={styles.paymentModal}>
-            <h2 className={styles.paymentModalTitle}>
-              {modalAction === 'renew' ? 'Gia hạn gói tập' : modalAction === 'buyMore' ? 'Mua thêm gói tập' : 'Đăng ký gói tập'}
-            </h2>          <div className={styles.paymentModalInfo}>
+          <div className={styles.paymentModal}>            <h2 className={styles.paymentModalTitle}>
+              {modalAction === 'renew' ? 'Gia hạn gói tập' : 'Mua thêm gói tập'}
+            </h2><div className={styles.paymentModalInfo}>
               <p><strong>Tên gói:</strong> {selectedPackage ? selectedPackage.name : ''}</p>
               <p><strong>Loại:</strong> {selectedPackage ? selectedPackage.type : ''}</p>
               <p><strong>Mô tả:</strong> {selectedPackage ? selectedPackage.description : ''}</p>
