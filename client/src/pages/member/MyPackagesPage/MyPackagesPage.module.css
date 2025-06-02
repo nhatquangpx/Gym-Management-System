@@ -217,6 +217,166 @@
   background: var(--primary-red);
 }
 
+/* Styling cho nút xem đánh giá */
+.commentButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #3a3a3a !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease;
+  color: #eee !important;
+  font-size: 0.95rem !important;
+  font-weight: 500;
+  width: fit-content;
+  margin: 0 auto;
+  outline: none !important;
+  border: none !important;
+}
+
+.commentButton:hover {
+  background: var(--primary-red) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.commentButton:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.commentButton:active {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Container cho danh sách đánh giá */
+.commentsContainer {
+  background: #232323;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  margin: 10px 0 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+  text-align: left;
+}
+
+.commentsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.commentsHeader h3 {
+  color: var(--primary-red);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.closeCommentsBtn {
+  background: none !important;
+  color: #aaa !important;
+  padding: 5px !important;
+  font-size: 1.1rem !important;
+  border-radius: 50% !important;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.closeCommentsBtn:hover {
+  background: rgba(255,255,255,0.1) !important;
+  color: var(--primary-red) !important;
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.commentItem {
+  background: #2c2c2c;
+  border-radius: 8px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--primary-red);
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.commentItem:hover {
+  transform: translateX(1px);
+}
+
+.commentMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding-bottom: 8px;
+}
+
+.commentTrainer {
+  color: #4CAF50;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.commentTime {
+  color: #bbb;
+  font-size: 0.85rem;
+}
+
+.commentText {
+  color: #eee;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  text-align: left;
+  word-break: break-word;
+}
+
+.noComments {
+  color: #999;
+  text-align: left;
+  font-style: italic;
+  padding: 20px 0;
+}
+
+/* Cập nhật responsive cho hiển thị nhận xét */
+@media (max-width: 768px) {
+  .commentsContainer {
+    padding: 15px 10px;
+  }
+  
+  .commentButton {
+    padding: 5px 10px !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .commentMeta {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .commentTime {
+    font-size: 0.8rem;
+  }
+}
+
 @media (max-width: 900px) {
   .container {
     padding: 25px 8px;
@@ -361,4 +521,22 @@
   padding: 8px 12px;
   margin: 10px 0;
   font-size: 0.98rem;
+}
+
+.commentsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.commentsList::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 10px;
+}
+
+.commentsList::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+.commentsList::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-red);
 } 
