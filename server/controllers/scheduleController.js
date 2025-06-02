@@ -388,8 +388,11 @@ exports.getSchedulesByDate = async (req, res) => {
 // @access  Private (Admin)
 exports.getMemberUsageSummary = async (req, res) => {
     try {
-        // Lấy tất cả lịch tập và nhóm theo hội viên
-        const schedules = await Schedule.find()
+        // Lấy tất cả lịch tập có checkin/checkout và nhóm theo hội viên
+        const schedules = await Schedule.find({
+            checkinTime: { $exists: true, $ne: null },
+            checkoutTime: { $exists: true, $ne: null }
+        })
             .populate('memberId', 'name email phone')
             .sort({ date: -1 });
 
@@ -455,9 +458,13 @@ exports.getMemberUsageDetails = async (req, res) => {
       });
     }
 
-    // Lấy lịch sử sử dụng
-    const schedules = await Schedule.find({ memberId })
-      .select('date timeStart timeEnd')
+    // Lấy lịch sử sử dụng - chỉ lấy các buổi có checkin/checkout
+    const schedules = await Schedule.find({ 
+      memberId,
+      checkinTime: { $exists: true, $ne: null },
+      checkoutTime: { $exists: true, $ne: null }
+    })
+      .select('date checkinTime checkoutTime')
       .sort({ date: -1 });
 
     res.status(200).json({
@@ -468,8 +475,8 @@ exports.getMemberUsageDetails = async (req, res) => {
       },
       history: schedules.map(schedule => ({
         date: schedule.date,
-        timeStart: schedule.timeStart,
-        timeEnd: schedule.timeEnd
+        timeStart: schedule.checkinTime,
+        timeEnd: schedule.checkoutTime
       }))
     });
   } catch (error) {
