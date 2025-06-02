@@ -144,11 +144,10 @@ const RegisterPackage = () => {
           </div>
         )}
 
-        {/* Thêm nhóm nút */}
-        <div className={styles.buttonGroup}>
+        {/* Thêm nhóm nút */}        <div className={styles.buttonGroup}>
           <Button 
             className={styles.backButton}
-            onClick={handleBack} 
+            onClick={handleBackToLogin} 
           >
             Quay lại
           </Button>          <Button 
