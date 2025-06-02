@@ -72,22 +72,29 @@ export default function ViewWorkout() {
             <TableHead>
               <TableRow>
                 <TableCell>Ngày sử dụng</TableCell>
-                <TableCell>Giờ bắt đầu</TableCell>
-                <TableCell>Giờ kết thúc</TableCell>
+                <TableCell>Giờ check-in</TableCell>
+                <TableCell>Giờ check-out</TableCell>
                 <TableCell>Thời gian sử dụng</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {usageHistory.map((session, index) => (
-                <TableRow key={index}>
-                  <TableCell>{new Date(session.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{session.timeStart}</TableCell>
-                  <TableCell>{session.timeEnd}</TableCell>
-                  <TableCell>
-                    {`${Math.round((new Date(session.timeEnd) - new Date(session.timeStart)) / (1000 * 60))} phút`}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {usageHistory.map((session, index) => {
+                // Parse time strings into Date objects
+                const checkInTime = new Date(`${session.date.split('T')[0]}T${session.timeStart}`);
+                const checkOutTime = new Date(`${session.date.split('T')[0]}T${session.timeEnd}`);
+                const durationMinutes = Math.round((checkOutTime - checkInTime) / (1000 * 60));
+
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{new Date(session.date).toLocaleDateString()}</TableCell>
+                    <TableCell>{session.timeStart}</TableCell>
+                    <TableCell>{session.timeEnd}</TableCell>
+                    <TableCell>
+                      {`${durationMinutes} phút`}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

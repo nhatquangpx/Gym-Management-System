@@ -21,6 +21,7 @@ const menu = [
   { name: "Phòng tập", path: "/staff/gymrooms", icon: <MeetingRoomIcon /> },
   { name: "Thiết bị", path: "/staff/equipment", icon: <BuildIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/staff/orders", icon: <MonetizationOnIcon /> },
+  { name: "Ghi nhận buổi tập", path: "/staff/attendance", icon: <HowToRegIcon /> },
   { name: "Theo dõi sử dụng dịch vụ", path: "/staff/service-history", icon: <HistoryIcon /> },
   { name: "Phản hồi", path: "/staff/feedback", icon: <FeedbackIcon /> },
   { name: "Tài khoản cá nhân", path: "/staff/account", icon: <AccountCircleIcon /> },
@@ -47,16 +48,6 @@ export default function StaffSidebar() {
             <span className={styles.label}>{item.name}</span>
           </NavLink>
         ))}
-        <NavLink
-          to="/staff/attendance"
-          className={({ isActive }) =>
-            isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
-          }
-          end
-        >
-          <span className={styles.icon}><HowToRegIcon /></span>
-          <span className={styles.label}>Ghi nhận buổi tập</span>
-        </NavLink>
         {menu.slice(9).map((item) => (
           <NavLink
             key={item.path}
