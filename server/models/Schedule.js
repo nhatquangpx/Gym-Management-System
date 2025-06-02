@@ -30,6 +30,7 @@ const ScheduleSchema = new Schema(
             default: 'Chưa tập'
         },
         checkinTime: String,
+        checkoutTime: String,
     },
     { timestamps: true }
 );

@@ -196,33 +196,32 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
             disabled={isDetail}
             rows={3}
           />
-          {isDetail && (
+          {isDetail && session.comment && (
             <>
               <label className={styles.sessionModalLabel}>Nhận xét của huấn luyện viên</label>
               <textarea
                 className={styles.sessionModalTextarea}
                 name="trainerComment"
-                value={form.trainerComment || 'Chưa có nhận xét'}
+                value={session.comment}
                 disabled={true}
                 rows={3}
               />
-              
-              <div className={styles.checkTimes}>
-                <div className={styles.checkTimeItem}>
-                  <div className={styles.checkTimeLabel}>Thời gian checkin:</div>
-                  <div className={styles.checkTimeValue}>
-                    {session?.checkinTime ? session.checkinTime : 'Chưa checkin'}
-                  </div>
-                </div>
-                <div className={styles.checkTimeItem}>
-                  <div className={styles.checkTimeLabel}>Thời gian checkout:</div>
-                  <div className={styles.checkTimeValue}>
-                    {session?.checkoutTime ? session.checkoutTime : 'Chưa checkout'}
-                  </div>
-                </div>
-              </div>
             </>
           )}
+          <div className={styles.checkTimes}>
+            <div className={styles.checkTimeItem}>
+              <div className={styles.checkTimeLabel}>Thời gian checkin:</div>
+              <div className={styles.checkTimeValue}>
+                {session?.checkinTime ? session.checkinTime : 'Chưa checkin'}
+              </div>
+            </div>
+            <div className={styles.checkTimeItem}>
+              <div className={styles.checkTimeLabel}>Thời gian checkout:</div>
+              <div className={styles.checkTimeValue}>
+                {session?.checkoutTime ? session.checkoutTime : 'Chưa checkout'}
+              </div>
+            </div>
+          </div>
           {/* Không hiển thị error khi chỉ xem chi tiết */}
           {!isDetail && error && <div style={{ color: '#ff1744', fontWeight: 500 }}>{error}</div>}
           <div className={styles.sessionModalFooter}>
@@ -276,6 +275,8 @@ const SchedulePage = () => {
         trainerComment: s.trainerComment || '',
         checkinTime: s.checkinTime,
         checkoutTime: s.checkoutTime,
+        status: s.status || 'Chưa tập',
+        comment: s.comment || '',
       });
     });
     return Object.entries(map).map(([date, sessions]) => ({

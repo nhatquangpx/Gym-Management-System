@@ -207,7 +207,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
           </div>
           {isEdit && (
             <div className={styles.currentGuideInfo}>
-              Gói tập hiện tại: <span className={styles.currentGuideText}>{form.guide}</span>
+              Gói tập hiện tại: <span className={styles.currentGuideText}>{form.package}</span>
             </div>
           )}
           {/* Không hiển thị error khi chỉ xem chi tiết */}
