@@ -283,6 +283,7 @@ exports.getTrainerStudents = async (req, res) => {
         membershipEnd: membership.endDate,
         progress,
         packageName: membership.packageId.name,
+        packageId: membership.packageId._id,
         goal: 'Giảm cân',
         status: status
       };
@@ -498,7 +499,7 @@ exports.logWorkout = async (req, res) => {
         message: "Không tìm thấy lịch tập"
       });
     }
-    if (schedule.comment && schedule.status === 'Đã tập') {
+    if (schedule.comment) {
       return res.status(400).json({
         success: false,
         message: "Buổi tập đã được ghi nhận trước đó"
@@ -532,13 +533,14 @@ exports.logWorkout = async (req, res) => {
 // @access  Private (Trainer)
 exports.addFeedback = async (req, res) => {
   try {
-    const { memberId, content } = req.body;
+    const { memberId, packageId, content } = req.body;
     const trainerId = req.user.id;
     const date = new Date().toISOString().slice(0, 10); // Format YYYY-MM-DD
     // Create new feedback
     const feedback = new TrainerFeedback({
       trainerId,
       memberId,
+      packageId,
       content,
       date
     });

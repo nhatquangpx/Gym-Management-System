@@ -1,36 +1,46 @@
-import { useState } from 'react';
-import { TextField, Button, Paper, Box, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Paper, Typography, Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
+} from '@mui/material';
+import HistoryIcon from '@mui/icons-material/History';
 
-export default function ServiceHistory() {
-  const [searchMember, setSearchMember] = useState('');
-  const [serviceHistory, setServiceHistory] = useState([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
-  const [error, setError] = useState('');
+export default function WorkoutList() {
+  const navigate = useNavigate();
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState({ member: '' });
 
-  const handleSearchHistory = async () => {
-    setLoadingHistory(true);
-    setError('');
-    // Giả lập API, thực tế sẽ fetch từ backend
-    setTimeout(() => {
-      if (searchMember.trim() === 'HV1234') {
-        setServiceHistory([
-          { date: '03/04/2025', service: 'Yoga', duration: '01:30', note: 'Tập đúng lộ trình' },
-          { date: '05/04/2025', service: 'Gym', duration: '01:00', note: 'Cần tăng cường cardio' },
-        ]);
-      } else if (searchMember.trim() === '') {
-        setServiceHistory([]);
-        setError('Vui lòng nhập mã hội viên.');
-      } else {
-        setServiceHistory([]);
-        setError('Không tìm thấy hội viên hoặc không có dữ liệu lịch sử.');
-      }
-      setLoadingHistory(false);
-    }, 800);
+  useEffect(() => {
+    fetchMemberUsage();
+  }, []);
+
+  const fetchMemberUsage = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/schedules/member-usage', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      setMembers(data.data || []);
+    } catch (error) {
+      console.error('Error fetching member usage:', error);
+      setMembers([]);
+    }
+    setLoading(false);
   };
 
+  const filteredMembers = members.filter(member =>
+    filter.member === '' || 
+    (member.name && member.name.toLowerCase().includes(filter.member.toLowerCase()))
+  );
+
   return (
-    <div className="p-6" style={{ backgroundColor: 'var(--admin-bg)', color: 'var(--admin-text)', minHeight: '100vh' }}>
+    <div className="p-6">
       <Box className="flex justify-between items-center mb-6">
         <Typography
           variant="h4"
@@ -42,67 +52,57 @@ export default function ServiceHistory() {
             mb: 4
           }}
         >
-          Theo dõi sử dụng dịch vụ
+          Lịch sử sử dụng dịch vụ
         </Typography>
-        <Button
-          variant="contained"
-          sx={{ 
-            backgroundColor: 'var(--admin-primary)',
-            '&:hover': { backgroundColor: 'var(--admin-primary-dark)' }
-          }}
-          startIcon={<AddIcon />}
-          onClick={() => alert('Chức năng này chỉ demo UI!')}
-        >
-          Thêm lịch sử
-        </Button>
       </Box>
-      <Paper sx={{ p: 2, mb: 3, background: 'var(--admin-sidebar)', color: 'var(--admin-text)' }}>
+      <Paper className="p-4 mb-4" sx={{ background: 'var(--admin-sidebar)' }}>
         <Box className="flex flex-wrap gap-4">
           <TextField
-            label="Nhập mã hội viên"
-            value={searchMember}
-            onChange={e => setSearchMember(e.target.value)}
+            label="Tìm kiếm hội viên"
+            value={filter.member}
+            onChange={e => setFilter(f => ({ ...f, member: e.target.value }))}
             size="small"
             InputLabelProps={{ style: { color: 'var(--admin-text)' } }}
             InputProps={{ style: { color: 'var(--admin-text)' } }}
-            sx={{
-              '.MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-border)' },
-              '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--admin-primary)' },
-              minWidth: 220
-            }}
           />
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary-dark)' } }}
-            onClick={handleSearchHistory}
-          >
-            Tìm kiếm
-          </Button>
         </Box>
       </Paper>
       <Paper sx={{ background: 'var(--admin-sidebar)', color: 'var(--admin-text)', borderRadius: 4, boxShadow: 6 }}>
-        {error && <Typography color="error" sx={{ mb: 2, mt: 2 }}>{error}</Typography>}
         <div className="overflow-x-auto">
           <table className="min-w-full rounded-2xl">
             <thead>
               <tr className="bg-[var(--admin-header)] text-[var(--admin-primary)]">
-                <th className="py-3 px-4 text-left">Ngày tập</th>
-                <th className="py-3 px-4 text-left">Dịch vụ sử dụng</th>
-                <th className="py-3 px-4 text-left">Thời lượng</th>
-                <th className="py-3 px-4 text-left">Ghi chú</th>
+                <th className="py-3 px-4 text-center">Hội viên</th>
+                <th className="py-3 px-4 text-center">Tổng số buổi đã sử dụng</th>
+                <th className="py-3 px-4 text-center">Ngày sử dụng gần nhất</th>
+                <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {loadingHistory ? (
-                <tr><td colSpan={4} className="text-center py-4">Đang tải...</td></tr>
-              ) : serviceHistory.length === 0 && !error ? (
-                <tr><td colSpan={4} className="text-center py-4">Không có dữ liệu lịch sử</td></tr>
-              ) : serviceHistory.map((row, idx) => (
-                <tr key={idx} className="border-b border-[var(--admin-border)] hover:bg-[var(--admin-accent)] transition">
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{row.date}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{row.service}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{row.duration}</td>
-                  <td className="px-6 py-4 text-[var(--admin-text)] text-left">{row.note}</td>
+              {loading ? (
+                <tr><td colSpan={4}>Loading...</td></tr>
+              ) : filteredMembers.length === 0 ? (
+                <tr><td colSpan={4} className="text-center py-4">Không có dữ liệu</td></tr>
+              ) : filteredMembers.map(member => (
+                <tr key={member._id}>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">
+                    {member.name}
+                  </td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">
+                    {member.totalSessions} buổi
+                  </td>
+                  <td className="px-6 py-4 text-[var(--admin-text)] text-center">
+                    {member.lastUsed ? new Date(member.lastUsed).toLocaleDateString() : 'Chưa sử dụng'}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <Button
+                      size="small"
+                      startIcon={<HistoryIcon />}
+                      onClick={() => navigate(`/staff/service-history/view/${member._id}`)}
+                    >
+                      Xem chi tiết
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>

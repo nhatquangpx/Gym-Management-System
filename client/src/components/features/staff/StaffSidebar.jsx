@@ -21,9 +21,7 @@ const menu = [
   { name: "Phòng tập", path: "/staff/gymrooms", icon: <MeetingRoomIcon /> },
   { name: "Thiết bị", path: "/staff/equipment", icon: <BuildIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/staff/orders", icon: <MonetizationOnIcon /> },
-  { name: "Lịch sử tập luyện", path: "/staff/workouts", icon: <HistoryIcon /> },
   { name: "Theo dõi sử dụng dịch vụ", path: "/staff/service-history", icon: <HistoryIcon /> },
-  { name: "Lịch tập", path: "/staff/schedules", icon: <CalendarMonthIcon /> },
   { name: "Phản hồi", path: "/staff/feedback", icon: <FeedbackIcon /> },
   { name: "Tài khoản cá nhân", path: "/staff/account", icon: <AccountCircleIcon /> },
 ];

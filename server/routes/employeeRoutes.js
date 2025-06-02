@@ -8,10 +8,15 @@ const employeeController = require("../controllers/employeeController");
 // @access  Private (Employee)
 router.get("/members", [verifyToken, verifyRole(["employee"])], employeeController.getAllMembers);
 
-// @route   GET /api/employees/schedule/:memberId
+// @route   GET /api/employees/checkin/:memberId
 // @desc    Get schedule for a member
 // @access  Private (Employee)
 router.post('/checkin/:memberId', [verifyToken, verifyRole(["employee"])], employeeController.checkInMember);
+
+// @route   GET /api/employees/checkout/:memberId
+// @desc    Check out a member
+// @access  Private (Employee)
+router.post('/checkout/:memberId', [verifyToken, verifyRole(["employee"])], employeeController.checkOutMember);
 
 // @route   POST /api/employees
 // @desc    Create a new employee

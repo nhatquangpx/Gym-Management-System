@@ -4,8 +4,6 @@ import styles from './RegisterAccountPage.module.css';
 import InputField from '../../../components/common/InputField/InputField';
 import PasswordField from '../../../components/common/PasswordField/PasswordField';
 import Button from '../../../components/common/Button/Button';
-import Divider from '../../../components/common/Divider/Divider';
-import GoogleButton from '../../../components/common/GoogleButton/GoogleButton';
 
 const RegisterAccount = () => {
   const navigate = useNavigate();
@@ -98,20 +96,6 @@ const RegisterAccount = () => {
     }
   };
 
-  const handleGoogleRegister = () => {
-    console.log('Đăng ký với Google');
-    navigate('/register/personal', {
-      state: {
-        ...registrationData,
-        account: {
-          email: 'example@gmail.com', 
-          phone: '', 
-          googleAuth: true
-        }
-      }
-    });
-  };
-
   return (
     <div className={styles.pageContainer}> 
       <div className={styles.contentWrapper}> 
@@ -178,10 +162,6 @@ const RegisterAccount = () => {
             Tiếp tục
           </Button>
         </div>
-
-        <Divider text="hoặc" />
-
-          <GoogleButton onClick={handleGoogleRegister} text="Đăng ký với Google" /> 
       </form>
       </div>
     </div>

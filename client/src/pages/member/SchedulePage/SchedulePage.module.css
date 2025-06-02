@@ -480,7 +480,7 @@
   border-radius: 12px;
   width: 95%;
   max-width: 600px;
-  padding: 40px 36px 28px 36px;
+  padding: 24px 24px 18px 24px;
   position: relative;
   box-shadow: 0 4px 24px rgba(255, 23, 68, 0.12);
 }
@@ -488,7 +488,7 @@
   font-size: 1.2em;
   font-weight: 700;
   color: var(--primary-red);
-  margin-bottom: 18px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -496,7 +496,7 @@
 .sessionModalDate {
   font-size: 1em;
   color: #fff;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -526,12 +526,12 @@
 .sessionModalForm {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 .sessionModalLabel {
   font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 .sessionModalInput {
   padding: 12px 14px;
@@ -726,18 +726,19 @@
 }
 
 .sessionModalTextarea {
-  padding: 12px 16px;
+  padding: 8px 12px;
   border-radius: 8px;
   border: 1.5px solid #888;
-  font-size: 1.1em;
+  font-size: 1em;
   color: #fff;
   background: #35353a;
   width: 100%;
-  min-height: 120px;
+  min-height: 90px;
   resize: vertical;
   font-family: inherit;
-  line-height: 1.5;
-  font-weight: 500;
+  line-height: 1.45;
+  font-weight: 400;
+  margin-bottom: 2px;
 }
 
 .sessionModalTextarea:focus {
@@ -748,7 +749,7 @@
 .sessionModalTextarea:disabled {
   background: #35353a;
   color: #fff;
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .sessionModalTextareaBold {
@@ -765,21 +766,29 @@
   letter-spacing: 0.1px;
 }
 
-/* Thêm style cho checkin time trong modal */
-.checkinTime {
-  margin-top: 16px;
-  padding-top: 16px;
+/* Updated styles for checkin/checkout times */
+.checkTimes {
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid #444;
+  display: flex;
+  justify-content: space-between;
 }
 
-.checkinTimeLabel {
+.checkTimeItem {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.checkTimeLabel {
   font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 4px;
+  margin-bottom: 1px;
 }
 
-.checkinTimeValue {
+.checkTimeValue {
   color: #fff;
   font-size: 1em;
   font-style: italic;
+  margin-bottom: 2px;
 }

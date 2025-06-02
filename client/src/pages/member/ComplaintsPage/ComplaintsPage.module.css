@@ -146,26 +146,28 @@
 }
 .buttonGroup {
   display: flex;
-  justify-content: flex-end;
-  gap: 18px;
+  justify-content: center;
+  gap: 0;
   margin-top: 18px;
-}
-.backButton, .submitButton {
-  padding: 12px 30px;
-  font-size: 1rem;
-  font-weight: 500;
-}
-.backButton {
-  background-color: #555;
-}
-.backButton:hover {
-  background-color: #666;
 }
 .submitButton {
   background-color: var(--primary-red);
+  padding: 10px 0;
+  font-size: 1.08rem;
+  font-weight: 600;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
 }
 .submitButton:hover {
   background-color: #e0002d;
+}
+.fullWidthSubmit {
+  width: 100%;
+  max-width: 100%;
+  display: block;
 }
 
 /* Lịch sử đánh giá */
@@ -285,7 +287,7 @@
     flex-direction: column-reverse;
     gap: 12px;
   }
-  .backButton, .submitButton {
+  .submitButton {
     width: 100%;
   }
 } 

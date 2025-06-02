@@ -26,7 +26,7 @@ export default function Header() {
         const userId = userObj?.id;
         if (!userId) return;
         const token = localStorage.getItem('token');
-        const res = await fetch(`/api/admin/get-user/${userId}`, {
+        const res = await fetch(`http://localhost:8001/api/users/${userId}`, {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${token}` }
         });

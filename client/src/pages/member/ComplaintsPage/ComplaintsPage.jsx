@@ -107,15 +107,27 @@ const ComplaintsPage = () => {
   };
 
   const fetchUsedTrainers = async () => {
-    const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:8001/api/feedbacks/used-trainers', {
-      headers: {
-        'Authorization': 'Bearer ' + token
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Fetching used trainers with token:', token);
+      
+      const res = await fetch('http://localhost:8001/api/feedbacks/used-trainers', {
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      
+      const data = await res.json();
+      console.log('Used trainers response:', data);
+      
+      if (data.success) {
+        setUsedTrainers(data.data);
+        console.log('Set used trainers:', data.data);
+      } else {
+        console.error('Failed to fetch trainers:', data.message);
       }
-    });
-    const data = await res.json();
-    if (data.success) {
-      setUsedTrainers(data.data);
+    } catch (error) {
+      console.error('Error fetching used trainers:', error);
     }
   };
 
@@ -214,10 +226,7 @@ const ComplaintsPage = () => {
             {successMsg && <div className={styles.successMsg}>{successMsg}</div>}
             {errors.submit && <div className={styles.errorMsg}>{errors.submit}</div>}
             <div className={styles.buttonGroup}>
-              <Button type="button" className={styles.backButton} onClick={() => window.history.back()}>
-                Quay lại
-              </Button>
-              <Button type="submit" className={styles.submitButton}>
+              <Button type="submit" className={styles.submitButton + ' ' + styles.fullWidthSubmit}>
                 Gửi đánh giá
               </Button>
             </div>

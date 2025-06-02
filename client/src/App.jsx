@@ -93,8 +93,6 @@ import StaffViewMember from './pages/staff/ViewMember';
 import StaffEditMember from './pages/staff/EditMember';
 import StaffPackages from './pages/staff/Packages';
 import StaffEquipment from './pages/staff/Equipment';
-import StaffWorkouts from './pages/staff/Workouts';
-import StaffSchedules from './pages/staff/Schedules';
 import StaffFeedback from './pages/staff/Feedback';
 import StaffViewFeedback from './pages/staff/ViewFeedback';
 import StaffAccount from './pages/staff/Account';
@@ -108,6 +106,7 @@ import StaffEditEquipment from './pages/staff/EditEquipment';
 import StaffViewEquipment from './pages/staff/ViewEquipment';
 import StaffOrders from './pages/staff/Orders';
 import StaffServiceHistory from './pages/staff/ServiceHistory';
+import StaffViewServiceHistory from './pages/staff/ViewServiceHistory';
 import StaffViewOrder from './pages/staff/ViewOrder';
 import StaffEditOrder from './pages/staff/EditOrder';
 import StaffGymRoomList from './pages/staff/GymRoomList';
@@ -115,7 +114,6 @@ import StaffAddGymRoom from './pages/staff/AddGymRoom';
 import StaffEditGymRoom from './pages/staff/EditGymRoom';
 import StaffViewGymRoom from './pages/staff/ViewGymRoom';
 import StaffAttendance from './pages/staff/Attendance';
-import StaffViewWorkout from './pages/staff/ViewWorkout';
 
 // Trainer components
 import TrainerLayout from './components/layout/TrainerLayout';
@@ -124,6 +122,8 @@ import TrainerStudents from './pages/trainer/StudentsPage/StudentsPage';
 import TrainerSchedulePage from './pages/trainer/SchedulePage/SchedulePage';
 import TrainerWorkoutLogPage from './pages/trainer/WorkoutLogPage/WorkoutLogPage';
 import ProgressPage from './pages/trainer/ProgressPage/ProgressPage';
+import TrainerProfilePage from './pages/trainer/ProfilePage/ProfilePage';
+import TrainerChangePasswordPage from './pages/trainer/ChangePasswordPage/ChangePasswordPage';
 
 function App() {
   // Kiểm tra trạng thái xác thực khi ứng dụng khởi động
@@ -191,13 +191,11 @@ function App() {
             <Route path="equipment/add" element={<StaffAddEquipment />} />
             <Route path="equipment/view/:id" element={<StaffViewEquipment />} />
             <Route path="equipment/edit/:id" element={<StaffEditEquipment />} />
+            <Route path="service-history" element={<StaffServiceHistory />} />
+            <Route path="service-history/view/:id" element={<StaffViewServiceHistory />} />
             <Route path="orders" element={<StaffOrders />} />
             <Route path="orders/view/:id" element={<StaffViewOrder />} />
             <Route path="orders/edit/:id" element={<StaffEditOrder />} />
-            <Route path="workouts" element={<StaffWorkouts />} />
-            <Route path="workouts/view/:id" element={<StaffViewWorkout />} />
-            <Route path="service-history" element={<StaffServiceHistory />} />
-            <Route path="schedules" element={<StaffSchedules />} />
             <Route path="feedback" element={<StaffFeedback />} />
             <Route path="feedback/view/:id" element={<StaffViewFeedback />} />
             <Route path="account" element={<StaffAccount />} />
@@ -263,7 +261,8 @@ function App() {
             <Route path="schedule" element={<TrainerSchedulePage />} />
             <Route path="workouts" element={<TrainerWorkoutLogPage />} />
             <Route path="progress" element={<ProgressPage />} />
-            <Route path="settings" element={<div>Cài đặt</div>} />
+            <Route path="profile" element={<TrainerProfilePage />} />
+            <Route path="change-password" element={<TrainerChangePasswordPage />} />
           </Route>
         </Route>
 

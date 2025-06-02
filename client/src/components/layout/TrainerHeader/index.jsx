@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLogout } from '../../../redux/slices/authSlice';
 import styles from './TrainerHeader.module.css';
@@ -7,13 +7,41 @@ import defaultAvatar from '../../../assets/cute-character.jpg';
 
 const TrainerHeader = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.auth);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const dropdownRef = useRef();
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    if (!showUserMenu) return;
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
+
+  // Đóng dropdown khi chuyển route
+  useEffect(() => {
+    setShowUserMenu(false);
+  }, [location]);
 
   const handleLogout = () => {
+    // Xóa token khỏi localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Đăng xuất trong Redux store
     dispatch(setLogout());
-    navigate('/trainer/login');
+    
+    // Chuyển hướng đến trang đăng nhập
+    navigate('/auth/login');
   };
 
   return (
@@ -22,7 +50,7 @@ const TrainerHeader = () => {
         {/* Có thể thêm breadcrumb ở đây nếu muốn */}
       </div>
       <div className={styles.rightSection}>
-        <div className={styles.userMenu}>
+        <div className={styles.userMenu} ref={dropdownRef}>
           <button
             className={styles.userButton}
             onClick={() => setShowUserMenu(!showUserMenu)}
@@ -46,7 +74,7 @@ const TrainerHeader = () => {
                 </div>
               </div>
               <button onClick={() => navigate('/trainer/profile')}>Thông tin cá nhân</button>
-              <button onClick={() => navigate('/trainer/settings')}>Cài đặt</button>
+              <button onClick={() => navigate('/trainer/change-password')}>Đổi mật khẩu</button>
               <button onClick={handleLogout}>Đăng xuất</button>
             </div>
           )}

@@ -6,6 +6,7 @@ import styles from './MyPackagesPage.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from '../../../utils/axiosConfig';
+import { FaComment, FaTimes } from 'react-icons/fa';
 
 const MyPackagesPage = () => {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ const MyPackagesPage = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [expandedComments, setExpandedComments] = useState(null);
+  const [packageFeedback, setPackageFeedback] = useState({});
+  const [loadingFeedback, setLoadingFeedback] = useState(false);
   
   // Fetch packages available in the system
   useEffect(() => {
@@ -196,6 +200,43 @@ const MyPackagesPage = () => {
   const isExpired = hasCurrent && currentHistory.status === 'Đã hết hạn';
   const isActive = hasCurrent && currentHistory.status === 'Đang sử dụng';
 
+  // Hàm xử lý việc xem/ẩn đánh giá trainer
+  const fetchPackageFeedback = async (packageId) => {
+    setLoadingFeedback(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8001/api/users/my-feedback/${packageId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setPackageFeedback(prev => ({
+          ...prev,
+          [packageId]: data.data
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching feedback:', error);
+    } finally {
+      setLoadingFeedback(false);
+    }
+  };
+
+  const toggleComments = async (packageId) => {
+    if (expandedComments === packageId) {
+      setExpandedComments(null);
+    } else {
+      setExpandedComments(packageId);
+      if (!packageFeedback[packageId]) {
+        await fetchPackageFeedback(packageId);
+      }
+    }
+  };
+
   return (
     <div className={styles.pageWrapper}>
       <Navbar />
@@ -270,7 +311,7 @@ const MyPackagesPage = () => {
                       <th>Tên gói</th>
                     <th>Thời gian</th>
                     <th>Trạng thái</th>
-                    <th></th>
+                    <th>Đánh giá</th>
                   </tr>                
                   </thead>
                 <tbody>
@@ -280,7 +321,50 @@ const MyPackagesPage = () => {
                         <td>{pkg.name}</td>
                         <td>{pkg.start} - {pkg.end}</td>
                         <td>{pkg.status}</td>
+                        <td>
+                          <button 
+                            className={styles.commentButton} 
+                            onClick={() => toggleComments(pkg.id)}
+                            title="Xem đánh giá của huấn luyện viên"
+                          >
+                            <FaComment /> Xem đánh giá
+                          </button>
+                        </td>
                       </tr>
+                      {expandedComments === pkg.id && (
+                        <tr>
+                          <td colSpan={4} className={styles.commentsContainer}>
+                            <div className={styles.commentsHeader}>
+                              <h3>Đánh giá của huấn luyện viên - {pkg.name}</h3>
+                              <button 
+                                className={styles.closeCommentsBtn} 
+                                onClick={() => setExpandedComments(null)}
+                              >
+                                <FaTimes />
+                              </button>
+                            </div>
+                            <div className={styles.commentsList}>
+                              {loadingFeedback ? (
+                                <div className={styles.loadingState}>Đang tải đánh giá...</div>
+                              ) : packageFeedback[pkg.id]?.length > 0 ? (
+                                packageFeedback[pkg.id].map(comment => (
+                                  <div key={comment.id} className={styles.commentItem}>
+                                    <div className={styles.commentMeta}>
+                                      <span className={styles.commentTrainer}>{comment.trainer}</span>
+                                      <span className={styles.commentTime}>{comment.time}</span>
+                                    </div>
+                                    <div className={styles.commentText}>{comment.text}</div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className={styles.noComments}>
+                                  Chưa có đánh giá nào từ huấn luyện viên.
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </React.Fragment>
                   ))}
                 </tbody>
@@ -318,4 +402,4 @@ const MyPackagesPage = () => {
   );
 };
 
-export default MyPackagesPage; 
+export default MyPackagesPage;
