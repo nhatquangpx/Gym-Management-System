@@ -163,55 +163,6 @@
   border: 1.5px solid #ffccbc;
 }
 
-.statusSelectWrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  max-width: 180px;
-}
-
-.statusSelect {
-  width: 100%;
-  padding: 7px 32px 7px 18px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  border: 1.5px solid #e3f2fd;
-  background: #f8f9fa;
-  color: var(--trainer-text);
-  margin-top: 6px;
-  margin-bottom: 2px;
-  outline: none;
-  cursor: pointer;
-  transition: border 0.2s;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-.statusSelectArrow {
-  position: absolute;
-  right: 16px;
-  top: 55%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: #888;
-  font-size: 1em;
-}
-
-.successMsgCenter {
-  color: #219653;
-  background: #e3fcef;
-  border-radius: 8px;
-  padding: 10px 0;
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  width: 100%;
-  text-align: center;
-  animation: fadeIn 0.3s;
-}
-
 .studentDetails {
   margin-top: 18px;
   padding-top: 18px;
@@ -403,24 +354,6 @@
 
 .modalButton:hover {
   opacity: 0.9;
-}
-
-.successMsg {
-  color: #219653;
-  background: #e3fcef;
-  border-radius: 8px;
-  padding: 6px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  margin-right: 10px;
-  margin-bottom: 0;
-  align-self: center;
-  display: inline-block;
-  animation: fadeIn 0.3s;
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 /* Bảng hiển thị chi tiết buổi tập để đánh giá tiến độ */

@@ -82,7 +82,8 @@ const RegisterPackage = () => {
               key={pkg.id}
               className={`${styles.packageCard} ${selectedPackage?.id === pkg.id ? styles.selected : ''}`}
               onClick={() => handlePackageSelect(pkg)}
-            >              <div className={styles.packageHeader}>
+            >              
+              <div className={styles.packageHeader}>
                 <div className={styles.packageName}>{pkg.name}</div>
                 <div className={styles.packageType}>{pkg.type}</div> 
                 <div className={styles.priceContainer}>
@@ -92,12 +93,17 @@ const RegisterPackage = () => {
               </div>
               
               <div className={styles.packageFeatures}>
-                {pkg.features.map((feature, index) => (
+                {pkg.features && pkg.features.length > 0 ? pkg.features.map((feature, index) => (
                   <div key={index} className={styles.feature}>
                     <i className="material-icons">check_circle</i>
                     <span>{feature}</span>
                   </div>
-                ))}
+                )) : (
+                  <div className={styles.feature}>
+                    <i className="material-icons">check_circle</i>
+                    <span>Sử dụng phòng tập</span>
+                  </div>
+                )}
               </div>
               
               <div className={styles.packageFooter}>
@@ -107,14 +113,15 @@ const RegisterPackage = () => {
                   {selectedPackage?.id === pkg.id ? 'Đã chọn' : 'Chọn gói'}
                 </button>
               </div>
-            </div>          ))}
-        </div>
+            </div>
+            ))}
+          </div>
         )}
 
         {/* Thêm nhóm nút */}
         <div className={styles.buttonGroup}>
           <Button 
-            className={styles.backButton} // Style riêng cho nút quay lại
+            className={styles.backButton}
             onClick={handleBack} 
           >
             Quay lại
