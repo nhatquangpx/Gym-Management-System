@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
+import Button from '@mui/material/Button';
 
 export default function ViewTrainer() {
   const { id } = useParams();
@@ -74,18 +75,40 @@ export default function ViewTrainer() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-blue-600">Chi tiết huấn luyện viên</h1>
         <div className="flex gap-3">
-          <Link
+          <Button
+            variant="contained"
+            startIcon={<FaEdit />}
+            component={Link}
             to={`/admin/trainers/edit/${id}`}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+            sx={{
+              backgroundColor: 'var(--admin-primary)',
+              color: 'white',
+              borderRadius: 1,
+              fontWeight: 500,
+              boxShadow: 'none',
+              textTransform: 'none',
+              '&:hover': { backgroundColor: 'var(--admin-primary-dark)', boxShadow: 'none' }
+            }}
           >
-            <FaEdit /> Chỉnh sửa
-          </Link>
-          <Link
+            Chỉnh sửa
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<FaArrowLeft />}
+            component={Link}
             to="/admin/trainers"
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+            sx={{
+              backgroundColor: 'var(--admin-gray, #6b7280)',
+              color: 'white',
+              borderRadius: 1,
+              fontWeight: 500,
+              boxShadow: 'none',
+              textTransform: 'none',
+              '&:hover': { backgroundColor: '#4b5563', boxShadow: 'none' }
+            }}
           >
-            <FaArrowLeft /> Quay lại
-          </Link>
+            Quay lại
+          </Button>
         </div>
       </div>
 
