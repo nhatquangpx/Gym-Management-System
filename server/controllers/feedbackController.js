@@ -29,16 +29,38 @@ exports.getUsedPackages = async (req, res) => {
 exports.getUsedTrainers = async (req, res) => {
   try {
     const userId = req.user.id;
-    // Lấy các lịch tập có trainer
-    const schedules = await Schedule.find({ memberId: userId, trainerId: { $ne: null } }).populate('trainerId', 'name');
-    const trainers = schedules
-      .filter(s => s.trainerId)
-      .map(s => ({ _id: s.trainerId._id, name: s.trainerId.name }));
+    console.log('Getting used trainers for user:', userId);
+
+    // Lấy các order có trainer của user
+    const orders = await Order.find({ 
+      userId,
+      trainerId: { $exists: true, $ne: null },
+      status: "paid"  // Chỉ lấy các order đã thanh toán
+    }).populate('trainerId', 'name');
+
+    console.log('Orders with trainers:', orders);
+
+    const trainers = orders
+      .filter(o => o.trainerId)
+      .map(o => ({ 
+        _id: o.trainerId._id, 
+        name: o.trainerId.name 
+      }));
+
+    console.log('Mapped trainers:', trainers);
+
     // Loại trùng
     const uniqueTrainers = Array.from(new Map(trainers.map(t => [t._id.toString(), t])).values());
+    console.log('Final unique trainers:', uniqueTrainers);
+
     res.json({ success: true, data: uniqueTrainers });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Lỗi lấy HLV đã tập', error: error.message });
+    console.error('Error in getUsedTrainers:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Lỗi lấy HLV đã tập', 
+      error: error.message 
+    });
   }
 };
 
