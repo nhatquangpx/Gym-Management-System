@@ -70,8 +70,7 @@ const MyPackagesPage = () => {
           setPackageHistory([]);
           setIsLoadingHistory(false);
           return;
-        }        
-        const formattedHistory = response.data.packages.map((pkg, index) => {
+        }          const formattedHistory = response.data.packages.map((pkg, index) => {
           if (!pkg) {
             console.log('Package data is null or undefined at index', index);
             return null;
@@ -79,8 +78,17 @@ const MyPackagesPage = () => {
           
           console.log('Processing package:', pkg);
           
-          let startDate, endDate;
+          let startDate, endDate, remaining;
           const today = new Date();
+          
+          // Fix cứng logic theo yêu cầu
+          if (response.data.packages.length === 1) {
+            // Nếu chỉ có 1 gói thì số ngày còn lại là 30
+            remaining = 30;
+          } else {
+            // Nếu không thì hiện 60 ngày
+            remaining = 60;
+          }
           
           if (pkg.startDate && pkg.endDate) {
             startDate = new Date(pkg.startDate);
@@ -88,39 +96,24 @@ const MyPackagesPage = () => {
             console.log(`Package ${pkg.name}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
           } else {
             console.log('No date data from API, using fallback dates');
-            const isActive = index === 0; // Assume most recent package is active
             startDate = new Date(today);
             endDate = new Date(today);
-            
-            if (isActive) {
-              endDate.setMonth(today.getMonth() + 1);
-            } else {
-              startDate.setMonth(today.getMonth() - (index + 1));
-              endDate = new Date(startDate);
-              endDate.setMonth(startDate.getMonth() + 1);
-            }
+            endDate.setDate(today.getDate() + remaining); // Set end date based on remaining days
           }
-          
-          const isActive = endDate > today;
-          const daysDiff = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
-          const remaining = isActive ? Math.max(0, daysDiff) : 0;
           
           return {
             id: pkg._id,
             name: pkg.name,
             start: startDate.toISOString().split('T')[0].replace(/-/g, '/'),
             end: endDate.toISOString().split('T')[0].replace(/-/g, '/'),
-            status: isActive ? 'Đang sử dụng' : 'Đã hết hạn',
+            status: 'Đang sử dụng', // Fix cứng luôn hiển thị đang sử dụng
             remaining: remaining,
-            sessions: pkg.sessions || [] // If the API doesn't return sessions, provide an empty array
+            sessions: pkg.sessions || []
           };
-        }).filter(pkg => pkg !== null); // Lọc bỏ các mục null
-          console.log('Formatted history:', formattedHistory);
+        }).filter(pkg => pkg !== null);          console.log('Formatted history:', formattedHistory);
         
+        // Sắp xếp để gói mới nhất lên đầu
         const sortedHistory = formattedHistory.sort((a, b) => {
-          if (a.status === 'Đang sử dụng' && b.status !== 'Đang sử dụng') return -1;
-          if (b.status === 'Đang sử dụng' && a.status !== 'Đang sử dụng') return 1;
-          
           return new Date(b.end.replace(/\//g, '-')) - new Date(a.end.replace(/\//g, '-'));
         });
         
@@ -260,7 +253,7 @@ const MyPackagesPage = () => {
                     </>}
                     {!hasCurrent && <p>Bạn chưa đăng ký gói tập nào.</p>}
                   </div>
-                  <div className={styles.packageStats}>j{hasCurrent && <>
+                  <div className={styles.packageStats}>{hasCurrent && <>
                       <div className={styles.remainingBox}>
                         <span className={styles.remainingLabel}>Số ngày còn lại</span>
                         <span className={styles.remainingValue}>{currentHistory.remaining}</span>
