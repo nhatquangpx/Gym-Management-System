@@ -15,7 +15,7 @@
 
   .contentWrapper {
   width: 100%;
-  max-width: 1100px; /* Giảm nhẹ max-width để card không quá xa nhau */
+  max-width: 1400px; /* Tăng max-width để hiển thị 4 gói tập */
   background: rgba(20, 20, 20, 0.92); /* Tăng nhẹ độ mờ */
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
@@ -46,7 +46,7 @@
 
 .packagesGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px; /* Giảm gap */
   margin-bottom: 30px; /* Giảm margin */
 }
@@ -62,7 +62,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Giảm nhẹ shadow */
-  padding: 25px; /* Giảm padding */
+  padding: 20px; /* Giảm padding thêm để vừa với 4 cột */
   height: 100%; /* Để các card cao bằng nhau */
 }
 
@@ -87,11 +87,11 @@
 
 .packageName {
   color: var(--text-color);
-  font-size: 1.7rem; /* Giảm nhẹ */
+  font-size: 1.5rem; /* Giảm nhẹ hơn để vừa với 4 cột */
   margin-bottom: 12px; /* Giảm margin */
   font-weight: 700;
   /* Thêm padding phải để tránh badge đè lên nếu tên quá dài */
-  padding-right: 80px; 
+  padding-right: 70px; 
   min-height: 50px; /* Đảm bảo có không gian cho badge */
   display: flex; /* Căn giữa tên gói nếu nó ngắn */
   align-items: center;
@@ -120,7 +120,7 @@
 
 .price {
   color: var(--primary-red);
-  font-size: 2rem; /* Giảm nhẹ */
+  font-size: 1.8rem; /* Giảm nhẹ hơn cho 4 cột */
   font-weight: bold;
 }
 
@@ -153,6 +153,11 @@
 .feature span {
   font-size: 0.9rem; /* Giảm nhẹ */
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Giới hạn tối đa 2 dòng */
+  -webkit-box-orient: vertical;
 }
 
 .packageFooter {
@@ -217,9 +222,15 @@
   cursor: not-allowed;
 }
 
+@media (max-width: 1200px) {
+  .packagesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 992px) {
   .packagesGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); /* Giữ nguyên 2 cột ở màn hình trung bình */
   }
   
   .header h1 {
@@ -228,6 +239,10 @@
   
   .header p {
     font-size: 1.1rem;
+  }
+
+  .packageName {
+    font-size: 1.4rem;
   }
 }
 
@@ -265,4 +280,21 @@
   .backButton, .continueButton {
     max-width: 100%; /* Full width trên mobile */
   }
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  background: rgba(30, 30, 30, 0.7);
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.loading {
+  color: #ccc;
+}
+
+.error {
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.3);
 }

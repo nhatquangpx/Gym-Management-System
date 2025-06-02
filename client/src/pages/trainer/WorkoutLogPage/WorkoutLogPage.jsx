@@ -79,7 +79,7 @@ const WorkoutLogPage = () => {
       });
       const data = await res.json();
       if (data.success) {
-        setSuccess('Đã ghi nhận buổi tập thành công!');
+        setSuccess('Đã gửi đánh giá thành công!');
         setError('');
         setForm({ ...form, note: '' });
       } else {
@@ -87,14 +87,14 @@ const WorkoutLogPage = () => {
         setSuccess('');
       }
     } catch (err) {
-      setError('Lỗi khi ghi nhận buổi tập!');
+      setError('Lỗi khi gửi đánh giá!');
       setSuccess('');
     }
   };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Ghi nhận buổi tập</h1>
+      <h1 className={styles.title}>Đánh giá học viên</h1>
       <form className={styles.form} onSubmit={handleSubmit}>
         <div>
           <label className={styles.label}>Học viên</label>
@@ -129,12 +129,12 @@ const WorkoutLogPage = () => {
             value={form.note}
             onChange={handleChange}
             rows={3}
-            placeholder="Ví dụ: Đã hoàn thành bài tập, cần chú ý kỹ thuật..."
+            placeholder="Ví dụ: Hiệu suất tập luyện tốt, cần cải thiện kỹ thuật tay..."
           />
         </div>
         {error && <div className={styles.error}>{error}</div>}
         {success && <div className={styles.success}>{success}</div>}
-        <button className={styles.submitBtn} type="submit">Ghi nhận</button>
+        <button className={styles.submitBtn} type="submit">Gửi đánh giá</button>
       </form>
     </div>
   );

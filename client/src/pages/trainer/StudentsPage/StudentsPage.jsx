@@ -14,8 +14,24 @@ const statusColorClass = {
   completed: styles.statusCompleted
 };
 
+// Render trạng thái với màu sắc - chuyển ra ngoài để các component đều có thể sử dụng
+const renderStatus = (status) => {
+  const config = statusOptions.find(opt => opt.value === status);
+  return (
+    <span
+      className={styles.status}
+      style={{
+        color: config?.color,
+        background: config?.bg,
+        border: `1px solid ${config?.border}`
+      }}
+    >
+      {config ? config.label : status}
+    </span>
+  );
+};
+
 const StudentModal = ({ student, onClose }) => {
-  const [editStatus, setEditStatus] = useState(student.status);
   const modalFooterRef = React.useRef(null);
 
   return (
@@ -39,34 +55,7 @@ const StudentModal = ({ student, onClose }) => {
               <div className={styles.studentInfo}>
                 <h3 className={styles.name}>{student.name}</h3>
                 <p className={styles.email}>{student.email}</p>
-                <div className={styles.statusSelectWrapper}>
-                  <select
-                    className={styles.statusSelect}
-                    value={editStatus}
-                    onChange={e => setEditStatus(e.target.value)}
-                    style={{
-                      color: statusOptions.find(opt => opt.value === editStatus)?.color,
-                      background: statusOptions.find(opt => opt.value === editStatus)?.bg,
-                      borderColor: statusOptions.find(opt => opt.value === editStatus)?.border
-                    }}
-                  >
-                    {statusOptions.map(option => (
-                      <option
-                        key={option.value}
-                        value={option.value}
-                        style={{
-                          color: option.color,
-                          background: option.bg
-                        }}
-                      >
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <span className={styles.statusSelectArrow}>
-                    <FaChevronDown />
-                  </span>
-                </div>
+                {renderStatus(student.status)}
               </div>
             </div>
           </div>
@@ -195,52 +184,8 @@ const StudentsPage = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // Đổi trạng thái (chỉ cập nhật khi bấm cập nhật trong modal)
-  const handleStatusChange = async (studentId, newStatus) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8001/api/trainers/update-student-status/${studentId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        setStudents(students.map(student => 
-          student.id === studentId ? { ...student, status: newStatus } : student
-        ));
-        if (selectedStudent && selectedStudent.id === studentId) {
-          setSelectedStudent({ ...selectedStudent, status: newStatus });
-        }
-      }
-    } catch (err) {
-      console.error('Error updating student status:', err);
-    }
-  };
-
   if (loading) return <div className={styles.loading}>Đang tải...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
-
-  // Render trạng thái với màu sắc
-  const renderStatus = (status) => {
-    const config = statusOptions.find(opt => opt.value === status);
-    return (
-      <span
-        className={styles.status}
-        style={{
-          color: config?.color,
-          background: config?.bg,
-          border: `1px solid ${config?.border}`
-        }}
-      >
-        {config ? config.label : status}
-      </span>
-    );
-  };
 
   return (
     <div className={styles.container}>
@@ -333,7 +278,6 @@ const StudentsPage = () => {
         <StudentModal
           student={selectedStudent}
           onClose={() => setSelectedStudent(null)}
-          onStatusChange={handleStatusChange}
         />
       )}
     </div>

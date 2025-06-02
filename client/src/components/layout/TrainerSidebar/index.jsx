@@ -9,7 +9,7 @@ const TrainerSidebar = () => {
     { path: '/trainer/dashboard', label: 'Tổng quan', icon: <FaChartBar /> },
     { path: '/trainer/students', label: 'Quản lý học viên', icon: <FaUsers /> },
     { path: '/trainer/schedule', label: 'Lịch tập', icon: <FaCalendarAlt /> },
-    { path: '/trainer/workouts', label: 'Ghi nhận buổi tập', icon: <FaDumbbell /> },
+    { path: '/trainer/workouts', label: 'Đánh giá học viên', icon: <FaDumbbell /> },
     { path: '/trainer/progress', label: 'Đánh giá tiến độ', icon: <FaChartLine /> },
     { path: '/trainer/settings', label: 'Cài đặt', icon: <FaCog /> },
   ];

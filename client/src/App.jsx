@@ -121,6 +121,8 @@ import TrainerStudents from './pages/trainer/StudentsPage/StudentsPage';
 import TrainerSchedulePage from './pages/trainer/SchedulePage/SchedulePage';
 import TrainerWorkoutLogPage from './pages/trainer/WorkoutLogPage/WorkoutLogPage';
 import ProgressPage from './pages/trainer/ProgressPage/ProgressPage';
+import TrainerProfilePage from './pages/trainer/ProfilePage/ProfilePage';
+import TrainerChangePasswordPage from './pages/trainer/ChangePasswordPage/ChangePasswordPage';
 
 function App() {
   // Kiểm tra trạng thái xác thực khi ứng dụng khởi động
@@ -256,7 +258,8 @@ function App() {
             <Route path="schedule" element={<TrainerSchedulePage />} />
             <Route path="workouts" element={<TrainerWorkoutLogPage />} />
             <Route path="progress" element={<ProgressPage />} />
-            <Route path="settings" element={<div>Cài đặt</div>} />
+            <Route path="profile" element={<TrainerProfilePage />} />
+            <Route path="change-password" element={<TrainerChangePasswordPage />} />
           </Route>
         </Route>
 
