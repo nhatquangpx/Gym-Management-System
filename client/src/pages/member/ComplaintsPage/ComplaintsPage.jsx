@@ -214,10 +214,7 @@ const ComplaintsPage = () => {
             {successMsg && <div className={styles.successMsg}>{successMsg}</div>}
             {errors.submit && <div className={styles.errorMsg}>{errors.submit}</div>}
             <div className={styles.buttonGroup}>
-              <Button type="button" className={styles.backButton} onClick={() => window.history.back()}>
-                Quay lại
-              </Button>
-              <Button type="submit" className={styles.submitButton}>
+              <Button type="submit" className={styles.submitButton + ' ' + styles.fullWidthSubmit}>
                 Gửi đánh giá
               </Button>
             </div>

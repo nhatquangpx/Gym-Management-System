@@ -6,6 +6,7 @@ import styles from './MyPackagesPage.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from '../../../utils/axiosConfig';
+import { FaComment, FaTimes } from 'react-icons/fa';
 
 const MyPackagesPage = () => {
   const navigate = useNavigate();
@@ -19,6 +20,26 @@ const MyPackagesPage = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [expandedComments, setExpandedComments] = useState(null);
+  
+  // Dữ liệu mẫu về đánh giá của trainer
+  const trainerComments = {
+    // Giả lập dữ liệu mẫu cho từng gói tập
+    'pkg1': [
+      { id: 1, text: 'Bạn đã hoàn thành tốt các bài tập, nhưng cần cải thiện tư thế khi squat.', time: '2025/06/10 14:30', trainer: 'Huấn luyện viên Minh' },
+      { id: 2, text: 'Hôm nay đã có tiến bộ về tư thế. Tiếp tục duy trì lịch tập đều đặn nhé!', time: '2025/06/17 15:45', trainer: 'Huấn luyện viên Minh' }
+    ],
+    'pkg2': [
+      { id: 3, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
+      { id: 4, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
+      { id: 5, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
+      { id: 6, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
+      { id: 7, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
+      { id: 8, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
+      { id: 9, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' },
+      { id: 10, text: 'Chúc mừng bạn đã hoàn thành 70% lộ trình của gói tập. Cần tăng cường tập luyện phần cardio để đạt hiệu quả tốt hơn.', time: '2025/05/20 09:15', trainer: 'Huấn luyện viên Hùng' }
+    ],
+  };
   
   // Fetch packages available in the system
   useEffect(() => {
@@ -191,6 +212,11 @@ const MyPackagesPage = () => {
   const isExpired = hasCurrent && currentHistory.status === 'Đã hết hạn';
   const isActive = hasCurrent && currentHistory.status === 'Đang sử dụng';
 
+  // Hàm xử lý việc xem/ẩn đánh giá trainer
+  const toggleComments = (packageId) => {
+    setExpandedComments(current => current === packageId ? null : packageId);
+  };
+
   return (
     <div className={styles.pageWrapper}>
       <Navbar />
@@ -265,7 +291,7 @@ const MyPackagesPage = () => {
                       <th>Tên gói</th>
                     <th>Thời gian</th>
                     <th>Trạng thái</th>
-                    <th></th>
+                    <th>Đánh giá</th>
                   </tr>                
                   </thead>
                 <tbody>
@@ -275,7 +301,49 @@ const MyPackagesPage = () => {
                         <td>{pkg.name}</td>
                         <td>{pkg.start} - {pkg.end}</td>
                         <td>{pkg.status}</td>
+                        <td>
+                          <button 
+                            className={styles.commentButton} 
+                            onClick={() => toggleComments(pkg.id)}
+                            title="Xem đánh giá của huấn luyện viên"
+                          >
+                            <FaComment /> Xem đánh giá
+                          </button>
+                        </td>
                       </tr>
+                      {expandedComments === pkg.id && (
+                        <tr>
+                          <td colSpan={4} className={styles.commentsContainer}>
+                            <div className={styles.commentsHeader}>
+                              <h3>Đánh giá của huấn luyện viên - {pkg.name}</h3>
+                              <button 
+                                className={styles.closeCommentsBtn} 
+                                onClick={() => setExpandedComments(null)}
+                              >
+                                <FaTimes />
+                              </button>
+                            </div>
+                            <div className={styles.commentsList}>
+                              {/* Sử dụng ID mẫu để hiển thị dữ liệu demo */}
+                              {(trainerComments[pkg.id === 'pkg1' ? 'pkg1' : 'pkg2'] || []).length > 0 ? (
+                                trainerComments[pkg.id === 'pkg1' ? 'pkg1' : 'pkg2'].map(comment => (
+                                  <div key={comment.id} className={styles.commentItem}>
+                                    <div className={styles.commentMeta}>
+                                      <span className={styles.commentTrainer}>{comment.trainer}</span>
+                                      <span className={styles.commentTime}>{comment.time}</span>
+                                    </div>
+                                    <div className={styles.commentText}>{comment.text}</div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className={styles.noComments}>
+                                  Chưa có đánh giá nào từ huấn luyện viên.
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </React.Fragment>
                   ))}
                 </tbody>

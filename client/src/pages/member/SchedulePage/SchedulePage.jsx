@@ -23,14 +23,14 @@ const hours = Array.from({ length: 24 }, (_, i) => (i < 10 ? '0' : '') + i);
 const minutes = Array.from({ length: 12 }, (_, i) => (i * 5 < 10 ? '0' : '') + i * 5);
 
 const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selectedDate }) => {
-  const [form, setForm] = React.useState(session || { startTime: '', endTime: '', detail: '', date: selectedDate });
+  const [form, setForm] = React.useState(session || { startTime: '', endTime: '', detail: '', trainerComment: '', date: selectedDate });
   const [error, setError] = React.useState('');
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const [confirmAction, setConfirmAction] = React.useState(null);
   const dateInputRef = React.useRef();
 
   useEffect(() => {
-    setForm(session ? { ...session, date: session.date || selectedDate } : { startTime: '', endTime: '', detail: '', date: selectedDate });
+    setForm(session ? { ...session, date: session.date || selectedDate } : { startTime: '', endTime: '', detail: '', trainerComment: '', date: selectedDate });
     setError('');
   }, [session, open, selectedDate]);
 
@@ -194,15 +194,34 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, selected
             value={form.detail}
             onChange={handleChange}
             disabled={isDetail}
-            rows={4}
+            rows={3}
           />
           {isDetail && (
-            <div className={styles.checkinTime}>
-              <div className={styles.checkinTimeLabel}>Thời gian checkin</div>
-              <div className={styles.checkinTimeValue}>
-                {session?.checkinTime ? session.checkinTime : 'Chưa checkin'}
+            <>
+              <label className={styles.sessionModalLabel}>Nhận xét của huấn luyện viên</label>
+              <textarea
+                className={styles.sessionModalTextarea}
+                name="trainerComment"
+                value={form.trainerComment || 'Chưa có nhận xét'}
+                disabled={true}
+                rows={3}
+              />
+              
+              <div className={styles.checkTimes}>
+                <div className={styles.checkTimeItem}>
+                  <div className={styles.checkTimeLabel}>Thời gian checkin:</div>
+                  <div className={styles.checkTimeValue}>
+                    {session?.checkinTime ? session.checkinTime : 'Chưa checkin'}
+                  </div>
+                </div>
+                <div className={styles.checkTimeItem}>
+                  <div className={styles.checkTimeLabel}>Thời gian checkout:</div>
+                  <div className={styles.checkTimeValue}>
+                    {session?.checkoutTime ? session.checkoutTime : 'Chưa checkout'}
+                  </div>
+                </div>
               </div>
-            </div>
+            </>
           )}
           {/* Không hiển thị error khi chỉ xem chi tiết */}
           {!isDetail && error && <div style={{ color: '#ff1744', fontWeight: 500 }}>{error}</div>}
@@ -254,7 +273,9 @@ const SchedulePage = () => {
         startTime: s.timeStart,
         endTime: s.timeEnd,
         detail: s.exercises,
+        trainerComment: s.trainerComment || '',
         checkinTime: s.checkinTime,
+        checkoutTime: s.checkoutTime,
       });
     });
     return Object.entries(map).map(([date, sessions]) => ({
@@ -450,7 +471,7 @@ const SchedulePage = () => {
         <div className={styles.scheduleContainer}>
           <div className={styles.headerRow}>
             <h1 className={styles.title}>Lịch tập của tôi</h1>
-          </div>
+            </div>
           <div className={styles.topBar}>
             <button className={styles.weekBtn} onClick={handlePrevWeek}><FaChevronLeft /></button>
             <div className={styles.weekCalendar}>
@@ -462,7 +483,7 @@ const SchedulePage = () => {
                 return (
                   <div
                     key={dateStr}
-                    className={
+                className={
                       styles.dayItem +
                       (isSelected ? ' ' + styles.selected : '') +
                       (isToday ? ' ' + styles.today : '') +
@@ -492,7 +513,7 @@ const SchedulePage = () => {
                 <div key={session.id} className={styles.sessionItem} onClick={e => { if (e.target === e.currentTarget) handleDetailSession(session); }}>
                   <div className={styles.sessionTime}>
                     {session.startTime} - {session.endTime}
-                  </div>
+                      </div>
                   <div className={styles.sessionGuide}>{session.detail}</div>
                   <div className={styles.sessionActions}>
                     <button className={styles.editBtn} title="Sửa" onClick={e => { e.stopPropagation(); setModal({ open: true, mode: 'edit', session }); }}><FaEdit /></button>
@@ -521,7 +542,7 @@ const SchedulePage = () => {
                   <button className={`${styles.sessionModalBtn} ${styles.danger}`} onClick={() => { handleDeleteSession(deleteModal.session); setDeleteModal({ open: false, session: null }); }}>Xóa</button>
                 </div>
               </div>
-            </div>
+          </div>
           )}
         </div>
       </main>

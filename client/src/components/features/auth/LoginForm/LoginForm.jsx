@@ -153,6 +153,10 @@ const LoginForm = () => {
       >
         {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
       </Button>
+
+      <div className={styles.registerLink}>
+        Chưa có tài khoản? <Link to="/register/package" className={styles.registerText}>Đăng ký ngay</Link>
+      </div>
     </form>
   );
 };

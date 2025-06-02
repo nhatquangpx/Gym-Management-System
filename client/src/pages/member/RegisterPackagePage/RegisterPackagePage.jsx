@@ -60,9 +60,9 @@ const RegisterPackage = () => {
   };
 
   // Hàm xử lý nút quay lại
-  const handleBackToLogin = () => {
-    navigate('/login');
-};
+  const handleBack = () => {
+    navigate(-1); // Quay lại trang trước đó
+  };
   return (
     <div className={styles.pageContainer}> 
       <div className={styles.contentWrapper}>
@@ -115,7 +115,7 @@ const RegisterPackage = () => {
         <div className={styles.buttonGroup}>
           <Button 
             className={styles.backButton} // Style riêng cho nút quay lại
-            onClick={handleBackToLogin} 
+            onClick={handleBack} 
           >
             Quay lại
           </Button>
