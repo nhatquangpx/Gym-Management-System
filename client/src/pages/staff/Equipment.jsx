@@ -265,6 +265,19 @@ export default function Equipment() {
               startIcon={<AddIcon />}
               component={Link}
               to="/staff/equipment/add"
+              disableElevation
+              sx={{
+                borderRadius: 1,
+                boxShadow: 'none',
+                backgroundColor: 'var(--admin-primary)',
+                color: '#fff',
+                '&:hover': {
+                  backgroundColor: 'var(--admin-primary-dark)',
+                  boxShadow: 'none',
+                  border: 'none',
+                  color: '#fff'
+                }
+              }}
             >
               Thêm thiết bị
             </Button>

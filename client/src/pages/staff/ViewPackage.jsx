@@ -79,28 +79,28 @@ const ViewPackage = () => {
         <div className="space-y-4">
           <div>
             <h2 className="font-semibold mb-1">Mô tả</h2>
-            <p className="text-gray-300">{packageData.description}</p>
+            <p className="text-[var(--admin-text)]">{packageData.description}</p>
           </div>
 
           <div>
             <h2 className="font-semibold mb-1">Giá</h2>
-            <p className="text-gray-300">{packageData.price.toLocaleString('vi-VN')} VNĐ {packageData.period}</p>
+            <p className="text-[var(--admin-text)]">{packageData.price.toLocaleString('vi-VN')} VNĐ {packageData.period}</p>
           </div>
 
           <div>
             <h2 className="font-semibold mb-1">Loại gói</h2>
-            <p className="text-gray-300">{packageData.type}</p>
+            <p className="text-[var(--admin-text)]">{packageData.type}</p>
           </div>
 
           <div>
             <h2 className="font-semibold mb-1">Thời hạn</h2>
-            <p className="text-gray-300">{packageData.duration} ngày</p>
+            <p className="text-[var(--admin-text)]">{packageData.duration} ngày</p>
           </div>
 
           {packageData.features && packageData.features.length > 0 && (
             <div>
               <h2 className="font-semibold mb-1">Tính năng</h2>
-              <ul className="list-disc list-inside text-gray-300">
+              <ul className="list-disc list-inside text-[var(--admin-text)]">
                 {packageData.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}

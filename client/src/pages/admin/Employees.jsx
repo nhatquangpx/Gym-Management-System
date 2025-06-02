@@ -145,7 +145,13 @@ export default function Employees() {
             borderRadius: 1,
             boxShadow: 'none',
             fontWeight: 500,
-            '&:hover': { backgroundColor: 'var(--admin-primary-dark)', boxShadow: 'none', opacity: 1 }
+            '&:hover': {
+              backgroundColor: 'var(--admin-primary-dark)',
+              boxShadow: 'none',
+              border: 'none',
+              color: 'white',
+              opacity: 1
+            }
           }}
         >
           Thêm nhân viên

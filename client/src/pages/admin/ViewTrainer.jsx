@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 import StatusBadge from "../../components/features/admin/StatusBadge/StatusBadge";
-import Button from '@mui/material/Button';
+import { Button } from '@mui/material';
 
 export default function ViewTrainer() {
   const { id } = useParams();
@@ -46,12 +46,28 @@ export default function ViewTrainer() {
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
           <span className="block sm:inline">{error}</span>
         </div>
-        <Link
-          to="/admin/trainers"
-          className="mt-4 inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2 w-fit"
+        <Button
+          variant="outlined"
+          startIcon={<FaArrowLeft />}
+          onClick={() => window.location.href = '/admin/trainers'}
+          sx={{
+            color: 'var(--admin-primary)',
+            borderColor: 'var(--admin-primary)',
+            backgroundColor: 'white',
+            borderRadius: 2,
+            fontWeight: 500,
+            boxShadow: 'none',
+            textTransform: 'none',
+            mt: 2,
+            '&:hover': {
+              backgroundColor: 'rgba(79, 140, 255, 0.08)',
+              borderColor: 'var(--admin-primary)',
+              color: 'var(--admin-primary)'
+            }
+          }}
         >
-          <FaArrowLeft /> Quay lại
-        </Link>
+          Quay lại
+        </Button>
       </div>
     );
   }
@@ -60,12 +76,28 @@ export default function ViewTrainer() {
     return (
       <div className="p-6">
         <div className="text-center">Không tìm thấy huấn luyện viên</div>
-        <Link
-          to="/admin/trainers"
-          className="mt-4 inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2 w-fit"
+        <Button
+          variant="outlined"
+          startIcon={<FaArrowLeft />}
+          onClick={() => window.location.href = '/admin/trainers'}
+          sx={{
+            color: 'var(--admin-primary)',
+            borderColor: 'var(--admin-primary)',
+            backgroundColor: 'white',
+            borderRadius: 2,
+            fontWeight: 500,
+            boxShadow: 'none',
+            textTransform: 'none',
+            mt: 2,
+            '&:hover': {
+              backgroundColor: 'rgba(79, 140, 255, 0.08)',
+              borderColor: 'var(--admin-primary)',
+              color: 'var(--admin-primary)'
+            }
+          }}
         >
-          <FaArrowLeft /> Quay lại
-        </Link>
+          Quay lại
+        </Button>
       </div>
     );
   }
@@ -87,24 +119,33 @@ export default function ViewTrainer() {
               fontWeight: 500,
               boxShadow: 'none',
               textTransform: 'none',
-              '&:hover': { backgroundColor: 'var(--admin-primary-dark)', boxShadow: 'none' }
+              '&:hover': {
+                backgroundColor: 'var(--admin-primary-dark)',
+                color: 'white',
+                boxShadow: 'none',
+                border: 'none'
+              }
             }}
           >
             Chỉnh sửa
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             startIcon={<FaArrowLeft />}
-            component={Link}
-            to="/admin/trainers"
+            onClick={() => window.location.href = '/admin/trainers'}
             sx={{
-              backgroundColor: 'var(--admin-gray, #6b7280)',
-              color: 'white',
-              borderRadius: 1,
+              color: 'var(--admin-primary)',
+              borderColor: 'var(--admin-primary)',
+              backgroundColor: 'white',
+              borderRadius: 2,
               fontWeight: 500,
               boxShadow: 'none',
               textTransform: 'none',
-              '&:hover': { backgroundColor: '#4b5563', boxShadow: 'none' }
+              '&:hover': {
+                backgroundColor: 'rgba(79, 140, 255, 0.08)',
+                borderColor: 'var(--admin-primary)',
+                color: 'var(--admin-primary)'
+              }
             }}
           >
             Quay lại

@@ -58,92 +58,68 @@ const AddGymRoom = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen p-6">
-      <Typography variant="h4" className="font-bold mb-6" sx={{ color: '#1a237e' }}>
-        Thêm phòng tập mới
-      </Typography>
-
+    <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
+      <h1 className="text-2xl font-bold mb-6">Thêm phòng tập mới</h1>
       {error && (
-        <Box className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </Box>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>
       )}
-
-      <Paper className="p-6 max-w-lg mx-auto">
-        <form onSubmit={handleSubmit}>
-          <Box className="space-y-4">
-            <TextField
-              fullWidth
-              label="Tên phòng"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              sx={{ '& .MuiInputLabel-root': { color: '#1a237e' } }}
-            />
-
-            <FormControl fullWidth>
-              <InputLabel sx={{ color: '#1a237e' }}>Trạng thái</InputLabel>
-              <Select
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-                label="Trạng thái"
-                sx={{ '& .MuiSelect-icon': { color: '#1a237e' } }}
-              >
-                <MenuItem value="active">Hoạt động</MenuItem>
-                <MenuItem value="maintenance">Bảo trì</MenuItem>
-                <MenuItem value="inactive">Không hoạt động</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel sx={{ color: '#1a237e' }}>Loại phòng</InputLabel>
-              <Select
-                name="roomType"
-                value={form.roomType}
-                onChange={handleChange}
-                label="Loại phòng"
-                sx={{ '& .MuiSelect-icon': { color: '#1a237e' } }}
-              >
-                <MenuItem value="cardio">Cardio</MenuItem>
-                <MenuItem value="strength">Tập sức mạnh</MenuItem>
-                <MenuItem value="yoga">Yoga</MenuItem>
-                <MenuItem value="functional">Tập chức năng</MenuItem>
-                <MenuItem value="group">Tập nhóm</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-
-          <Box className="flex gap-3 mt-6">
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={loading}
-              sx={{ 
-                backgroundColor: 'var(--admin-primary)',
-                '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 }
-              }}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Thêm phòng tập'}
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => navigate('/staff/gymrooms')}
-              sx={{ 
-                color: 'var(--admin-primary)', 
-                borderColor: 'var(--admin-primary)',
-                '&:hover': {
-                  borderColor: 'var(--admin-primary)',
-                  backgroundColor: 'rgba(26, 35, 126, 0.04)'
-                }
-              }}
-            >
-              Hủy
-            </Button>
-          </Box>
-        </form>
-      </Paper>
+      <form className="bg-[var(--admin-sidebar)] rounded-lg shadow p-6 max-w-lg mx-auto" onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Tên phòng</label>
+          <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Trạng thái</label>
+          <select
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+          >
+            <option value="active">Hoạt động</option>
+            <option value="maintenance">Bảo trì</option>
+            <option value="inactive">Không hoạt động</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-[var(--admin-text)]">Loại phòng</label>
+          <select
+            name="roomType"
+            value={form.roomType}
+            onChange={handleChange}
+            className="w-full p-2 rounded bg-[var(--admin-header)] text-[var(--admin-text)] border border-[var(--admin-border)]"
+          >
+            <option value="cardio">Cardio</option>
+            <option value="strength">Tập sức mạnh</option>
+            <option value="yoga">Yoga</option>
+            <option value="functional">Tập chức năng</option>
+            <option value="group">Tập nhóm</option>
+          </select>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading}
+            sx={{ backgroundColor: 'var(--admin-primary)', '&:hover': { backgroundColor: 'var(--admin-primary)', opacity: 0.9 } }}
+          >
+            {loading ? <CircularProgress size={24} /> : 'Thêm phòng tập'}
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/staff/gymrooms')}
+            sx={{ color: 'var(--admin-primary)', borderColor: 'var(--admin-primary)', '&:hover': { borderColor: 'var(--admin-primary)', backgroundColor: 'rgba(26, 35, 126, 0.04)' } }}
+          >
+            Hủy
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

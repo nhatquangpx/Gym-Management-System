@@ -1,8 +1,8 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import {
-  Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
+  Paper, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button
 } from '@mui/material';
 
 export default function ViewWorkout() {
@@ -10,6 +10,7 @@ export default function ViewWorkout() {
   const [member, setMember] = useState(null);
   const [usageHistory, setUsageHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMemberHistory = async () => {
@@ -44,12 +45,27 @@ export default function ViewWorkout() {
     <div className="bg-[var(--admin-bg)] min-h-screen p-6 text-[var(--admin-text)]">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-blue-600">Lịch sử sử dụng dịch vụ</h1>
-        <Link
-          to="/admin/workouts"
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-2"
+        <Button
+          variant="outlined"
+          startIcon={<FaArrowLeft />}
+          onClick={() => navigate('/admin/workouts')}
+          sx={{
+            color: 'var(--admin-primary)',
+            borderColor: 'var(--admin-primary)',
+            backgroundColor: 'white',
+            borderRadius: 2,
+            fontWeight: 500,
+            boxShadow: 'none',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'rgba(79, 140, 255, 0.08)',
+              borderColor: 'var(--admin-primary)',
+              color: 'var(--admin-primary)'
+            }
+          }}
         >
-          <FaArrowLeft /> Quay lại
-        </Link>
+          Quay lại
+        </Button>
       </div>
 
       <Paper className="p-6 mb-6" sx={{ background: 'var(--admin-sidebar)' }}>
