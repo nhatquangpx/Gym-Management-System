@@ -260,7 +260,6 @@ exports.getTrainerStudents = async (req, res) => {
           $lte: membership.endDate
         }
       });
-
       // Calculate progress percentage
       const progress = Math.min(
         Math.round((completedWorkouts / totalDays) * 100),
@@ -274,6 +273,7 @@ exports.getTrainerStudents = async (req, res) => {
       } else {
         status = 'Đang hoạt động';
       }
+      console.log(membership.packageId.name)
       return {
         _id: membership.userId._id,
         name: membership.userId.name,
@@ -310,20 +310,31 @@ exports.getTrainerStudents = async (req, res) => {
 exports.getAllSchedules = async (req, res) => {
   try {
     const trainerId = req.user.id;
-    const schedules = await Schedule.find({ trainerId })
+
+    // Get all members managed by this trainer
+    const memberships = await MembershipHistory.find({ trainerId })
+      .select('userId');
+
+    const memberIds = memberships.map(m => m.userId);
+
+    // Get all schedules for these members, including self-created ones
+    const schedules = await Schedule.find({
+      memberId: { $in: memberIds }
+    })
       .populate('memberId', 'name _id')
       .select('timeStart timeEnd memberId exercises date status comment');
 
-    // Lấy thông tin gói tập từ MembershipHistory cho từng member
+    // Add package information to each schedule
     const scheduleWithPackages = await Promise.all(schedules.map(async (schedule) => {
-      let memberId = schedule.memberId?._id.toString(); // Chuyển ObjectId sang string
+      let memberId = schedule.memberId?._id.toString();
       
       const membership = await MembershipHistory.findOne({
         userId: memberId,
+        trainerId
       }).populate('packageId', 'name');
 
       return {
-        id: schedule._id.toString(), // Chuyển ObjectId sang string
+        id: schedule._id.toString(),
         timeStart: schedule.timeStart,
         timeEnd: schedule.timeEnd,
         memberId: memberId,
@@ -332,7 +343,8 @@ exports.getAllSchedules = async (req, res) => {
         date: schedule.date,
         status: schedule.status,
         comment: schedule.comment || '',
-        packageName: membership?.packageId?.name || 'Chưa có gói tập'
+        packageName: membership?.packageId?.name || 'Chưa có gói tập',
+        isTrainerSchedule: schedule.trainerId ? true : false // Check if schedule was created by trainer
       };
     }));
 
@@ -342,7 +354,11 @@ exports.getAllSchedules = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Lỗi server", error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: "Lỗi server", 
+      error: error.message 
+    });
   }
 };
 
