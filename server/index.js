@@ -5,6 +5,8 @@ const fileUpload = require("express-fileupload");
 const fs = require("fs-extra");
 const path = require("path");
 const connectDB = require("./config/db");
+const updateMissedSchedules = require('./jobs/scheduleCron');
+
 const authRoutes = require("./routes/authRoutes");
 const adminUserRoutes = require("./routes/adminUserRoutes");
 const adminRoutes = require("./routes/adminRoutes");
@@ -47,6 +49,9 @@ app.post('/api/test-request', (req, res) => {
 });
 
 connectDB();
+
+// Start cron jobs
+updateMissedSchedules.start();
 
 // Đã cấu hình CORS ở trên, không cần thiết lập lại
 app.use(express.json());

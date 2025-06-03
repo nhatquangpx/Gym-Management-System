@@ -32,12 +32,12 @@ exports.getSchedulesByMember = async (req, res) => {
         $lte: finalEndDate
       };
     }
-
+    query.status = { $ne: 'Chưa tập'}
     const schedules = await Schedule.find(query)
       .select('-createdAt -updatedAt')
       .populate('memberId', 'name')
        .sort({ date: 1, timeStart: 1 }); // Sort by date and time
-    console.log('Schedules for member:', schedules);
+
     res.status(200).json({
       success: true,
       count: schedules.length,
