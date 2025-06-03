@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const Schedule = require('../models/Schedule');
 
 // Run at 00:01 AM every day
-const updateMissedSchedules = cron.schedule('13 19 * * *', async () => {
+const updateMissedSchedules = cron.schedule('1 0 * * *', async () => {
   try {
     console.log('Running schedule update cron job...');
       
