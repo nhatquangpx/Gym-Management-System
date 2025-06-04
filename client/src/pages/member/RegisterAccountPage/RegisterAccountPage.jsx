@@ -35,7 +35,7 @@ const RegisterAccount = () => {
     }
   };
 
-  const validateForm = () => {
+  const validateForm = async () => {
     const newErrors = {};
     let isValid = true;
 
@@ -46,7 +46,35 @@ const RegisterAccount = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email không hợp lệ';
       isValid = false;
+    } else {
+      try {
+        // Kiểm tra email đã tồn tại chưa
+        const response = await fetch('http://localhost:8001/api/auth/check-existed-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ email: formData.email })
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.message || 'Có lỗi xảy ra khi kiểm tra email');
+        }
+        
+        if (data.exists) {
+          newErrors.email = 'Email đã tồn tại';
+          isValid = false;
+        }
+      } catch (error) {
+        console.error('Error checking email:', error);
+        newErrors.email = error.message || 'Có lỗi xảy ra khi kiểm tra email';
+        isValid = false;
+      }
     }
+    
 
     // Kiểm tra số điện thoại
     if (!formData.phone.trim()) {
@@ -76,16 +104,31 @@ const RegisterAccount = () => {
     }
 
     setErrors(newErrors);
-    return isValid;
+    return { isValid, errors: newErrors };
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      navigate('/register/personal', {
-        state: { ...registrationData, account: formData }
-      });
+    setErrors({}); // Reset errors before validation
+    
+    const { isValid, errors } = await validateForm();
+    
+    if (!isValid) {
+      // Nếu form không hợp lệ, focus vào trường đầu tiên có lỗi
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        const element = document.getElementById(firstErrorField);
+        if (element) {
+          element.focus();
+        }
+      }
+      return; // Dừng việc xử lý form nếu có lỗi
     }
+
+    // Chỉ navigate khi form hợp lệ
+    navigate('/register/personal', {
+      state: { ...registrationData, account: formData }
+    });
   };
 
   const handleBack = () => {

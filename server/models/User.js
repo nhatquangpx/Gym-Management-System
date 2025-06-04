@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema(
     phone: {
       type: String,
       trim: true
-    },    role: {
+    },    
+    role: {
       type: String,
       enum: ["member", "admin", "employee", "trainer"],
       default: "member"
@@ -47,15 +48,8 @@ const UserSchema = new mongoose.Schema(
       specialization: String, 
       type: {
         type: String,
-        enum: ["yoga", "gym"],
-        default: "gym"
+        enum: ["yoga", "gym"]
       },
-    },
-    employeeInfo: {
-      position: String,
-      salary: Number,
-      shiftSchedule: String,
-      performanceRating: Number
     }
   },
   { timestamps: true }
