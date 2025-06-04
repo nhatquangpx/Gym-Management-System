@@ -5,7 +5,6 @@ import {
   IconButton, Chip, Rating, TextField, Tooltip
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function StaffFeedback() {
   const navigate = useNavigate();
@@ -32,18 +31,6 @@ export default function StaffFeedback() {
       console.error('Error fetching feedback:', error);
     }
     setLoading(false);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa phản hồi này?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await fetch(`/api/feedback/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
-        fetchFeedback();
-      } catch (error) {
-        console.error('Error deleting feedback:', error);
-      }
-    }
   };
 
   const filteredFeedback = feedback.filter(fb =>
@@ -119,7 +106,6 @@ export default function StaffFeedback() {
                   <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
                       <Tooltip title="Xem chi tiết"><IconButton sx={{ color: 'var(--admin-primary)' }} onClick={() => navigate(`/admin/feedback/view/${item._id}`)}><VisibilityIcon /></IconButton></Tooltip>
-                      <Tooltip title="Xóa"><IconButton sx={{ color: '#d32f2f' }} onClick={() => handleDelete(item._id)}><DeleteIcon /></IconButton></Tooltip>
                     </div>
                   </td>
                 </tr>

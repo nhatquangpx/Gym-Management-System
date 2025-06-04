@@ -4,44 +4,30 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { sendEmail, sendNewPasswordEmail, sendReceiptEmail, sendMaintenanceNotificationEmail } = require("../utils/emailService");
 
-exports.register = async (req, res) => {
+exports.checkExistedEmail = async (req, res) => {
   try {
-    const { name, email, password, phone, role, memberInfo, trainerInfo, employeeInfo } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Người dùng đã tồn tại!" });
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Email là bắt buộc" 
+      });
     }
 
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({
-      name,
-      email,
-      password: hashPassword,
-      phone,
-      role: role || "member",
-      ...(role === "member" && memberInfo && { memberInfo }),
-      ...(role === "trainer" && trainerInfo && { trainerInfo }),
-      ...(role === "employee" && employeeInfo && { employeeInfo })
-    });
-
-    await newUser.save();
-    res.status(201).json({ 
-      message: "Đăng ký thành công!", 
-      user: {
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        phone: newUser.phone,
-        role: newUser.role,
-        memberInfo: newUser.memberInfo,
-        trainerInfo: newUser.trainerInfo,
-        employeeInfo: newUser.employeeInfo
-      }
+    const existingUser = await User.findOne({ email });
+    return res.status(200).json({ 
+      success: true,
+      exists: !!existingUser,
+      message: existingUser ? "Email đã tồn tại" : "Email có thể sử dụng"
     });
   } catch (err) {
-    res.status(500).json({ message: "Đăng ký thất bại!", error: err.message });
+    console.error('Error checking email:', err);
+    res.status(500).json({ 
+      success: false,
+      message: "Đã xảy ra lỗi khi kiểm tra email", 
+      error: err.message 
+    });
   }
 };
 
