@@ -181,23 +181,28 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
           </div>
           <div className={styles.sessionModalRow}>
             <label className={styles.sessionModalLabel}>Học viên</label>
-            <select
-              className={styles.sessionModalSelect}
-              name="student"
-              value={form.student}
-              onChange={handleChange}
-              disabled={isDetail}
-            >
-              <option value="">Chọn học viên</option>
-              {students.map(s => (
-              <option key={s._id} value={s._id}>{s.name}</option>
-            ))}
-            </select>
+            {isAdd ? (
+              <select
+                className={styles.sessionModalSelect}
+                name="student"
+                value={form.student}
+                onChange={handleChange}
+              >
+                <option value="">Chọn học viên</option>
+                {students.map(s => (
+                  <option key={s._id} value={s._id}>{s.name}</option>
+                ))}
+              </select>
+            ) : (
+              <div className={styles.studentDisplayName}>
+                {students.find(s => s._id === form.student)?.name || 'Không xác định'}
+              </div>
+            )}
           </div>
           <div className={styles.sessionModalRow}>
             <label className={styles.sessionModalLabel}>Bài hướng dẫn</label>
             <textarea
-              className={styles.sessionModalTextarea + (isEdit ? ' ' + styles.sessionModalTextareaBold : '')}
+              className={`${styles.sessionModalTextarea} ${isDetail ? styles.viewOnlyTextarea : ''} ${isEdit ? styles.sessionModalTextareaBold : ''}`}
               name="guide"
               value={form.guide}
               onChange={handleChange}
@@ -205,7 +210,7 @@ const SessionModal = ({ open, onClose, onSave, onDelete, mode, session, students
               rows={4}
             />
           </div>
-          {isEdit && (
+          {isEdit && form.package && (
             <div className={styles.currentGuideInfo}>
               Gói tập hiện tại: <span className={styles.currentGuideText}>{form.package}</span>
             </div>
@@ -504,10 +509,10 @@ const SchedulePage = () => {
   };
 
   // Helper: lấy tên học viên từ id
-  const getStudentName = (id) => {
-    const found = studentsList.find(s => s._id === id);
-    return found ? found.name : id;
-  };
+  const getStudentName = React.useMemo(() => {
+    const studentsMap = new Map(studentsList.map(s => [s._id, s.name]));
+    return (id) => studentsMap.get(id) || id;
+  }, [studentsList]);
 
   return (
     <div className={styles.container}>
