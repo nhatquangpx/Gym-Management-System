@@ -1,0 +1,16 @@
+# Test coverage reports
+coverage/
+*.lcov
+
+# Test artifacts
+tmp/
+*.log
+
+# Node modules (redundant but safe)
+node_modules/
+
+# Environment files
+.env.test.local
+
+# Jest cache
+.jest/

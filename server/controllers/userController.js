@@ -6,7 +6,7 @@ const TrainerFeedback = require('../models/TrainerFeedback');
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password');
-        res.status(200).json(users);
+        res.status(200).json({ users });
     } catch (err) {
         res.status(500).json({ message: 'Lỗi khi lấy danh sách người dùng!', error: err.message });
     }
