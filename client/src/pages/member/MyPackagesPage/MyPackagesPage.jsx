@@ -60,9 +60,7 @@ const MyPackagesPage = () => {
           return;
         }
         
-        console.log('Fetching user packages...');
         const response = await axios.get('/api/users/my-packages');
-        console.log('User packages response:', response.data);
         
         // Kiểm tra nếu không có packages hoặc mảng rỗng
         if (!response.data.packages || response.data.packages.length === 0) {
@@ -70,29 +68,30 @@ const MyPackagesPage = () => {
           setPackageHistory([]);
           setIsLoadingHistory(false);
           return;
-        }          const formattedHistory = response.data.packages.map((pkg, index) => {
+        }
+        const formattedHistory = response.data.packages.map((pkg, index) => {
           if (!pkg) {
             console.log('Package data is null or undefined at index', index);
             return null;
           }
           
-          console.log('Processing package:', pkg);
-          
           let startDate, endDate, remaining;
           const today = new Date();
           
           // Fix cứng logic theo yêu cầu
-          if (response.data.packages.length === 1) {
-            // Nếu chỉ có 1 gói thì số ngày còn lại là 30
-            remaining = 30;
-          } else {
-            // Nếu không thì hiện 60 ngày
-            remaining = 60;
-          }
+          // if (response.data.packages.length === 1) {
+          //   // Nếu chỉ có 1 gói thì số ngày còn lại là 30
+          //   remaining = 30;
+          // } else {
+          //   // Nếu không thì hiện 60 ngày
+          //   remaining = 60;
+          // }
           
           if (pkg.startDate && pkg.endDate) {
             startDate = new Date(pkg.startDate);
             endDate = new Date(pkg.endDate);
+            remaining = endDate.getTime() - today.getTime();
+            remaining = Math.ceil(remaining / (1000 * 60 * 60 * 24)); // Chuyển đổi thành số ngày
             console.log(`Package ${pkg.name}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
           } else {
             console.log('No date data from API, using fallback dates');
@@ -100,7 +99,7 @@ const MyPackagesPage = () => {
             endDate = new Date(today);
             endDate.setDate(today.getDate() + remaining); // Set end date based on remaining days
           }
-          
+          console.log('==========', pkg);
           return {
             id: pkg._id,
             name: pkg.name,
@@ -108,10 +107,11 @@ const MyPackagesPage = () => {
             end: endDate.toISOString().split('T')[0].replace(/-/g, '/'),
             status: 'Đang sử dụng', // Fix cứng luôn hiển thị đang sử dụng
             remaining: remaining,
-            sessions: pkg.sessions || []
+            registered: pkg.regested || null, // Sử dụng registered nếu có, nếu không thì null
           };
-        }).filter(pkg => pkg !== null);          console.log('Formatted history:', formattedHistory);
-        
+        }).filter(pkg => pkg !== null);
+        console.log('Formatted history:', formattedHistory);
+
         // Sắp xếp để gói mới nhất lên đầu
         const sortedHistory = formattedHistory.sort((a, b) => {
           return new Date(b.end.replace(/\//g, '-')) - new Date(a.end.replace(/\//g, '-'));
@@ -139,7 +139,7 @@ const MyPackagesPage = () => {
       navigate('/register/package');
       return;
     }
-    
+    console.log(`Handling action: ${action} for package:`, pkg);
     // Với các action khác (renew, buyMore), hiển thị modal thanh toán
     setModalAction(action);
     setSelectedPackage(pkg);
@@ -157,6 +157,7 @@ const MyPackagesPage = () => {
         packageId: selectedPackage.id,
         packageName: selectedPackage.name,
         price: selectedPackage.price,
+        registeredPackageId: selectedPackage.registered || null,
       };
       const response = await fetch('http://localhost:8001/api/payment/vnpay', {
         method: 'POST',
@@ -190,7 +191,6 @@ const MyPackagesPage = () => {
 
   // Kiểm tra trạng thái để hiển thị nút phù hợp
   const hasCurrent = !!currentHistory;
-  const isExpired = hasCurrent && currentHistory.status === 'Đã hết hạn';
   const isActive = hasCurrent && currentHistory.status === 'Đang sử dụng';
 
   // Hàm xử lý việc xem/ẩn đánh giá trainer
@@ -205,7 +205,6 @@ const MyPackagesPage = () => {
       });
       
       const data = await response.json();
-      
       if (data.success) {
         setPackageFeedback(prev => ({
           ...prev,
@@ -266,14 +265,9 @@ const MyPackagesPage = () => {
                   </div>
                 </div>
                 <div className={styles.actionButtons}>
-                  {isExpired && (
-                    <Button onClick={() => handleAction('renew', currentPackage)} className={styles.renewButton}>
-                      Gia hạn gói tập
-                    </Button>
-                  )}
                   {isActive && (
-                    <Button onClick={() => handleAction('buyMore', currentPackage)} className={styles.buyMoreButton}>
-                      Mua thêm gói tập
+                    <Button onClick={() => handleAction('buyMore', sortedHistory[0])} className={styles.buyMoreButton}>
+                      Gia hạn gói tập
                     </Button>
                   )}
                   {!hasCurrent && allPackages.length > 0 && (

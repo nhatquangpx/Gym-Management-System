@@ -24,7 +24,8 @@ exports.createVnpayPayment = async (req, res) => {
                 received: req.body 
             });
         }
-        const { userId, packageId } = req.body;
+        const { userId, packageId, registeredPackageId} = req.body;
+
           // Kiểm tra tham số bắt buộc
         if (!userId || !packageId) {
             console.error('Missing required parameters:', { userId, packageId });
@@ -100,11 +101,28 @@ exports.createVnpayPayment = async (req, res) => {
                 console.log(`Found user with email ${userId}, using ID: ${userIdToUse}`);
             } else {
                 console.log(`No existing user found with email ${userId}, will create order with email as userId`);
-            }        }        // Tạo đơn hàng mới nếu không có sẵn
+            }        }   
+        if(registeredPackageId) {
+            const MembershipHistory = require('../models/MembershipHistory');
+            const registeredPackage = await MembershipHistory.findById(registeredPackageId);
+            if(!registeredPackage) {
+                console.error('Registered package not found with ID:', registeredPackageId);
+                return res.status(404).json({ message: "Registered package not found" });
+            }
+            else if (registeredPackage.status !== 'Chờ kích hoạt') {
+                let endDate = new Date(registeredPackage.endDate);
+                endDate.setDate(endDate.getDate() + (gymPackage.duration || 30));
+                registeredPackage.endDate = endDate;
+                await registeredPackage.save();
+            }
+        }
+        // Tạo đơn hàng mới nếu không có sẵn
         if (!order) {
+            console.log('Goi dki=============================================', registeredPackageId);
             order = await Order.create({
                 userId: userIdToUse,
                 packageId: gymPackage._id, // Sử dụng _id của gymPackage đã tìm được
+                registeredPackageId: registeredPackageId || null, // Nếu có registeredPackageId thì sử dụng
                 amount: gymPackage.price,
                 status: "pending"
             });
