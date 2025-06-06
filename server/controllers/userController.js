@@ -171,11 +171,13 @@ exports.getMyPackages = async (req, res) => {
         const paidOrders = await MembershipHistory.find({ userId, status: "Đã kích hoạt" })
             .populate('packageId')
             .sort({ createdAt: 1 });
-        console.log(`Found ${paidOrders.length} paid orders for user: ${userId}`);
-        const packages = paidOrders.map(order => {
-            if (!order.packageId) return null;
 
-            return {
+        // Xử lý từng order một và đợi tất cả hoàn thành
+        const packages = await Promise.all(paidOrders.map(async (order) => {
+            if (!order.packageId) return null;
+            
+            // Tạo object cơ bản cho package
+            const packageData = {
                 _id: order.packageId._id,
                 id: order.packageId.id,
                 regested: order._id,
@@ -194,9 +196,28 @@ exports.getMyPackages = async (req, res) => {
                 endDate: order.endDate,
                 orderDate: order.createdAt
             };
-        }).filter(pkg => pkg !== null);
-        console.log(packages);
-        res.status(200).json({ packages });
+
+            // Nếu có trainerId, lấy thông tin trainer
+            if (order.trainerId && order.packageId.type === 'Tập với PT') {
+                try {
+                    const trainer = await User.findById(order.trainerId).select('name');
+                    if (trainer) {
+                        packageData.trainerId = order.trainerId;
+                        packageData.trainerName = trainer.name;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching trainer for order ${order._id}:`, error);
+                }
+            }
+
+            return packageData;
+        }));
+
+        // Lọc bỏ các null values
+        const validPackages = packages.filter(pkg => pkg !== null);
+        
+        console.log('Formatted packages:', validPackages);
+        res.status(200).json({ packages: validPackages });
     } catch (err) {
         console.error('Error in getMyPackages:', err);
         res.status(500).json({ message: 'Lỗi khi truy vấn gói tập của bạn!', error: err.message });

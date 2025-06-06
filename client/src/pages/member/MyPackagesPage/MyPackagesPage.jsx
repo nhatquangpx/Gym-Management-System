@@ -34,7 +34,7 @@ const MyPackagesPage = () => {
           name: pkg.name,
           price: `${pkg.price.toLocaleString()}đ`,
           period: `/${pkg.period}`,
-          type: pkg.type === 'personal_training' ? 'Tập với PT' : 'Tự tập',
+          type: pkg.type === 'Tập với PT' ? 'Tập với PT' : 'Tự tập',
           description: pkg.description,
           highlight: pkg.price < 600000, // Highlight affordable options
         }));
@@ -110,11 +110,12 @@ const MyPackagesPage = () => {
             start: startDate.toISOString().split('T')[0].replace(/-/g, '/'),
             end: endDate.toISOString().split('T')[0].replace(/-/g, '/'),
             status: status,
-            type: pkg.type === 'personal_training' ? 'Tập với PT' : 'Tự tập',
+            type: pkg.type === 'Tập với PT' ? 'Tập với PT' : 'Tự tập',
             price: pkg.price ? `${pkg.price.toLocaleString()}đ` : 'Liên hệ',
             description: pkg.description || 'Không có mô tả',
             remaining: remaining,
             registered: pkg.regested || null, // Sử dụng registered nếu có, nếu không thì null
+            trainerName: pkg.trainerName,
           };
         }).filter(pkg => pkg !== null);
         console.log('Formatted history:', formattedHistory);
@@ -255,6 +256,9 @@ const MyPackagesPage = () => {
                     <h3>{hasCurrent ? currentPackage?.name : 'Chưa có gói tập'}</h3>
                     {hasCurrent && currentPackage && <>
                       <p><strong>Loại:</strong> {currentPackage.type}</p>
+                      {currentHistory.trainerName && (
+                        <p><strong>Huấn luyện viên:</strong> {currentHistory.trainerName}</p>
+                      )}
                       <p><strong>Thời hạn:</strong> {currentHistory.start} - {currentHistory.end}</p>
                       <p><strong>Mô tả:</strong> {currentPackage.description}</p>
                     </>}
@@ -378,8 +382,12 @@ const MyPackagesPage = () => {
             </h2><div className={styles.paymentModalInfo}>
               <p><strong>Tên gói:</strong> {selectedPackage ? selectedPackage.name : ''}</p>
               <p><strong>Loại:</strong> {selectedPackage ? selectedPackage.type : ''}</p>
+              {selectedPackage?.type === 'Tập với PT' && selectedPackage?.trainerName && (
+                <p><strong>Huấn luyện viên:</strong> {selectedPackage.trainerName}</p>
+              )}
               <p><strong>Mô tả:</strong> {selectedPackage ? selectedPackage.description : ''}</p>
               <p><strong>Giá:</strong> <span className={styles.paymentModalPrice}>{selectedPackage ? selectedPackage.price : ''}{selectedPackage ? selectedPackage.period : ''}</span></p>
+              
             </div>
             {error && <div className={styles.paymentModalError}>{error}</div>}
             <div className={styles.paymentModalActions}>
