@@ -517,6 +517,13 @@ exports.logWorkout = async (req, res) => {
         message: "Không tìm thấy lịch tập"
       });
     }
+    if (schedule.status !== 'Đã tập') {
+      return res.status(400).json({
+        success: false,
+        message: "Không thể ghi nhận buổi tập, chỉ có thể ghi nhận buổi tập đã hoàn thành"
+      });
+    }
+    
     if (schedule.comment) {
       return res.status(400).json({
         success: false,
@@ -525,9 +532,6 @@ exports.logWorkout = async (req, res) => {
     }
     // Cập nhật comment
     if (comment !== undefined) schedule.comment = comment;
-    if (schedule.status !== 'Đã tập') {
-      schedule.status = 'Đã tập'; // Chỉ cập nhật status nếu chưa ghi nhận
-    }
 
     await schedule.save();
 
