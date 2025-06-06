@@ -417,15 +417,17 @@ exports.getTodaySchedule = async (req, res) => {
     const trainerId = req.user.id;
     const today = new Date();
     const todayStr = today.toISOString().slice(0, 10);
-
     // Lấy lịch tập hôm nay của trainer, populate tên học viên
+    const studentIds = await MembershipHistory.find({ trainerId })
+      .select('userId');
+    console.log(studentIds);
     const schedules = await Schedule.find({
-      trainerId,
-      date: todayStr
+      date: todayStr,
+      memberId: { $in: studentIds.map(m => m.userId) }
     })
       .populate('memberId', 'name')
       .select('timeStart timeEnd memberId workoutType');
-
+    console.log(schedules);
     // Định dạng lại dữ liệu cho FE
     const data = schedules.map(s => ({
       id: s._id,

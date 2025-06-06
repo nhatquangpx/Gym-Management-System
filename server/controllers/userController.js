@@ -171,7 +171,7 @@ exports.getMyPackages = async (req, res) => {
         const paidOrders = await MembershipHistory.find({ userId, status: "Đã kích hoạt" })
             .populate('packageId')
             .sort({ createdAt: 1 });
-
+        console.log(`Found ${paidOrders.length} paid orders for user: ${userId}`);
         const packages = paidOrders.map(order => {
             if (!order.packageId) return null;
 
@@ -228,7 +228,7 @@ exports.getPackageFeedback = async (req, res) => {
   try {
     const { packageId } = req.params;
     const memberId = req.user.id;
-
+    console.log(`Getting feedback for member: ${memberId}, package: ${packageId}`);
     // Find all feedback for this member and package
     const feedback = await TrainerFeedback.find({ 
       memberId,

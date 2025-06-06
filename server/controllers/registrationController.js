@@ -184,15 +184,13 @@ exports.activateAfterPayment = async (req, res) => {
             ]);
 
             // Validate required data exists
-            if (!user || !gymPackage || !resisteredPackage) {
+            if (!user || !gymPackage) {
                 await session.abortTransaction();
                 return res.status(404).json({
                     success: false,
                     message: 'Không tìm thấy thông tin tài khoản hoặc gói tập'
                 });
             }
-            console.log("==============Kiểm tra thông tin người dùng================");
-            console.log(resisteredPackage);
 
             // Check if order is already paid (TRUYỀN SESSION VÀO ĐÂY)
             if (order.status === 'paid') {

@@ -32,7 +32,7 @@ exports.getSchedulesByMember = async (req, res) => {
         $lte: finalEndDate
       };
     }
-    query.status = { $ne: 'Chưa tập'}
+    // query.status = { $ne: 'Chưa tập'}
     const schedules = await Schedule.find(query)
       .select('-createdAt -updatedAt')
       .populate('memberId', 'name')

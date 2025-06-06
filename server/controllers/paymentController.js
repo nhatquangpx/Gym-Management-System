@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const Package = require("../models/Package");
+const MembershipHistory = require('../models/MembershipHistory');
 const qs = require("qs");
 const crypto = require("crypto");
 
@@ -12,6 +13,7 @@ const vnp_ReturnUrl = process.env.VNP_RETURNURL;
 // Tạo URL thanh toán VNPAY
 exports.createVnpayPayment = async (req, res) => {
     try {
+        console.log('===============VNPAY Payment Request===============');
         console.log('VNPAY Payment Request received:');
         console.log('- Request body:', req.body);
         console.log('- Headers:', req.headers);
@@ -24,8 +26,7 @@ exports.createVnpayPayment = async (req, res) => {
                 received: req.body 
             });
         }
-        const { userId, packageId, registeredPackageId} = req.body;
-
+        const { userId, packageId, registeredPackageId, trainerId } = req.body;
           // Kiểm tra tham số bắt buộc
         if (!userId || !packageId) {
             console.error('Missing required parameters:', { userId, packageId });
@@ -101,28 +102,39 @@ exports.createVnpayPayment = async (req, res) => {
                 console.log(`Found user with email ${userId}, using ID: ${userIdToUse}`);
             } else {
                 console.log(`No existing user found with email ${userId}, will create order with email as userId`);
-            }        }   
-        if(registeredPackageId) {
-            const MembershipHistory = require('../models/MembershipHistory');
-            const registeredPackage = await MembershipHistory.findById(registeredPackageId);
-            if(!registeredPackage) {
-                console.error('Registered package not found with ID:', registeredPackageId);
-                return res.status(404).json({ message: "Registered package not found" });
-            }
-            else if (registeredPackage.status !== 'Chờ kích hoạt') {
-                let endDate = new Date(registeredPackage.endDate);
-                endDate.setDate(endDate.getDate() + (gymPackage.duration || 30));
-                registeredPackage.endDate = endDate;
-                await registeredPackage.save();
             }
         }
         // Tạo đơn hàng mới nếu không có sẵn
         if (!order) {
-            console.log('Goi dki=============================================', registeredPackageId);
+            if(registeredPackageId) {
+                const MembershipHistory = require('../models/MembershipHistory');
+                const registeredPackage = await MembershipHistory.findById(registeredPackageId);
+                if(!registeredPackage) {
+                    console.error('Registered package not found with ID:', registeredPackageId);
+                    return res.status(404).json({ message: "Registered package not found" });
+                }
+            }
+            let registedPackageId1 = registeredPackageId;
+            if (!registeredPackageId) {
+                const startDate = new Date();
+                const membershipStartDate = startDate;
+                const membershipExpiryDate = new Date(startDate);
+                membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30)); // Mặc định là 30 ngày nếu không có duration
+                const membershipHistory = await MembershipHistory.create({
+                    userId: userIdToUse,
+                    packageId: gymPackage._id,
+                    trainerId: trainerId || null,
+                    startDate: membershipStartDate,
+                    endDate: membershipExpiryDate,
+                    status: "Chờ kích hoạt",
+                });
+                registedPackageId1 = membershipHistory._id; // Lưu ID của membership history
+            }
             order = await Order.create({
                 userId: userIdToUse,
                 packageId: gymPackage._id, // Sử dụng _id của gymPackage đã tìm được
-                registeredPackageId: registeredPackageId || null, // Nếu có registeredPackageId thì sử dụng
+                trainerId: trainerId || null, // Nếu có trainerId thì sử dụng
+                registedPackageId: registedPackageId1, // Nếu có registeredPackageId thì sử dụng
                 amount: gymPackage.price,
                 status: "pending"
             });
@@ -173,6 +185,7 @@ exports.createVnpayPayment = async (req, res) => {
 // Xử lý callback từ VNPAY
 exports.vnpayReturn = async (req, res) => {
     try {
+        console.log('===============VNPAY Return Request===============');
         console.log('VNPAY Return received: ', req.query);
         console.log('Headers:', req.headers);
         
@@ -370,8 +383,9 @@ function sortObject(obj) {
 // Tạo đơn hàng cho thanh toán thủ công (banking, momo)
 exports.createManualOrder = async (req, res) => {
     try {
-        const { userId, packageId, paymentMethod, amount, orderInfo, bankId } = req.body;
-        
+        console.log('===============Manual Order Request===============');
+        const { userId, trainerId, packageId, paymentMethod, amount, orderInfo, bankId } = req.body;
+
         // Kiểm tra gói tập
         const gymPackage = await Package.findById(packageId);
         if (!gymPackage) {
@@ -380,11 +394,24 @@ exports.createManualOrder = async (req, res) => {
                 message: "Không tìm thấy gói tập" 
             });
         }
+        const startDate = new Date();
+        const membershipStartDate = startDate;
+        const membershipExpiryDate = new Date(startDate);
+        membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30)); // Mặc định là 30 ngày nếu không có duration
+        const membershipHistory = await MembershipHistory.create({
+            userId: userId,
+            packageId: packageId,
+            trainerId: trainerId || null,
+            startDate: membershipStartDate,
+            endDate: membershipExpiryDate,
+            status: "Chờ kích hoạt",
+        });
         
         // Tạo đơn hàng chờ xác nhận
         const order = await Order.create({
             userId,
             packageId,
+            registedPackageId: membershipHistory._id,
             amount,
             orderType: paymentMethod === 'banking' ? 'bank_transfer' : 'momo',
             status: "pending",

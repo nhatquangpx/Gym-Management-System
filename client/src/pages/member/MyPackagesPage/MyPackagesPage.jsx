@@ -99,13 +99,20 @@ const MyPackagesPage = () => {
             endDate = new Date(today);
             endDate.setDate(today.getDate() + remaining); // Set end date based on remaining days
           }
-          console.log('==========', pkg);
+          let status = 'Đang sử dụng';
+          if (remaining <= 0) {
+            remaining = 0; // Đảm bảo không có số ngày âm
+            status = 'Đã hết hạn';
+          }
           return {
             id: pkg._id,
             name: pkg.name,
             start: startDate.toISOString().split('T')[0].replace(/-/g, '/'),
             end: endDate.toISOString().split('T')[0].replace(/-/g, '/'),
-            status: 'Đang sử dụng', // Fix cứng luôn hiển thị đang sử dụng
+            status: status,
+            type: pkg.type === 'personal_training' ? 'Tập với PT' : 'Tự tập',
+            price: pkg.price ? `${pkg.price.toLocaleString()}đ` : 'Liên hệ',
+            description: pkg.description || 'Không có mô tả',
             remaining: remaining,
             registered: pkg.regested || null, // Sử dụng registered nếu có, nếu không thì null
           };
@@ -191,6 +198,7 @@ const MyPackagesPage = () => {
 
   // Kiểm tra trạng thái để hiển thị nút phù hợp
   const hasCurrent = !!currentHistory;
+  console.log('Current history:', hasCurrent);
   const isActive = hasCurrent && currentHistory.status === 'Đang sử dụng';
 
   // Hàm xử lý việc xem/ẩn đánh giá trainer
@@ -266,7 +274,7 @@ const MyPackagesPage = () => {
                 </div>
                 <div className={styles.actionButtons}>
                   {isActive && (
-                    <Button onClick={() => handleAction('buyMore', sortedHistory[0])} className={styles.buyMoreButton}>
+                    <Button onClick={() => handleAction('renew', sortedHistory[0])} className={styles.buyMoreButton}>
                       Gia hạn gói tập
                     </Button>
                   )}
@@ -288,7 +296,7 @@ const MyPackagesPage = () => {
               <div className={styles.noHistoryMessage}>
                 <p>Chưa có lịch sử sử dụng gói tập nào.</p>
                 <small>Nếu bạn đã thanh toán gói tập, vui lòng thử đăng xuất và đăng nhập lại.</small>
-                <p className={styles.debugInfo}>Debug: {JSON.stringify({auth: !!localStorage.getItem('token') || !!localStorage.getItem('authToken')})}</p>
+                {/* <p className={styles.debugInfo}>Debug: {JSON.stringify({auth: !!localStorage.getItem('token') || !!localStorage.getItem('authToken')})}</p> */}
               </div>
             ) : (
               <div className={styles.historyTableWrapper}>
