@@ -21,7 +21,6 @@ const menu = [
   { name: "Huấn luyện viên", path: "/admin/trainers", icon: <PeopleIcon /> },
   { name: "Gói tập", path: "/admin/packages", icon: <FitnessCenterIcon /> },
   { name: "Quản lý đăng ký gói tập", path: "/admin/orders", icon: <ReceiptLongIcon /> },
-  { name: "Ưu đãi", path: "/admin/promotions", icon: <LocalOfferIcon /> },
   { name: "Phòng tập", path: "/admin/gymrooms", icon: <MeetingRoomIcon /> },
   { name: "Thiết bị", path: "/admin/equipment", icon: <BuildIcon /> },
   { name: "Lịch sử sử dụng dịch vụ", path: "/admin/workouts", icon: <HistoryIcon /> },

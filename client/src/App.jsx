@@ -59,10 +59,6 @@ import EquipmentList from './pages/admin/EquipmentList';
 import AddMember from './pages/admin/AddMember';
 // import AddEmployee from './pages/admin/AddEmployee';
 import AddPackage from './pages/admin/AddPackage';
-import Promotions from './pages/admin/Promotions';
-import AddPromotion from './pages/admin/AddPromotion';
-import ViewPromotion from './pages/admin/ViewPromotion';
-import EditPromotion from './pages/admin/EditPromotion';
 import Trainers from './pages/admin/Trainers';
 import AddTrainer from './pages/admin/AddTrainer';
 import ViewTrainer from './pages/admin/ViewTrainer';
@@ -241,10 +237,6 @@ function App() {
             <Route path="profile" element={<AdminProfile />} />
             <Route path="profile/edit" element={<EditProfile />} />
             <Route path="account" element={<AdminAccount />} />
-            <Route path="promotions" element={<Promotions />} />
-            <Route path="promotions/add" element={<AddPromotion />} />
-            <Route path="promotions/view/:id" element={<ViewPromotion />} />
-            <Route path="promotions/edit/:id" element={<EditPromotion />} />
             <Route path="trainers" element={<Trainers />} />
             <Route path="trainers/add" element={<AddTrainer />} />
             <Route path="trainers/view/:id" element={<ViewTrainer />} />
