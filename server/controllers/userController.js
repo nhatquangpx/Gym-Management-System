@@ -161,72 +161,63 @@ exports.getMyPackages = async (req, res) => {
         
         const Order = require('../models/Order');
         const User = require('../models/User');
-        
-        // Tìm user để lấy thông tin thành viên
+        const MembershipHistory = require('../models/MembershipHistory');
+
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'Không tìm thấy người dùng' });
         }
         
-        // Tìm các đơn hàng đã thanh toán, sắp xếp theo thời gian tạo
-        const paidOrders = await Order.find({ userId, status: "paid" })
+        const paidOrders = await MembershipHistory.find({ userId, status: "Đã kích hoạt" })
             .populate('packageId')
-            .sort({ createdAt: 1 }); // Sắp xếp từ cũ đến mới
-        console.log(`Found ${paidOrders.length} paid orders for user ${userId}`);
-        
-        // Lọc các đơn hàng có packageId
-        const validOrders = paidOrders.filter(order => order.packageId);
-        console.log(`Found ${validOrders.length} valid orders with package information`);
-        
-        if (validOrders.length === 0) {
-            return res.status(200).json({ packages: [] });
-        }
-        
-        // Tính toán ngày bắt đầu và kết thúc cho từng gói
-        const packages = [];
-        let currentStartDate = user.memberInfo?.membershipStart ? new Date(user.memberInfo.membershipStart) : new Date();
-        
-        for (let i = 0; i < validOrders.length; i++) {
-            const order = validOrders[i];
-            const pkg = { ...order.packageId.toObject() };
-            const duration = pkg.duration || 30; // mặc định 30 ngày
+            .sort({ createdAt: 1 });
+
+        // Xử lý từng order một và đợi tất cả hoàn thành
+        const packages = await Promise.all(paidOrders.map(async (order) => {
+            if (!order.packageId) return null;
             
-            let startDate, endDate;
-            
-            if (i === 0) {
-                // Gói đầu tiên: sử dụng ngày bắt đầu từ memberInfo hoặc ngày tạo order
-                startDate = user.memberInfo?.membershipStart ? 
-                    new Date(user.memberInfo.membershipStart) : 
-                    new Date(order.createdAt);
-            } else {
-                // Các gói tiếp theo: bắt đầu từ ngày kết thúc của gói trước
-                startDate = new Date(currentStartDate);
+            // Tạo object cơ bản cho package
+            const packageData = {
+                _id: order.packageId._id,
+                id: order.packageId.id,
+                regested: order._id,
+                name: order.packageId.name,
+                description: order.packageId.description,
+                price: order.packageId.price,
+                period: order.packageId.period,
+                type: order.packageId.type,
+                typePackage: order.packageId.typePackage,
+                features: order.packageId.features || [],
+                duration: order.packageId.duration,
+                __v: order.packageId.__v,
+                createdAt: order.packageId.createdAt,
+                updatedAt: order.packageId.updatedAt,
+                startDate: order.startDate,
+                endDate: order.endDate,
+                orderDate: order.createdAt
+            };
+
+            // Nếu có trainerId, lấy thông tin trainer
+            if (order.trainerId && order.packageId.type === 'Tập với PT') {
+                try {
+                    const trainer = await User.findById(order.trainerId).select('name');
+                    if (trainer) {
+                        packageData.trainerId = order.trainerId;
+                        packageData.trainerName = trainer.name;
+                    }
+                } catch (error) {
+                    console.error(`Error fetching trainer for order ${order._id}:`, error);
+                }
             }
-            
-            // Tính ngày kết thúc
-            endDate = new Date(startDate);
-            if (duration >= 30) {
-                // Nếu duration >= 30, coi như là tháng
-                endDate.setMonth(endDate.getMonth() + Math.floor(duration / 30));
-                endDate.setDate(endDate.getDate() + (duration % 30));
-            } else {
-                // Nếu duration < 30, coi như là ngày
-                endDate.setDate(endDate.getDate() + duration);
-            }
-            
-            // Cập nhật startDate cho gói tiếp theo
-            currentStartDate = new Date(endDate);
-            
-            // Thêm thông tin ngày vào package
-            pkg.startDate = startDate;
-            pkg.endDate = endDate;
-            pkg.orderDate = order.createdAt;
-            
-            packages.push(pkg);
-        }
+
+            return packageData;
+        }));
+
+        // Lọc bỏ các null values
+        const validPackages = packages.filter(pkg => pkg !== null);
         
-        console.log(`Returning ${packages.length} packages with calculated dates`);
-        res.status(200).json({ packages });
+        console.log('Formatted packages:', validPackages);
+        res.status(200).json({ packages: validPackages });
     } catch (err) {
         console.error('Error in getMyPackages:', err);
         res.status(500).json({ message: 'Lỗi khi truy vấn gói tập của bạn!', error: err.message });
@@ -258,7 +249,7 @@ exports.getPackageFeedback = async (req, res) => {
   try {
     const { packageId } = req.params;
     const memberId = req.user.id;
-
+    console.log(`Getting feedback for member: ${memberId}, package: ${packageId}`);
     // Find all feedback for this member and package
     const feedback = await TrainerFeedback.find({ 
       memberId,

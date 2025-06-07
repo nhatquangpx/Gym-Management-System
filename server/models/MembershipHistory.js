@@ -28,10 +28,10 @@ const MembershipHistorySchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    renewalType: {
+    status: {
         type: String,
-        enum: ["new", "renew"],
-        default: "new"
+        enum: ["Chờ kích hoạt", "Đã kích hoạt", "Hết hạn", "Đã hủy"],
+        default: "Chờ kích hoạt"
     },
 }, { timestamps: true });
 

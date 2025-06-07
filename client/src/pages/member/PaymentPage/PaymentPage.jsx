@@ -340,7 +340,6 @@ const PaymentPage = () => {
               {paymentData.user && (
                 <div className={styles.userInfo}>
                   <h4>Thông tin người đăng ký:</h4>
-                  <p>Họ tên: {paymentData.user.name || paymentData.user.fullName || 'Chưa cung cấp'}</p>
                   <p>Email: {paymentData.user.email || 'Chưa cung cấp'}</p>
                 </div>
               )}

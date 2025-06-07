@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    registedPackageId: { type: mongoose.Schema.Types.ObjectId, ref: "MembershipHistory" }, // For existing users registering for a package
     packageId: { type: mongoose.Schema.Types.ObjectId, ref: "Package", required: true },
     trainerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Store selected trainer for new registrations
     amount: { type: Number, required: true },

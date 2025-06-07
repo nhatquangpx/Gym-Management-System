@@ -83,17 +83,34 @@ exports.registerMember = async (req, res) => {
       { id: newUser._id, role: newUser.role },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
-    );    // 8. Tạo đơn hàng thanh toán với userId chính thức
+    );
+
+    // 8. Tạo đơn hàng thanh toán với userId chính thức
+    const membershipStartDate = new Date();
+    const membershipExpiryDate = new Date(membershipStartDate);
+    membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30));
+
+    const membershipHistory = await MembershipHistory.create({
+      userId: newUser._id,
+      packageId: gymPackage._id,
+      trainerId: trainer?.id || null,
+      startDate: membershipStartDate,
+      endDate: membershipExpiryDate,
+      status: "Chờ kích hoạt",
+    });
+
     const order = await Order.create({
       userId: newUser._id,
       packageId: gymPackage._id,
       trainerId: trainer?.id || null, // Store selected trainer ID
+      registedPackageId: membershipHistory._id, // Reference to MembershipHistory
       amount: gymPackage.price,
       status: "pending",
       orderInfo: `Đăng ký gói tập ${gymPackage.name} cho thành viên mới`
     });
     console.log(`Order created for new member: ${order._id}`);
     
+
     // 9. Trả về thông tin người dùng, token và đơn hàng
     res.status(201).json({
       success: true,
@@ -127,237 +144,170 @@ exports.registerMember = async (req, res) => {
 // @desc    Kích hoạt tài khoản user sau khi đã thanh toán thành công
 // @access  Private - Yêu cầu JWT
 exports.activateAfterPayment = async (req, res) => {
-  try {
-  const { txnRef, responseCode } = req.body;
-  const userId = req.user.id;
-  
-  console.log(`Attempting to activate account after payment: User=${userId}, TxnRef=${txnRef}, Code=${responseCode}`);
-  
-  // Chỉ kích hoạt nếu mã phản hồi là '00' (thành công)
-  if (responseCode !== '00') {
-    return res.status(400).json({
-      success: false,
-      message: 'Mã phản hồi thanh toán không hợp lệ'
-    });
-  }
-  
-  // Tìm đơn hàng dựa trên txnRef
-  const order = await Order.findOne({ vnp_TxnRef: txnRef });
-  
-  if (!order) {
-    return res.status(404).json({
-      success: false,
-      message: 'Không tìm thấy đơn hàng với mã giao dịch này'
-    });
-  }
-    
-    // Tìm user từ JWT token
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy thông tin tài khoản'
-      });
-    }
-      // Tìm thông tin gói tập
-    const gymPackage = await Package.findById(order.packageId);
-    if (!gymPackage) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy thông tin gói tập'
-      });
-    }
+    let session;
+    const MAX_RETRIES = 3; // Số lần thử lại tối đa
+    let attempts = 0;
 
-    // Nếu đơn hàng đã thanh toán rồi thì không cần làm gì thêm
-    if (order.status === 'paid') {
-      // Lấy membership history cho user này
-      const existingHistory = await MembershipHistory.findOne({ 
-        userId: user._id,
-        orderId: order._id
-      });
-        return res.json({
-        success: true,
-        message: 'Đơn hàng này đã được thanh toán trước đó',
-        user: {
-          id: user._id,
-          email: user.email,
-          membershipStart: user.memberInfo?.membershipStart,
-          membershipEnd: user.memberInfo?.membershipEnd,
-          packageInfo: {
-            id: gymPackage._id,
-            name: gymPackage.name
-          },
-          trainerId: existingHistory?.trainerId || null
-        }
-      });
-    }
-      // Kích hoạt tài khoản và thiết lập thông tin gói tập
-    const membershipStart = new Date();
-    const membershipExpiry = new Date(membershipStart);
-    membershipExpiry.setDate(membershipExpiry.getDate() + (gymPackage.duration || 30));
+    while (attempts < MAX_RETRIES) {
+        attempts++;
+        try {
+            session = await mongoose.startSession();
+            session.startTransaction();
 
-    // Kiểm tra có phải là gia hạn không
-    let isRenewing = false;
-    let membershipStartDate = membershipStart;
-    let membershipExpiryDate = membershipExpiry;
+            const { txnRef, responseCode } = req.body;
+            const userId = req.user.id;
 
-    // Kiểm tra membership cũ cùng packageId
-    const existingMembership = await MembershipHistory.findOne({
-      userId: user._id, 
-      packageId: gymPackage._id
-    }).sort({ endDate: -1 });
-
-    // Nếu đang gia hạn, sử dụng endDate cũ làm startDate mới
-    if (existingMembership) {
-      isRenewing = true;
-      membershipStartDate = new Date(existingMembership.endDate);
-      membershipExpiryDate = new Date(membershipStartDate);
-      membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30));
-    }
-    
-    // Cập nhật thông tin gói tập vào memberInfo
-    if (!user.memberInfo) {
-      user.memberInfo = {};
-    }
-    user.memberInfo.membershipStart = membershipStartDate;
-    user.memberInfo.membershipEnd = membershipExpiryDate;
-    
-    // Sử dụng MongoDB session để đảm bảo tính atomic cho toàn bộ quá trình
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    
-    try {
-      // 1. Cập nhật user với thông tin membership mới
-      await user.save({ session });
-      
-      // 2. Cập nhật trạng thái đơn hàng
-      order.status = 'paid';
-      await order.save({ session });
-        // 3. Kiểm tra có phải gia hạn gói tập (renewal) không
-      // Tìm MembershipHistory gần nhất với cùng packageId và userId
-      let existingMembership = await MembershipHistory.findOne({
-        userId: user._id, 
-        packageId: gymPackage._id
-      }).sort({ endDate: -1 });
-      
-      let isRenewal = false;
-      let renewalType = "new";
-      let membershipStartDate = membershipStart;
-      let membershipExpiryDate = membershipExpiry;
-      
-      // Nếu tìm thấy membership cũ cùng packageId, thì đây là gia hạn
-      if (existingMembership) {
-        isRenewal = true;
-        renewalType = "renew";
-        // Lấy endDate từ membership cũ làm startDate cho membership mới
-        membershipStartDate = new Date(existingMembership.endDate);
-        // Tính lại ngày hết hạn mới
-        membershipExpiryDate = new Date(membershipStartDate);
-        membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30));
-      }        // Xác định trainerId: ưu tiên lấy từ MembershipHistory cũ nếu là gia hạn, 
-        // hoặc tìm từ các bản ghi MembershipHistory trước đó của user này, 
-        // hoặc từ Order hiện tại nếu là đăng ký mới
-        let trainerId = null;
-        
-        if (existingMembership && existingMembership.trainerId) {
-          // Nếu là gia hạn, sử dụng trainerId từ membership cũ
-          trainerId = existingMembership.trainerId;
-          console.log(`Using existing trainerId from previous membership: ${trainerId}`);
-        } else {
-          // Nếu là đăng ký mới, tìm trainerId từ MembershipHistory gần nhất của user
-          const latestMembership = await MembershipHistory.findOne({
-            userId: user._id
-          }).sort({ createdAt: -1 });
-          
-          if (latestMembership && latestMembership.trainerId) {
-            trainerId = latestMembership.trainerId;
-            console.log(`Using trainerId from latest membership history: ${trainerId}`);
-          } else if (order.trainerId) {
-            // Nếu không có MembershipHistory trước đó, lấy từ Order hiện tại (đăng ký mới)
-            trainerId = order.trainerId;
-            console.log(`Using trainerId from current order: ${trainerId}`);
-          } else {
-            console.log('No trainerId found in previous memberships or current order');
-          }
-        }
-
-        // Tạo bản ghi MembershipHistory trong cùng transaction
-        const membershipHistory = new MembershipHistory({
-          userId: user._id,
-          packageId: gymPackage._id,
-          orderId: order._id,
-          trainerId: trainerId,
-          startDate: membershipStartDate,
-          endDate: membershipExpiryDate,
-          renewalType: renewalType,
-        });
-      
-      await membershipHistory.save({ session });
-      
-      // Commit transaction
-      await session.commitTransaction();
-      session.endSession();
-      console.log(`User ${user._id} activated with MembershipHistory successfully via atomic transaction`);
-    } catch (error) {
-      // Nếu có lỗi, rollback toàn bộ transaction
-      await session.abortTransaction();
-      session.endSession();
-      
-      // Nếu là lỗi duplicate key và đơn hàng thực sự đã được xử lý trước đó
-      if (error.code === 11000) {
-        console.log(`Possible race condition detected for order: ${order._id}, checking status`);
-        
-        // Kiểm tra trạng thái thực tế của order
-        const updatedOrder = await Order.findById(order._id);
-        
-        if (updatedOrder && updatedOrder.status === 'paid') {
-          console.log(`Order ${order._id} was processed by another request`);
-            // Tìm MembershipHistory đã được tạo
-          const membershipHistory = await MembershipHistory.findOne({ orderId: order._id });
-          
-          return res.json({
-            success: true,
-            message: 'Đơn hàng đã được xử lý bởi request khác',
-            user: {
-              id: user._id,
-              email: user.email,
-              membershipStart: user.memberInfo.membershipStart,
-              membershipEnd: user.memberInfo.membershipEnd,
-              packageInfo: {
-                id: gymPackage._id,
-                name: gymPackage.name
-              },
-              trainerId: membershipHistory?.trainerId || null
+            // Validate payment response
+            if (responseCode !== '00') {
+                await session.abortTransaction(); // Abort if invalid
+                return res.status(400).json({
+                    success: false,
+                    message: 'Mã phản hồi thanh toán không hợp lệ'
+                });
             }
-          });
+
+            // First find the order (TRUYỀN SESSION VÀO ĐÂY)
+            const order = await Order.findOne({ vnp_TxnRef: txnRef }).session(session);
+            if (!order) {
+                await session.abortTransaction();
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không tìm thấy đơn hàng với mã giao dịch này'
+                });
+            }
+
+            // Then find related data (TRUYỀN SESSION VÀO ĐÂY)
+            const [user, gymPackage, resisteredPackage] = await Promise.all([
+                User.findById(userId).session(session),
+                Package.findById(order.packageId).session(session),
+                MembershipHistory.findById(order.registedPackageId).session(session)
+            ]);
+
+            // Validate required data exists
+            if (!user || !gymPackage) {
+                await session.abortTransaction();
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không tìm thấy thông tin tài khoản hoặc gói tập'
+                });
+            }
+
+            // Check if order is already paid (TRUYỀN SESSION VÀO ĐÂY)
+            if (order.status === 'paid') {
+                const existingHistory = await MembershipHistory.findOne({
+                    _id: order.registedPackageId,
+                    userId: user._id,
+                }).session(session); // Đảm bảo query này cũng dùng session
+
+                await session.abortTransaction();
+                return res.json({
+                    success: true,
+                    message: 'Đơn hàng này đã được thanh toán trước đó',
+                    user: {
+                        id: user._id,
+                        email: user.email,
+                        membershipStart: user.memberInfo?.membershipStart,
+                        membershipEnd: user.memberInfo?.membershipEnd,
+                        packageInfo: {
+                            id: gymPackage._id,
+                            name: gymPackage.name
+                        },
+                        trainerId: existingHistory?.trainerId || order.trainerId || null
+                    }
+                });
+            }
+
+            // Calculate membership dates
+            let membershipStartDate = new Date();
+            let membershipExpiryDate = new Date(membershipStartDate);
+            membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30));
+
+            // Check for existing active membership (TRUYỀN SESSION VÀO ĐÂY)
+            const existingResiteredPackage = await MembershipHistory.findOne({
+                _id: order.registedPackageId
+            }).session(session);
+            console.log("==============Kiểm tra gói tập đã đăng ký================");
+            console.log(existingResiteredPackage);
+            // Handle membership renewal
+            if (existingResiteredPackage) {
+                if (existingResiteredPackage.status === 'Chờ kích hoạt') {
+                    console.log("==============Kích hoạt gói tập mới================");
+                    // Update existing package to active status
+                    existingResiteredPackage.status = 'Đã kích hoạt';
+                    await existingResiteredPackage.save({ session });
+                } else if (existingResiteredPackage.status === 'Đã kích hoạt') {
+                    console.log("==============Gia hạn gói tập đang hoạt động================");
+                    // Khi gia hạn, bắt đầu từ ngày kết thúc của gói hiện tại
+                    membershipStartDate = new Date(existingResiteredPackage.endDate);
+                    membershipExpiryDate = new Date(membershipStartDate);
+                    membershipExpiryDate.setDate(membershipExpiryDate.getDate() + (gymPackage.duration || 30));
+
+                    existingResiteredPackage.endDate = membershipExpiryDate;
+                    await existingResiteredPackage.save({ session });
+                }
+            }
+
+            // Update user membership info
+            user.memberInfo = {
+                ...user.memberInfo,
+                membershipStart: membershipStartDate,
+                membershipEnd: membershipExpiryDate
+            };
+            await user.save({ session });
+
+            // Update order status
+            order.status = 'paid';
+            await order.save({ session });
+
+            // Commit transaction
+            await session.commitTransaction();
+            console.log(`User ${user._id} activated successfully`);
+
+            // Trả về response thành công
+            return res.json({
+                success: true,
+                message: 'Đăng kí hoặc gia hạn gói tập thành công',
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    membershipStart: membershipStartDate,
+                    membershipEnd: membershipExpiryDate,
+                    packageInfo: {
+                        id: gymPackage._id,
+                        name: gymPackage.name
+                    },
+                    trainerId: order.trainerId
+                }
+            });
+
+        } catch (error) {
+            if (session) {
+                await session.abortTransaction();
+            }
+
+            // Kiểm tra nếu lỗi là WriteConflict hoặc TransientTransactionError
+            if (error.code === 112 || (error.errorLabels && error.errorLabels.includes('TransientTransactionError'))) {
+                console.warn(`Write conflict detected, retrying transaction. Attempt ${attempts} of ${MAX_RETRIES}`);
+                await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempts) * 50)); // Exponential backoff
+                continue; // Thử lại toàn bộ giao dịch
+            } else {
+                // Đây là một lỗi không phải write conflict, hoặc đã hết số lần thử lại
+                console.error('Error activating account after payment:', error);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Đã xảy ra lỗi khi kích hoạt tài khoản'
+                });
+            }
+        } finally {
+            if (session) {
+                await session.endSession();
+            }
         }
-      }
-      
-      // Nếu là lỗi khác, throw để catch bên ngoài xử lý
-      throw error;
     }
-        console.log(`User ${user._id} activated successfully via client-side activation`);
-      // Trả về thông tin thành công
-    return res.json({
-      success: true,
-      message: 'Tài khoản đã được kích hoạt thành công',
-      user: {
-        id: user._id,
-        email: user.email,
-        membershipStart: user.memberInfo.membershipStart,
-        membershipEnd: user.memberInfo.membershipEnd,
-        packageInfo: {
-          id: gymPackage._id,
-          name: gymPackage.name
-        },
-        trainerId: trainerId
-      }
-    });
-  } catch (error) {
-    console.error('Error activating account after payment:', error);
+
+    // Nếu vòng lặp kết thúc mà vẫn chưa thành công
     return res.status(500).json({
-      success: false,
-      message: 'Đã xảy ra lỗi khi kích hoạt tài khoản'
+        success: false,
+        message: 'Đã xảy ra lỗi khi kích hoạt tài khoản do xung đột đồng thời không thể giải quyết.'
     });
-  }
 };

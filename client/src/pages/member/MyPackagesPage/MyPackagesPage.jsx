@@ -34,7 +34,7 @@ const MyPackagesPage = () => {
           name: pkg.name,
           price: `${pkg.price.toLocaleString()}đ`,
           period: `/${pkg.period}`,
-          type: pkg.type === 'personal_training' ? 'Tập với PT' : 'Tự tập',
+          type: pkg.type === 'Tập với PT' ? 'Tập với PT' : 'Tự tập',
           description: pkg.description,
           highlight: pkg.price < 600000, // Highlight affordable options
         }));
@@ -60,9 +60,7 @@ const MyPackagesPage = () => {
           return;
         }
         
-        console.log('Fetching user packages...');
         const response = await axios.get('/api/users/my-packages');
-        console.log('User packages response:', response.data);
         
         // Kiểm tra nếu không có packages hoặc mảng rỗng
         if (!response.data.packages || response.data.packages.length === 0) {
@@ -70,29 +68,30 @@ const MyPackagesPage = () => {
           setPackageHistory([]);
           setIsLoadingHistory(false);
           return;
-        }          const formattedHistory = response.data.packages.map((pkg, index) => {
+        }
+        const formattedHistory = response.data.packages.map((pkg, index) => {
           if (!pkg) {
             console.log('Package data is null or undefined at index', index);
             return null;
           }
           
-          console.log('Processing package:', pkg);
-          
           let startDate, endDate, remaining;
           const today = new Date();
           
           // Fix cứng logic theo yêu cầu
-          if (response.data.packages.length === 1) {
-            // Nếu chỉ có 1 gói thì số ngày còn lại là 30
-            remaining = 30;
-          } else {
-            // Nếu không thì hiện 60 ngày
-            remaining = 60;
-          }
+          // if (response.data.packages.length === 1) {
+          //   // Nếu chỉ có 1 gói thì số ngày còn lại là 30
+          //   remaining = 30;
+          // } else {
+          //   // Nếu không thì hiện 60 ngày
+          //   remaining = 60;
+          // }
           
           if (pkg.startDate && pkg.endDate) {
             startDate = new Date(pkg.startDate);
             endDate = new Date(pkg.endDate);
+            remaining = endDate.getTime() - today.getTime();
+            remaining = Math.ceil(remaining / (1000 * 60 * 60 * 24)); // Chuyển đổi thành số ngày
             console.log(`Package ${pkg.name}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
           } else {
             console.log('No date data from API, using fallback dates');
@@ -100,18 +99,27 @@ const MyPackagesPage = () => {
             endDate = new Date(today);
             endDate.setDate(today.getDate() + remaining); // Set end date based on remaining days
           }
-          
+          let status = 'Đang sử dụng';
+          if (remaining <= 0) {
+            remaining = 0; // Đảm bảo không có số ngày âm
+            status = 'Đã hết hạn';
+          }
           return {
             id: pkg._id,
             name: pkg.name,
             start: startDate.toISOString().split('T')[0].replace(/-/g, '/'),
             end: endDate.toISOString().split('T')[0].replace(/-/g, '/'),
-            status: 'Đang sử dụng', // Fix cứng luôn hiển thị đang sử dụng
+            status: status,
+            type: pkg.type === 'Tập với PT' ? 'Tập với PT' : 'Tự tập',
+            price: pkg.price ? `${pkg.price.toLocaleString()}đ` : 'Liên hệ',
+            description: pkg.description || 'Không có mô tả',
             remaining: remaining,
-            sessions: pkg.sessions || []
+            registered: pkg.regested || null, // Sử dụng registered nếu có, nếu không thì null
+            trainerName: pkg.trainerName,
           };
-        }).filter(pkg => pkg !== null);          console.log('Formatted history:', formattedHistory);
-        
+        }).filter(pkg => pkg !== null);
+        console.log('Formatted history:', formattedHistory);
+
         // Sắp xếp để gói mới nhất lên đầu
         const sortedHistory = formattedHistory.sort((a, b) => {
           return new Date(b.end.replace(/\//g, '-')) - new Date(a.end.replace(/\//g, '-'));
@@ -139,7 +147,7 @@ const MyPackagesPage = () => {
       navigate('/register/package');
       return;
     }
-    
+    console.log(`Handling action: ${action} for package:`, pkg);
     // Với các action khác (renew, buyMore), hiển thị modal thanh toán
     setModalAction(action);
     setSelectedPackage(pkg);
@@ -157,6 +165,7 @@ const MyPackagesPage = () => {
         packageId: selectedPackage.id,
         packageName: selectedPackage.name,
         price: selectedPackage.price,
+        registeredPackageId: selectedPackage.registered || null,
       };
       const response = await fetch('http://localhost:8001/api/payment/vnpay', {
         method: 'POST',
@@ -190,7 +199,7 @@ const MyPackagesPage = () => {
 
   // Kiểm tra trạng thái để hiển thị nút phù hợp
   const hasCurrent = !!currentHistory;
-  const isExpired = hasCurrent && currentHistory.status === 'Đã hết hạn';
+  console.log('Current history:', hasCurrent);
   const isActive = hasCurrent && currentHistory.status === 'Đang sử dụng';
 
   // Hàm xử lý việc xem/ẩn đánh giá trainer
@@ -205,7 +214,6 @@ const MyPackagesPage = () => {
       });
       
       const data = await response.json();
-      
       if (data.success) {
         setPackageFeedback(prev => ({
           ...prev,
@@ -248,6 +256,9 @@ const MyPackagesPage = () => {
                     <h3>{hasCurrent ? currentPackage?.name : 'Chưa có gói tập'}</h3>
                     {hasCurrent && currentPackage && <>
                       <p><strong>Loại:</strong> {currentPackage.type}</p>
+                      {currentHistory.trainerName && (
+                        <p><strong>Huấn luyện viên:</strong> {currentHistory.trainerName}</p>
+                      )}
                       <p><strong>Thời hạn:</strong> {currentHistory.start} - {currentHistory.end}</p>
                       <p><strong>Mô tả:</strong> {currentPackage.description}</p>
                     </>}
@@ -266,14 +277,9 @@ const MyPackagesPage = () => {
                   </div>
                 </div>
                 <div className={styles.actionButtons}>
-                  {isExpired && (
-                    <Button onClick={() => handleAction('renew', currentPackage)} className={styles.renewButton}>
-                      Gia hạn gói tập
-                    </Button>
-                  )}
                   {isActive && (
-                    <Button onClick={() => handleAction('buyMore', currentPackage)} className={styles.buyMoreButton}>
-                      Mua thêm gói tập
+                    <Button onClick={() => handleAction('renew', sortedHistory[0])} className={styles.buyMoreButton}>
+                      Gia hạn gói tập
                     </Button>
                   )}
                   {!hasCurrent && allPackages.length > 0 && (
@@ -294,7 +300,7 @@ const MyPackagesPage = () => {
               <div className={styles.noHistoryMessage}>
                 <p>Chưa có lịch sử sử dụng gói tập nào.</p>
                 <small>Nếu bạn đã thanh toán gói tập, vui lòng thử đăng xuất và đăng nhập lại.</small>
-                <p className={styles.debugInfo}>Debug: {JSON.stringify({auth: !!localStorage.getItem('token') || !!localStorage.getItem('authToken')})}</p>
+                {/* <p className={styles.debugInfo}>Debug: {JSON.stringify({auth: !!localStorage.getItem('token') || !!localStorage.getItem('authToken')})}</p> */}
               </div>
             ) : (
               <div className={styles.historyTableWrapper}>
@@ -376,8 +382,12 @@ const MyPackagesPage = () => {
             </h2><div className={styles.paymentModalInfo}>
               <p><strong>Tên gói:</strong> {selectedPackage ? selectedPackage.name : ''}</p>
               <p><strong>Loại:</strong> {selectedPackage ? selectedPackage.type : ''}</p>
+              {selectedPackage?.type === 'Tập với PT' && selectedPackage?.trainerName && (
+                <p><strong>Huấn luyện viên:</strong> {selectedPackage.trainerName}</p>
+              )}
               <p><strong>Mô tả:</strong> {selectedPackage ? selectedPackage.description : ''}</p>
               <p><strong>Giá:</strong> <span className={styles.paymentModalPrice}>{selectedPackage ? selectedPackage.price : ''}{selectedPackage ? selectedPackage.period : ''}</span></p>
+              
             </div>
             {error && <div className={styles.paymentModalError}>{error}</div>}
             <div className={styles.paymentModalActions}>

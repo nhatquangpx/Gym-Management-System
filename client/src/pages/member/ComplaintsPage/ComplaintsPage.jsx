@@ -156,6 +156,12 @@ const ComplaintsPage = () => {
 
   // Lấy tên đối tượng từ id
   const getTargetName = (item) => {
+    // Nếu có targetName từ API thì dùng luôn
+    if (item.targetName) {
+      return item.targetName;
+    }
+
+    // Fallback về cách cũ nếu không có targetName
     if (item.type === 'Gói tập') {
       const pkg = usedPackages.find(p => p._id === (item.targetId || item.packageId));
       return pkg ? pkg.name : 'Gói tập';
@@ -276,4 +282,4 @@ const ComplaintsPage = () => {
   );
 };
 
-export default ComplaintsPage; 
+export default ComplaintsPage;
