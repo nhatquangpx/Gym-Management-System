@@ -255,10 +255,6 @@ exports.getTrainerStudents = async (req, res) => {
       const completedWorkouts = await Schedule.countDocuments({
         memberId: membership.userId._id,
         status: 'Đã tập',
-        date: {
-          $gte: membership.startDate,
-          $lte: membership.endDate
-        }
       });
       // Calculate progress percentage
       const progress = Math.min(
@@ -468,10 +464,6 @@ exports.getStudentProgress = async (req, res) => {
       const completedWorkouts = await Schedule.countDocuments({
         memberId: membership.userId._id,
         status: 'Đã tập',
-        date: {
-          $gte: membership.startDate,
-          $lte: membership.endDate
-        }
       });
 
       // Calculate progress percentage

@@ -45,7 +45,7 @@ export default function Account() {
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Avatar src={user.avatar} alt={user.name} sx={{ width: 120, height: 120, mb: 2, border: '4px solid var(--admin-primary)', boxShadow: '0 4px 24px rgba(var(--admin-primary-rgb), 0.2)' }} />
           <Typography variant="h5" gutterBottom sx={{ color: 'var(--admin-text)', fontWeight: 700 }}>{user.name}</Typography>
-          <Typography variant="body1" sx={{ color: 'var(--admin-primary)', fontWeight: 600 }} gutterBottom >{user.employeeInfo.position}</Typography>
+
           <Typography variant="body2" sx={{ color: 'var(--admin-text)' }}>Email: {user.email}</Typography>
           <Typography variant="body2" sx={{ color: 'var(--admin-text)' }}>SĐT: {user.phone}</Typography>
           <Button
